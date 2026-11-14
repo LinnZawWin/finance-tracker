@@ -3,6 +3,7 @@
 Personal finance tracker on Dataverse: capture expenses (Google Keep notes via a Google Sheet inbox),
 import bank statements, reconcile bank lines against transactions, and track assets.
 Model-driven app **Finance Tracker**. Schema as built: [docs/schema.md](docs/schema.md).
+Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions.md). Read it before changing anything.
 
 ## Rules
 
@@ -65,9 +66,27 @@ Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 | `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_flow.py`, `seed.py` | Idempotent build, in this order |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_compare.py` | Compare parsed statement lines with Dataverse before creating lines |
-| `recalc.py` | Recalculate rollups and fill the columns maintained by script |
+| `recalc.py` | Recalculate the rollup columns on demand |
+
+The five calculated columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are created by
+hand in the maker editor, because Dataverse rejects calculated formulas sent through the API. Do not run
+`build_formulas.py --fallback`: it would create them as plain columns. Run `build_ui.py` after creating them to
+put them on the forms and views.
 
 Run them with a Python that has `azure-identity` installed, from the repo root, with the Azure CLI on PATH.
+
+## Starting a new session
+
+- Tools: `pac` (PAC CLI 2.x needs the .NET 10 SDK: `apt-get install -y dotnet-sdk-10.0`, then
+  `dotnet tool install --global Microsoft.PowerApps.CLI.Tool`), `az` and the script dependencies
+  (`pip install azure-cli azure-identity` in a virtual environment). Sign-ins do not carry over: repeat the
+  device-code sign-in for both tools.
+- Skills: the dataverse skills (dv-*) come from the plugin. The model-apps and power-automate skills are in
+  the public repo `microsoft/power-platform-skills` under `plugins/`.
+- The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
+  completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
+- Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
+- The base currency was NZD when the solution was built. Scripts and the flow set AUD on the rows they create.
 
 ## Statement import rules
 
@@ -93,8 +112,7 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 3. Auto-confirm at or above the agreed confidence. Otherwise set Match Status = Proposed and ask in the session.
 4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
 5. For **Wise**, match on Original Amount (CNY), not AUD.
-6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns and the columns
-   maintained by script, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
+6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 
 ## Keep Inbox sheet
 

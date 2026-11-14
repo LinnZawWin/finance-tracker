@@ -3,6 +3,7 @@
 Personal finance tracker on Dataverse: capture expenses (Google Keep notes via a Google Sheet inbox),
 import bank statements, reconcile bank lines against transactions, and track assets.
 Model-driven app **Finance Tracker**. Schema as built: [docs/schema.md](docs/schema.md).
+Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions.md). Read it before changing anything.
 
 ## Rules
 

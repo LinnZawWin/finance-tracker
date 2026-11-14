@@ -74,6 +74,19 @@ put them on the forms and views.
 
 Run them with a Python that has `azure-identity` installed, from the repo root, with the Azure CLI on PATH.
 
+## Starting a new session
+
+- Tools: `pac` (PAC CLI 2.x needs the .NET 10 SDK: `apt-get install -y dotnet-sdk-10.0`, then
+  `dotnet tool install --global Microsoft.PowerApps.CLI.Tool`), `az` and the script dependencies
+  (`pip install azure-cli azure-identity` in a virtual environment). Sign-ins do not carry over: repeat the
+  device-code sign-in for both tools.
+- Skills: the dataverse skills (dv-*) come from the plugin. The model-apps and power-automate skills are in
+  the public repo `microsoft/power-platform-skills` under `plugins/`.
+- The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
+  completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
+- Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
+- The base currency was NZD when the solution was built. Scripts and the flow set AUD on the rows they create.
+
 ## Statement import rules
 
 1. Before creating Bank Statement Lines, query the existing lines for that account and date range.

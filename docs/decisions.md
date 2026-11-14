@@ -13,6 +13,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 4 | Create the Google Sheet (worksheet `Inbox`, headers A to L) and set `lzw_KeepInboxSheetId` | Owner | Layout is in `CLAUDE.md` |
 | 5 | Create the Google Sheets connection, bind both connection references, turn the flow on | Owner | The flow has never run; the first run is its real test |
 | 6 | Agree the confidence threshold for auto-confirming AI matches | Owner | Not set yet; reconciliation rules depend on it |
+| 8 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL`, then set up Claude Code GitHub Actions (`/install-github-app`) | Owner | Needed before issue-triggered work can reach Dataverse |
 | 7 | Test `recalc.py` and `statement_compare.py --apply` with real rows | Claude | Both have only run against empty tables |
 
 ## Decisions and reasoning
@@ -87,6 +88,17 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 - The environment's base currency was NZD at build time and Currency was deliberately not touched.
   AUD existed as an additional currency. The platform added `transactioncurrency` and `account` to the
   solution as references only.
+
+### Automation identity
+- App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the
+  environment as an application user with the **System Administrator** role (the owner's choice, so that
+  automation can change schema as well as data).
+- **No client secret exists.** The only credential is a GitHub federated credential that trusts workflows
+  running on the `main` branch of this repository (subject `repo:<owner>/finance-tracker:ref:refs/heads/main`).
+  Workflows on other branches or pull requests cannot sign in with it.
+- The client ID and tenant ID are not stored in this repo. They belong in GitHub secrets.
+- A workflow signs in with `azure/login` (OIDC, `allow-no-subscriptions: true`) and needs
+  `permissions: id-token: write`. The scripts then get their token from the Azure CLI as usual.
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

@@ -7,12 +7,12 @@ import build_ui
 import dv
 import spec
 
-MAINTAINED = {("lzw_bankstatementline", "lzw_unallocatedamount"): "Amount - Allocated Amount",
-              ("lzw_financetransaction", "lzw_actualcost"): "-Actual Amount if Type = Expense, else Actual Amount",
-              ("lzw_financetransaction", "lzw_partnershare"):
-                  "Actual Cost x 0.5 if Shared with Partner; Actual Cost if All for Partner; else 0",
-              ("lzw_financetransaction", "lzw_mycost"): "Actual Cost - Partner Share",
-              ("lzw_financeasset", "lzw_netcost"): "Total Cost - Sale Proceeds"}
+FORMULAS = {("lzw_bankstatementline", "lzw_unallocatedamount"): "Amount - Allocated Amount",
+            ("lzw_financetransaction", "lzw_actualcost"): "Actual Amount x -1 if Type = Expense, else Actual Amount",
+            ("lzw_financetransaction", "lzw_partnershare"):
+                "Actual Cost x 0.5 if Shared with Partner; Actual Cost if All for Partner; else 0",
+            ("lzw_financetransaction", "lzw_mycost"): "Actual Cost - Partner Share",
+            ("lzw_financeasset", "lzw_netcost"): "Total Cost - Sale Proceeds"}
 EXPECT = {"string": "String", "memo": "Memo", "bool": "Boolean", "choice": "Picklist", "gchoice": "Picklist",
           "date": "DateTime", "datetime": "DateTime", "money": "Money", "decimal": "Decimal", "int": "Integer",
           "file": "File", "image": "Image", "lookup": "Lookup", "calc": "Money"}
@@ -68,7 +68,7 @@ def describe(a, col):
         what = "count of rows" if col["agg"] == "Count" else f"sum of {col['source']}"
         cond = "active rows" if attr == "statecode" else f"{attr} {'=' if op == 'Equal' else 'is not'} {val}"
         return f"Rollup ({'whole number' if col['type'] == 'int' else 'currency'}): {what} in {col['child']} where {cond}"
-    return "Currency, plain column, maintained by script"
+    return "Calculated (currency), created in the maker editor"
 
 
 def main():
@@ -135,7 +135,7 @@ def main():
             if col["kind"] in ("rollup", "calc"):
                 d = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')/Microsoft.Dynamics.CRM."
                            f"{'Integer' if want == 'Integer' else 'Money'}AttributeMetadata?$select=SourceType")
-                check((d["SourceType"] == 2) == (col["kind"] == "rollup"), f"{tl}.{cl} source type {d['SourceType']}")
+                check(d["SourceType"] == (2 if col["kind"] == "rollup" else 1), f"{tl}.{cl} source type {d['SourceType']}")
             req = "Yes" if a["RequiredLevel"]["Value"] == "ApplicationRequired" else ""
             check(bool(req) == bool(col.get("required")), f"{tl}.{cl} required level")
             doc.append(f"| {col['name']} | `{cl}` | {desc} | {req} |")
@@ -148,11 +148,10 @@ def main():
             "Public view **Banks** (Is Bank = Yes, active). It is the only lookup view for Bank Account.Bank. "
             "No Account form was changed.", ""]
 
-    doc += ["## Columns maintained by script", "",
-            "Dataverse rejected these as calculated columns when defined through the API (Microsoft only supports "
-            "defining formulas in the maker editor), so they are plain currency columns. `scripts/recalc.py` "
-            "recalculates the rollups and then writes these values.", "", "| Table | Column | Formula |", "|---|---|---|"]
-    doc += [f"| `{t}` | `{c}` | {f} |" for (t, c), f in MAINTAINED.items()]
+    doc += ["## Calculated columns", "",
+            "Created by hand in the maker editor (Dataverse does not accept calculated formulas through the API). "
+            "They return no value while a column they use is empty.", "", "| Table | Column | Formula |", "|---|---|---|"]
+    doc += [f"| `{t}` | `{c}` | {f} |" for (t, c), f in FORMULAS.items()]
     doc += ["", "## Rollup notes", "",
             "- Rollups refresh on the hourly system job, with the Recalculate button on the form, or with `scripts/recalc.py`.",
             "- Line Count counts active Bank Statement Lines only.", ""]

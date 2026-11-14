@@ -65,7 +65,12 @@ Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 | `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_flow.py`, `seed.py` | Idempotent build, in this order |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_compare.py` | Compare parsed statement lines with Dataverse before creating lines |
-| `recalc.py` | Recalculate rollups and fill the columns maintained by script |
+| `recalc.py` | Recalculate the rollup columns on demand |
+
+The five calculated columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are created by
+hand in the maker editor, because Dataverse rejects calculated formulas sent through the API. Do not run
+`build_formulas.py --fallback`: it would create them as plain columns. Run `build_ui.py` after creating them to
+put them on the forms and views.
 
 Run them with a Python that has `azure-identity` installed, from the repo root, with the Azure CLI on PATH.
 
@@ -93,8 +98,7 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 3. Auto-confirm at or above the agreed confidence. Otherwise set Match Status = Proposed and ask in the session.
 4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
 5. For **Wise**, match on Original Amount (CNY), not AUD.
-6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns and the columns
-   maintained by script, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
+6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 
 ## Keep Inbox sheet
 

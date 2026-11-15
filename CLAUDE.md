@@ -27,10 +27,24 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
 - `DATAVERSE_URL`: the environment URL. `DATAVERSE_USER`: the sign-in account. Both come from the environment,
   never from files in this repo. `DATAVERSE_PUBLISHER` (unique name of the `lzw` publisher) is only needed
   to create the solution.
-- No browser or password is available. Sign in with device code for both tools, as `$DATAVERSE_USER`:
-  - `az login --use-device-code --allow-no-subscriptions`
-  - `pac auth create --environment $DATAVERSE_URL --deviceCode`
-- Verify with `pac auth list` and a WhoAmI call. Scripts take their token from the Azure CLI sign-in.
+- Sign in without any manual step wherever possible. Check first with `az account show`:
+  - **GitHub Actions**: the workflow has already signed the Azure CLI in before Claude starts. Do not ask
+    for a sign-in. Run the scripts yourself, check their output, fix what fails and run `verify.py`.
+    Never finish with "run this script yourself" while the sign-in works.
+  - **Claude Code cloud sessions**: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_CLIENT_SECRET` come from
+    the environment. Sign in with
+    `az login --service-principal -u "$AZURE_CLIENT_ID" -p "$AZURE_CLIENT_SECRET" --tenant "$AZURE_TENANT_ID" --allow-no-subscriptions`.
+    Never print or commit these values.
+  - **Fallback**, only if neither works: device code as `$DATAVERSE_USER`
+    (`az login --use-device-code --allow-no-subscriptions`).
+- Both automatic sign-ins act as the application user "Finance Tracker Automation" (System Administrator),
+  so rows it creates are owned by that user, not by the owner.
+- Scripts take their token from the Azure CLI sign-in. Verify with a WhoAmI call. PAC CLI is only needed for
+  `pac` commands: `pac auth create --environment $DATAVERSE_URL --deviceCode`.
+- A script is not done until it has run against the environment. Table metadata accepts PUT of the whole
+  definition, not PATCH.
+- Do not change standard tables shared with other apps (for example the Account icon or forms), apart from
+  `account.lzw_isbank` and the "Banks" view.
 
 ## Solution
 
@@ -82,8 +96,8 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 
 - Tools: `pac` (PAC CLI 2.x needs the .NET 10 SDK: `apt-get install -y dotnet-sdk-10.0`, then
   `dotnet tool install --global Microsoft.PowerApps.CLI.Tool`), `az` and the script dependencies
-  (`pip install azure-cli azure-identity` in a virtual environment). Sign-ins do not carry over: repeat the
-  device-code sign-in for both tools.
+  (`pip install azure-cli azure-identity` in a virtual environment). Sign-ins do not carry over: sign in
+  again as described under "Environment and sign-in".
 - Skills: the dataverse skills (dv-*) come from the plugin. The model-apps and power-automate skills are in
   the public repo `microsoft/power-platform-skills` under `plugins/`.
 - The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still

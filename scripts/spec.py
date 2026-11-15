@@ -31,8 +31,8 @@ def date(name, **kw):
     return dict(kind="date", name=name, **kw)
 
 
-def dt(name):
-    return dict(kind="datetime", name=name)
+def dt(name, **kw):
+    return dict(kind="datetime", name=name, **kw)
 
 
 def money(name, signed=False, **kw):
@@ -110,7 +110,8 @@ TABLES = [
     ]),
     dict(schema="lzw_FinanceTransaction", display="Finance Transaction", plural="Finance Transactions",
          primary="Description", columns=[
-        date("Transaction Date", required=True),
+        dt("Transaction Date", required=True,
+           description="Date and time. The time orders the transactions within a day"),
         choice("Type", ["Expense", "Income"], "Expense"),
         s("Payee", 200),
         money("Estimated Amount", False, description="Positive amount (AUD)"),

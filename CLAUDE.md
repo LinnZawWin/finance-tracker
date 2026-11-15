@@ -19,7 +19,8 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
 - After pushing work to a `claude/` branch, open a pull request to `main` and merge it straight away,
   without waiting for review. Never push to `main` directly.
 - Conventions: logical name = `lzw_` + display name in lowercase without spaces. Primary column `lzw_name`.
-  Tables are user-owned, no security roles. Dates are Date Only. Money has precision 2. Lookups are 1:N with
+  Tables are user-owned, no security roles. Dates are Date Only, except Finance Transaction
+  **Transaction Date**, which is date and time (user local). Money has precision 2. Lookups are 1:N with
   Restrict delete.
 
 ## Environment and sign-in
@@ -167,7 +168,25 @@ project they belong to.
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".
 
+## Web page (`web/index.html`)
+
+A single static page, published with GitHub Pages by `.github/workflows/pages.yml`, for entering and editing
+Finance Transactions. It has no build step and no dependencies.
+
+- The page is public, so it contains no environment details. On first use it asks for the Dataverse URL,
+  tenant ID and app ID and keeps them in the browser. Never put those values in the file.
+- Sign-in is the owner's own Microsoft account (authorization code flow with PKCE) through the app
+  registration "Finance Tracker Web". Rows are created as the owner, not as the automation identity.
+- The time part of **Transaction Date** is the order within a day. A new row for today gets the current
+  time; for another day, one minute after that day's last row. Reordering hands the day's existing times
+  out again in the new order. Bulk entry keeps the pasted order.
+- Page entries have Source = Manual, bulk entries Source = Keep.
+- Test changes with a browser against Dataverse before merging, and remove the test rows afterwards.
+
 ## Keep Inbox sheet
+
+The web page above can replace this sheet and flow. Both still exist. The flow writes the sheet's date into
+Transaction Date without a time, which Dataverse stores as midnight UTC (10:00 in Brisbane).
 
 Google Sheet, worksheet name `Inbox`, header row exactly as below. The sheet ID goes in the environment
 variable `lzw_KeepInboxSheetId`. The flow "Finance Tracker - Import Keep Rows" reads it every hour.
@@ -198,7 +217,9 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 |---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
 | 2 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
-| 3 | Import the statements waiting in `Statements/Inbox`. Nothing is imported yet. The owner is replacing the AMEX PDFs with xlsx exports first. Start with one statement | Claude, when the owner says so |
-| 4 | `statement_compare.py` does not yet fill the new columns (Posted Date, Bank Reference, Line Number, Card Holder, Fee Amount, Bank Category) or a per-line currency. Extend it before the first import | Claude |
-| 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
-| 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 3 | Turn on GitHub Pages: repo Settings, Pages, Source = GitHub Actions. Then run the "Deploy web page" workflow and sign in on the page once | Owner |
+| 4 | Decide whether the web page replaces the Keep Inbox sheet and its flow | Owner |
+| 5 | Import the statements waiting in `Statements/Inbox`. Nothing is imported yet. The owner is replacing the AMEX PDFs with xlsx exports first. Start with one statement | Claude, when the owner says so |
+| 6 | `statement_compare.py` does not yet fill the new columns (Posted Date, Bank Reference, Line Number, Card Holder, Fee Amount, Bank Category) or a per-line currency. Extend it before the first import | Claude |
+| 7 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
+| 8 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

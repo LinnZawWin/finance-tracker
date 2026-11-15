@@ -78,7 +78,7 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 
 | Display name | Logical name | Type | Required |
 |---|---|---|---|
-| Transaction Date | `lzw_transactiondate` | Date Only | Yes |
+| Transaction Date | `lzw_transactiondate` | Date and time (user local) | Yes |
 | Type | `lzw_type` | Choice: Expense (859130000), Income (859130001); default Expense |  |
 | Payee | `lzw_payee` | Text (200) |  |
 | Estimated Amount | `lzw_estimatedamount` | Currency, precision 2, 0 or more |  |

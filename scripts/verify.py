@@ -7,15 +7,11 @@ import build_ui
 import dv
 import spec
 
-FORMULAS = {("lzw_bankstatementline", "lzw_unallocatedamount"): "Amount - Allocated Amount",
-            ("lzw_financetransaction", "lzw_actualcost"): "Actual Amount x -1 if Type = Expense, else Actual Amount",
-            ("lzw_financetransaction", "lzw_partnershare"):
-                "Actual Cost x 0.5 if Shared with Partner; Actual Cost if All for Partner; else 0",
-            ("lzw_financetransaction", "lzw_mycost"): "Actual Cost - Partner Share",
-            ("lzw_financeasset", "lzw_netcost"): "Total Cost - Sale Proceeds"}
+FORMULAS = {(spec.table_logical(t), spec.logical(c["name"])): c["formula"]
+            for t in spec.TABLES for c in t["columns"] if c["kind"] == "calc"}
 EXPECT = {"string": "String", "memo": "Memo", "bool": "Boolean", "choice": "Picklist", "gchoice": "Picklist",
           "date": "DateTime", "datetime": "DateTime", "money": "Money", "decimal": "Decimal", "int": "Integer",
-          "file": "File", "image": "Image", "lookup": "Lookup", "calc": "Money"}
+          "file": "File", "image": "Image", "lookup": "Lookup", "calc": "Decimal"}
 problems, ok = [], 0
 
 
@@ -68,7 +64,7 @@ def describe(a, col):
         what = "count of rows" if col["agg"] == "Count" else f"sum of {col['source']}"
         cond = "active rows" if attr == "statecode" else f"{attr} {'=' if op == 'Equal' else 'is not'} {val}"
         return f"Rollup ({'whole number' if col['type'] == 'int' else 'currency'}): {what} in {col['child']} where {cond}"
-    return "Calculated (currency), created in the maker editor"
+    return "Formula (Power Fx), decimal, 2 places"
 
 
 def main():
@@ -134,8 +130,8 @@ def main():
                 desc = describe(a, col)
             if col["kind"] in ("rollup", "calc"):
                 d = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')/Microsoft.Dynamics.CRM."
-                           f"{'Integer' if want == 'Integer' else 'Money'}AttributeMetadata?$select=SourceType")
-                check(d["SourceType"] == (2 if col["kind"] == "rollup" else 1), f"{tl}.{cl} source type {d['SourceType']}")
+                           f"{want}AttributeMetadata?$select=SourceType")
+                check(d["SourceType"] == (2 if col["kind"] == "rollup" else 3), f"{tl}.{cl} source type {d['SourceType']}")
             req = "Yes" if a["RequiredLevel"]["Value"] == "ApplicationRequired" else ""
             check(bool(req) == bool(col.get("required")), f"{tl}.{cl} required level")
             doc.append(f"| {col['name']} | `{cl}` | {desc} | {req} |")
@@ -148,10 +144,11 @@ def main():
             "Public view **Banks** (Is Bank = Yes, active). It is the only lookup view for Bank Account.Bank. "
             "No Account form was changed.", ""]
 
-    doc += ["## Calculated columns", "",
-            "Created by hand in the maker editor (Dataverse does not accept calculated formulas through the API). "
-            "They return no value while a column they use is empty.", "", "| Table | Column | Formula |", "|---|---|---|"]
-    doc += [f"| `{t}` | `{c}` | {f} |" for (t, c), f in FORMULAS.items()]
+    doc += ["## Formula columns", "",
+            "Power Fx formula columns (Decimal, 2 places), created by `build_formulas.py`. A formula column cannot be "
+            "Currency, so they show no currency symbol. An empty input counts as 0.", "",
+            "| Table | Column | Formula |", "|---|---|---|"]
+    doc += [f"| `{t}` | `{c}` | `{f}` |" for (t, c), f in FORMULAS.items()]
     doc += ["", "## Rollup notes", "",
             "- Rollups refresh on the hourly system job, with the Recalculate button on the form, or with `scripts/recalc.py`.",
             "- Line Count counts active Bank Statement Lines only.", ""]

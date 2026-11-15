@@ -58,6 +58,7 @@ def rollup(name, kind, child, rel_lookup, agg, source=None, flt=None):
 
 
 def calc(name, formula):
+    """Power Fx formula column (Decimal, precision 2). Formulas use logical names."""
     return dict(kind="calc", name=name, formula=formula)
 
 
@@ -98,7 +99,7 @@ TABLES = [
         s("Duplicate Key", 600),
         rollup("Allocated Amount", "money", "lzw_reconciliationmatch", "lzw_BankStatementLine", "Sum",
                source="lzw_allocatedamount", flt=("lzw_matchstatus", "Equal", "Confirmed")),
-        calc("Unallocated Amount", ("sub", "lzw_amount", "lzw_allocatedamount")),
+        calc("Unallocated Amount", "Decimal(lzw_amount) - Decimal(lzw_allocatedamount)"),
         memo("Notes"),
     ]),
     dict(schema="lzw_FinanceTransaction", display="Finance Transaction", plural="Finance Transactions",
@@ -116,12 +117,10 @@ TABLES = [
         s("Source Row ID", 100),
         rollup("Actual Amount", "money", "lzw_reconciliationmatch", "lzw_FinanceTransaction", "Sum",
                source="lzw_allocatedamount", flt=("lzw_matchstatus", "Equal", "Confirmed")),
-        calc("Actual Cost", ("if", ("lzw_type", "Expense"), ("mul", "lzw_actualamount", "-1"),
-                             ("field", "lzw_actualamount"))),
-        calc("Partner Share", ("if", ("lzw_sharetype", "Shared with Partner (A)"), ("mul", "lzw_actualcost", "0.5"),
-                               ("lzw_sharetype", "All for Partner (AA)"), ("field", "lzw_actualcost"),
-                               ("const", "0"))),
-        calc("My Cost", ("sub", "lzw_actualcost", "lzw_partnershare")),
+        calc("Actual Cost", "If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))"),
+        calc("Partner Share", "If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, "
+                              "Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)"),
+        calc("My Cost", "lzw_actualcost - lzw_partnershare"),
         choice("Reconciliation Status", ["Unreconciled", "Partly Reconciled", "Reconciled"], "Unreconciled"),
         memo("Notes"),
     ]),
@@ -166,7 +165,7 @@ TABLES = [
                source="lzw_allocatedamount", flt=("lzw_role", "NotEqual", "Sale")),
         rollup("Sale Proceeds", "money", "lzw_financeassetlink", "lzw_FinanceAsset", "Sum",
                source="lzw_allocatedamount", flt=("lzw_role", "Equal", "Sale")),
-        calc("Net Cost", ("sub", "lzw_totalcost", "lzw_saleproceeds")),
+        calc("Net Cost", "Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)"),
         memo("Notes"),
     ]),
     dict(schema="lzw_FinanceAssetLink", display="Finance Asset Link", plural="Finance Asset Links",

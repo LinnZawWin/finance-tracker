@@ -4,8 +4,8 @@ Run after writing Reconciliation Matches or Finance Asset Links:
     python scripts/recalc.py            all active rows
     python scripts/recalc.py --days 60  only rows modified in the last 60 days
 
-The calculated columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are real
-Dataverse calculated columns created in the maker editor; they update by themselves.
+The formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
+formula columns; they are worked out when a row is read, so they need no recalculation.
 """
 import datetime
 import sys

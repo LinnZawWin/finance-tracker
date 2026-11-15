@@ -1,10 +1,14 @@
-"""Phase 2b: rollup and calculated columns.
+"""Phase 2b: rollup and formula columns.
+
+Rollups are sent as XAML. The five formula columns (spec kind "calc") are Power Fx formula columns:
+Decimal, precision 2, SourceType 3, with the formula text from spec.py in FormulaDefinition.
+A formula column cannot be Currency, so currency inputs are wrapped in Decimal().
 
 Usage:
-  python build_formulas.py              try to create every rollup/calculated column; report failures
-  python build_formulas.py --fallback   for columns that still do not exist, create a plain column
-                                        of the same type and name ("maintained by script")
-  python build_formulas.py --dump NAME  print the generated XAML for one column logical name
+  python build_formulas.py              create every rollup/formula column that is missing; report failures
+  python build_formulas.py --fallback   for rollups that still do not exist, create a plain column of the
+                                        same type and name. Never applied to formula columns.
+  python build_formulas.py --dump NAME  print the generated definition for one column logical name
 """
 import sys
 
@@ -110,103 +114,13 @@ def rollup_xaml(parent, child, relationship, agg, source, flt_attr, flt_op, flt_
             + '</Sequence></Sequence></mxswa:Workflow></Activity>')
 
 
-# ---------------------------------------------------------------- calculated
-
-def value_steps(entity, target_attr, expr, step):
-    """Sequence that computes expr and assigns it to target_attr. Returns xaml."""
-    v = f"SetAttributeValueStep{step}"
-    kind = expr[0]
-    body, nvars = "", 1
-    if kind == "field":
-        body = get_prop(expr[1], entity, f"{v}_1", "mxs:Money")
-    elif kind == "const":
-        body = evaluate("CreateCrmType", f'Microsoft.Xrm.Sdk.Workflow.WorkflowPropertyType.Money, "{expr[1]}"',
-                        "mxs:Money", f"{v}_1")
-    elif kind == "sub":
-        nvars = 3
-        body = (get_prop(expr[1], entity, f"{v}_2", "mxs:Money") + get_prop(expr[2], entity, f"{v}_3", "mxs:Money")
-                + evaluate("Subtract", f"{v}_2, {v}_3", "mxs:Money", f"{v}_1"))
-    elif kind == "mul":
-        nvars = 3
-        body = (get_prop(expr[1], entity, f"{v}_2", "mxs:Money")
-                + evaluate("CreateCrmType", f'Microsoft.Xrm.Sdk.Workflow.WorkflowPropertyType.Decimal, "{expr[2]}"',
-                           "x:Decimal", f"{v}_3")
-                + evaluate("Multiply", f"{v}_2, {v}_3", "mxs:Money", f"{v}_1"))
-    else:
-        raise ValueError(kind)
-    variables = "".join(f'<Variable x:TypeArguments="x:Object" Name="{v}_{i}" />' for i in range(1, nvars + 1))
-    return (f'<Sequence DisplayName="{v}"><Sequence.Variables>{variables}</Sequence.Variables>'
-            f'<Assign x:TypeArguments="mxs:Entity" To="{TEMP}" Value="[New Entity(&quot;{entity}&quot;)]" />'
-            '<Assign x:TypeArguments="s:Guid" To="[CreatedEntities(&quot;primaryEntity#Temp&quot;).Id]" '
-            'Value="[InputEntities(&quot;primaryEntity&quot;).Id]" />'
-            + body
-            + f'<mxswa:SetEntityProperty Attribute="{target_attr}" Entity="{TEMP}" EntityName="{entity}" Value="[{v}_1]">'
-            f'<mxswa:SetEntityProperty.TargetType>{typeref("mxs:Money")}</mxswa:SetEntityProperty.TargetType>'
-            '</mxswa:SetEntityProperty>'
-            f'<mcwc:SetAttributeValue DisplayName="{v}" Entity="{TEMP}" EntityName="{entity}" />'
-            f'<Assign x:TypeArguments="mxs:Entity" To="{PRIMARY}" Value="{TEMP}" /></Sequence>')
-
-
-def branch(name, cond_expr, then_xaml):
-    return (f'<mxswa:ActivityReference AssemblyQualifiedName="Microsoft.Crm.Workflow.Activities.ConditionBranch, {WF}" '
-            f'DisplayName="{name}"><mxswa:ActivityReference.Arguments>'
-            f'<InArgument x:TypeArguments="x:Boolean" x:Key="Condition">[{cond_expr}]</InArgument>'
-            '</mxswa:ActivityReference.Arguments><mxswa:ActivityReference.Properties>'
-            f'<mxswa:ActivityReference x:Key="Then" AssemblyQualifiedName="Microsoft.Crm.Workflow.Activities.Composite, {WF}" '
-            f'DisplayName="{name}"><mxswa:ActivityReference.Properties>'
-            '<sco:Collection x:TypeArguments="Variable" x:Key="Variables" />'
-            f'<sco:Collection x:TypeArguments="Activity" x:Key="Activities">{then_xaml}</sco:Collection>'
-            '</mxswa:ActivityReference.Properties></mxswa:ActivityReference>'
-            '<x:Null x:Key="Else" /><x:Null x:Key="Description" />'
-            '</mxswa:ActivityReference.Properties></mxswa:ActivityReference>')
-
-
-def calc_xaml(entity, target_attr, formula):
-    """formula: ('if', (attr, label), expr, [(attr, label), expr, ...], else_expr) or a plain expr."""
-    variables, activities = "", ""
-    step = 2
-    if formula[0] == "if":
-        parts = list(formula[1:])
-        else_expr = parts.pop()
-        pairs = [(parts[i], parts[i + 1]) for i in range(0, len(parts), 2)]
-    else:
-        pairs, else_expr = [], formula
-    for (attr, lbl), expr in pairs:
-        b = f"ConditionBranchStep{step}"
-        value = spec.option_value(spec.find_choice(entity, attr), lbl)
-        variables += (f'<Variable x:TypeArguments="x:Boolean" Default="False" Name="{b}_condition" />'
-                      f'<Variable x:TypeArguments="x:Boolean" Default="False" Name="{b}_1" />'
-                      f'<Variable x:TypeArguments="x:Object" Name="{b}_2" /><Variable x:TypeArguments="x:Object" Name="{b}_3" />')
-        activities += (get_prop(attr, entity, f"{b}_2")
-                       + optionset_literal(value, "Picklist", f"{b}_3")
-                       + condition("Equal", f"{b}_3", f"{b}_2", f"{b}_1")
-                       + f'<Assign x:TypeArguments="x:Boolean" To="[{b}_condition]" Value="[{b}_1]" />'
-                       + branch(b, f"{b}_condition", value_steps(entity, target_attr, expr, step + 1)))
-        step += 2
-    b = f"ConditionBranchStep{step}"
-    variables += (f'<Variable x:TypeArguments="x:Boolean" Default="False" Name="True" />'
-                  f'<Variable x:TypeArguments="x:Object" Name="{b}_1" />')
-    activities += (evaluate("CreateCrmType", 'Microsoft.Xrm.Sdk.Workflow.WorkflowPropertyType.Boolean, "true"',
-                            "x:Boolean", f"{b}_1")
-                   + branch(b, "True", value_steps(entity, target_attr, else_expr, step + 2)))
-    return (HEADER + '<mxswa:Workflow>'
-            f'<mxswa:ActivityReference AssemblyQualifiedName="Microsoft.Crm.Workflow.Activities.ConditionSequence, {WF}" '
-            'DisplayName="ConditionStep1"><mxswa:ActivityReference.Arguments>'
-            '<InArgument x:TypeArguments="x:Boolean" x:Key="Wait">False</InArgument></mxswa:ActivityReference.Arguments>'
-            '<mxswa:ActivityReference.Properties>'
-            f'<sco:Collection x:TypeArguments="Variable" x:Key="Variables">{variables}</sco:Collection>'
-            f'<sco:Collection x:TypeArguments="Activity" x:Key="Activities">{activities}</sco:Collection>'
-            f'<x:Boolean x:Key="ContainsElseBranch">{"True" if pairs else "False"}</x:Boolean>'
-            '</mxswa:ActivityReference.Properties></mxswa:ActivityReference></mxswa:Workflow></Activity>')
-
-
 # ---------------------------------------------------------------- driver
 
 def formula_for(t, col):
     tl = spec.table_logical(t)
     cl = spec.logical(col["name"])
     if col["kind"] == "calc":
-        return 1, calc_xaml(tl, cl, col["formula"])
+        return 3, col["formula"]
     child = col["child"]
     relationship = f"{child}_{col['rel_lookup'][4:]}"
     attr, op, val = col["flt"]
@@ -219,6 +133,10 @@ def formula_for(t, col):
 
 
 def body_for(col, source_type=None, xaml=None):
+    if col["kind"] == "calc":  # Power Fx formula column: Decimal, no MinValue / MaxValue
+        return {"@odata.type": "Microsoft.Dynamics.CRM.DecimalAttributeMetadata",
+                "SchemaName": spec.schema_name(col["name"]), "DisplayName": label(col["name"]),
+                "RequiredLevel": {"Value": "None"}, "Precision": 2, "SourceType": 3, "FormulaDefinition": xaml}
     typ = "IntegerAttributeMetadata" if col.get("type") == "int" else "MoneyAttributeMetadata"
     b = {"@odata.type": f"Microsoft.Dynamics.CRM.{typ}", "SchemaName": spec.schema_name(col["name"]),
          "DisplayName": label(col["name"]), "RequiredLevel": {"Value": "None"}}
@@ -228,9 +146,6 @@ def body_for(col, source_type=None, xaml=None):
         b.update(Format="None", MinValue=-2147483648, MaxValue=2147483647)
     if source_type:
         b.update(SourceType=source_type, FormulaDefinition=xaml)
-    if source_type == 1:  # calculated columns cannot carry MinValue / MaxValue
-        b.pop("MinValue", None)
-        b.pop("MaxValue", None)
     return b
 
 
@@ -251,6 +166,9 @@ def main():
                 continue
             if dv.exists(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')?$select=LogicalName"):
                 print(f"exists {tl}.{cl}")
+                continue
+            if fallback and col["kind"] == "calc":
+                print(f"skipped {tl}.{cl}: formula columns have no plain fallback")
                 continue
             if fallback:
                 dv.post(f"EntityDefinitions(LogicalName='{tl}')/Attributes", body_for(col), solution=True)

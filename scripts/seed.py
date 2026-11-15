@@ -7,7 +7,7 @@ BANKS = ["ANZ", "AMEX", "Wise", "Kogan Money"]
 ACCOUNT_TYPES = ["Everyday", "Savings", "Credit Card", "Wise", "Other"]
 # Old name -> new name. Applied first, so a rename is never re-created under its old name.
 RENAMED_ACCOUNTS = {"ANZ Flex": "ANZ Plus Flex Saver", "ANZ Savings": "ANZ Plus Growth Saver"}
-RENAMED_CATEGORIES = {"Dining and Drinks": "Dining"}
+RENAMED_CATEGORIES = {"Dining and Drinks": "Dining", "Tobacco and Vape": "Smoking"}
 BANK_ACCOUNTS = [  # name, short name, account type, bank
     ("ANZ Plus Everyday", "Everyday;ANZ", "Everyday", "ANZ"),
     ("ANZ Plus Flex Saver", "Flex", "Savings", "ANZ"),
@@ -16,7 +16,7 @@ BANK_ACCOUNTS = [  # name, short name, account type, bank
     ("Wise", "Wise", "Wise", "Wise"),
     ("Kogan Money Black Card", "Kogan", "Credit Card", "Kogan Money"),
 ]
-EXPENSE = ["Groceries", "Dining", "Drinks", "Tobacco and Vape", "Transport", "Rent and Housing", "Utilities",
+EXPENSE = ["Groceries", "Dining", "Drinks", "Smoking", "Transport", "Rent and Housing", "Utilities",
            "Insurance", "Health", "Personal Care", "Subscriptions", "Entertainment", "Sport and Fitness", "Shopping",
            "Home and Hardware", "Clothing", "Gifts", "Travel", "Education", "Pets", "Tax", "Fines",
            "Legal and Professional", "Cash Withdrawal", "Fees and Charges", "Support Payments", "Other Expense"]

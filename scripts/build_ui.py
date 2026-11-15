@@ -18,7 +18,7 @@ SUBGRID = "{E7A81278-8635-4d9e-8D4D-59480B391C5B}"
 # Default ("Active ...") view columns per table: (column, width). Sort: (column, descending)
 DEFAULT_COLS = {
     "lzw_bankaccount": ([("lzw_name", 200), ("lzw_shortname", 150), ("lzw_bankid", 120), ("lzw_accounttype", 120),
-                         ("lzw_accountcurrency", 120), ("lzw_accountnumber", 150), ("lzw_isactive", 90)], ("lzw_name", False)),
+                         ("lzw_accountcurrency", 120), ("lzw_accountnumber", 150)], ("lzw_name", False)),
     "lzw_bankstatement": ([("lzw_name", 220), ("lzw_bankaccount", 160), ("lzw_periodstart", 110), ("lzw_periodend", 110),
                            ("lzw_sourcetype", 110), ("lzw_closingbalance", 130), ("lzw_linecount", 100)],
                           ("lzw_periodend", True)),
@@ -33,11 +33,9 @@ DEFAULT_COLS = {
                                  ("lzw_allocatedamount", 120), ("lzw_matchstatus", 120), ("lzw_matchmethod", 120),
                                  ("lzw_confidence", 100)], ("lzw_name", True)),
     "lzw_bankrule": ([("lzw_name", 200), ("lzw_matchtext", 180), ("lzw_matchtype", 110), ("lzw_bankaccount", 150),
-                      ("lzw_defaultcategory", 150), ("lzw_priority", 90), ("lzw_isactive", 90)], ("lzw_priority", False)),
-    "lzw_financecategory": ([("lzw_name", 220), ("lzw_parentcategory", 180), ("lzw_categorytype", 120),
-                             ("lzw_isactive", 90)], ("lzw_name", False)),
-    "lzw_financeproject": ([("lzw_name", 220), ("lzw_projecttype", 120), ("lzw_startdate", 110), ("lzw_enddate", 110),
-                            ("lzw_isactive", 90)], ("lzw_name", False)),
+                      ("lzw_defaultcategory", 150), ("lzw_priority", 90)], ("lzw_priority", False)),
+    "lzw_financecategory": ([("lzw_name", 220), ("lzw_parentcategory", 180), ("lzw_categorytype", 120)], ("lzw_name", False)),
+    "lzw_financeproject": ([("lzw_name", 220), ("lzw_projecttype", 120), ("lzw_startdate", 110), ("lzw_enddate", 110)], ("lzw_name", False)),
     "lzw_financeasset": ([("lzw_name", 220), ("lzw_assettype", 120), ("lzw_brand", 120), ("lzw_model", 120),
                           ("lzw_status", 100), ("lzw_totalcost", 120), ("lzw_netcost", 120)], ("lzw_name", False)),
     "lzw_financeassetlink": ([("lzw_name", 110), ("lzw_financeasset", 200), ("lzw_financetransaction", 240),
@@ -97,7 +95,7 @@ FORMS = {
     "lzw_bankaccount": [("General", [
         ("Account", ["lzw_name", "lzw_shortname", "lzw_bankid", "lzw_accounttype", "lzw_accountcurrency",
                      "lzw_accountnumber"]),
-        ("Settings", ["lzw_statementsimported", "lzw_isactive", "ownerid"]),
+        ("Settings", ["lzw_statementsimported", "statecode", "ownerid"]),
     ])],
     "lzw_bankstatement": [("General", [
         ("Statement", ["lzw_name", "lzw_bankaccount", "lzw_periodstart", "lzw_periodend", "lzw_sourcetype"]),
@@ -133,15 +131,15 @@ FORMS = {
         ("AI Reasoning", ["lzw_aireasoning"]),
     ])],
     "lzw_bankrule": [("General", [
-        ("Rule", ["lzw_name", "lzw_matchtext", "lzw_matchtype", "lzw_bankaccount", "lzw_priority", "lzw_isactive"]),
+        ("Rule", ["lzw_name", "lzw_matchtext", "lzw_matchtype", "lzw_bankaccount", "lzw_priority", "statecode"]),
         ("Defaults", ["lzw_defaultpayee", "lzw_defaultdescription", "lzw_defaultcategory", "lzw_defaultsharetype",
                       "ownerid"]),
     ])],
     "lzw_financecategory": [("General", [
-        ("Category", ["lzw_name", "lzw_parentcategory", "lzw_categorytype", "lzw_isactive", "ownerid"]),
+        ("Category", ["lzw_name", "lzw_parentcategory", "lzw_categorytype", "statecode", "ownerid"]),
     ])],
     "lzw_financeproject": [("General", [
-        ("Project", ["lzw_name", "lzw_projecttype", "lzw_startdate", "lzw_enddate", "lzw_isactive", "ownerid"]),
+        ("Project", ["lzw_name", "lzw_projecttype", "lzw_startdate", "lzw_enddate", "statecode", "ownerid"]),
     ]), ("Transactions", [("subgrid", "Finance Transactions", FT, "lzw_financetransaction_Project")])],
     FA: [("General", [
         ("Asset", ["lzw_name", "lzw_assettype", "lzw_brand", "lzw_model", "lzw_serialnumber", "lzw_status",

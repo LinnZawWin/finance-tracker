@@ -13,7 +13,6 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 4 | Extend `statement_compare.py` for the new line columns and per-line currency | Claude | Needed before the first import |
 | 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
 | 6 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
-| 7 | Decide whether to replace the "Is Active" columns with the built-in Status | Owner | See "Statement review" below |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -141,10 +140,15 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   are not re-created.
 - **Kept out of the repo** because they are personal: account numbers, projects other than the seeded one,
   and the Bank Rules (48 created). They live only in Dataverse.
-- **"Is Active" versus Status.** The built-in Status (Active / Inactive) can replace the custom "Is Active"
-  column on Bank Account, Bank Rule, Finance Category and Finance Project: inactive rows drop out of
-  lookups and the default views without any filter. Not changed yet. The columns cannot be deleted under
-  the "never delete" rule, only taken off forms and views.
+- **Status instead of "Is Active".** The custom "Is Active" column was deleted from Bank Account, Bank
+  Rule, Finance Category and Finance Project on the owner's instruction (every value was Yes). The built-in
+  Status (Active / Inactive) is on the forms instead. Inactive rows drop out of lookups and default views.
+- **The "never delete" rule was removed** by the owner on 2026-11-15.
+- "Tobacco and Vape" was renamed "Smoking".
+- **Project dates** come from the owner's Google Calendar "Travel" calendar (all-day events, end date
+  inclusive). The seeded "Yunnan Trip" takes its dates from the calendar event for the same trip.
+- **Bank Rules** only apply to statement lines with no Keep note. No script applies them yet: they are
+  read during reconciliation.
 - JPY, SGD, THB and IDR were added with the Reserve Bank of Australia rates for 13 Nov 2026
   (108.81, 0.8753, 23.02, 12385 per 1 AUD).
 

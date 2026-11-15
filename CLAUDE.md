@@ -65,7 +65,7 @@ Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 | Script | Purpose |
 |---|---|
 | `dv.py`, `spec.py` | Web API helper and the schema specification |
-| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_flow.py`, `seed.py` | Idempotent build, in this order |
+| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `build_flow.py`, `seed.py` | Idempotent build, in this order |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_compare.py` | Compare parsed statement lines with Dataverse before creating lines |
 | `recalc.py` | Recalculate the rollup columns on demand |

@@ -103,16 +103,27 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the
   environment as an application user with the **System Administrator** role (the owner's choice, so that
   automation can change schema as well as data).
-- **No client secret exists.** The only credentials are two GitHub federated credentials for this repository:
+- **GitHub Actions uses no secret**: two GitHub federated credentials for this repository,
   `repo:<owner>/finance-tracker:ref:refs/heads/main` (issues and conversation comments) and
   `repo:<owner>/finance-tracker:pull_request` (pull request events, added 2026-11-15 so that reviews and
   review comments can reach Dataverse). GitHub does not give an identity token to pull requests from forks.
+- **Claude Code cloud sessions use a client secret** (owner's choice, 2026-11-15, to avoid the device-code
+  sign-in in every session). It is stored only as environment variables in the owner's personal cloud
+  environment. It expires and must be renewed in the app registration; device code is the fallback.
 - The client ID and tenant ID are not stored in this repo. They belong in GitHub secrets.
 - The workflow `.github/workflows/claude.yml` signs in with `azure/login` (OIDC, `allow-no-subscriptions: true`,
   `permissions: id-token: write`), passes `DATAVERSE_URL` from the secret and installs `azure-identity`.
   The scripts then get their token from the Azure CLI as usual. Claude is allowed to run `python scripts/*`.
 - The Azure step uses `continue-on-error`, so a failed sign-in leaves Claude running without Dataverse access.
 - Claude signs in with the secret `CLAUDE_CODE_OAUTH_TOKEN`.
+
+### Icons
+- `build_icons.py` creates one SVG web resource per table (`lzw_/icons/<table>.svg`) plus the app icon and
+  sets `IconVectorName`. Run against the environment on 2026-11-15.
+- The Account table is not given an icon: it is a standard table shared with the owner's other apps.
+- The first GitHub Actions run (issue 7) wrote the script but did not run it, although the workflow had
+  signed in to Azure, because `CLAUDE.md` then described only the device-code sign-in. `CLAUDE.md` now
+  tells Claude to run and verify scripts itself.
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

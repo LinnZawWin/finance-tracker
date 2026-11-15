@@ -1,6 +1,7 @@
 """Phase 2d: SVG icons for the model-driven app and every table. Idempotent; never deletes.
+The standard Account table is left alone: its icon is shared with every other app in the environment.
 
-Creates one SVG web resource per icon (type 11, in the solution), sets IconVectorName on each table and
+Creates one SVG web resource per icon (type 11, in the solution), sets IconVectorName on each lzw_ table and
 the web resource on the app module. Run after build_ui.py, then publish.
 """
 import base64
@@ -22,7 +23,6 @@ GLYPHS = {
     "lzw_financeproject": '<path d="M3 9h10l3 3h13v15H3z"/>',
     "lzw_financeasset": '<path d="M16 3 28 9.5v13L16 29 4 22.5v-13z"/><path d="M4 9.5 16 16l12-6.5M16 16v13"/>',
     "lzw_financeassetlink": '<path d="M13 19a5 5 0 0 0 7 0l5-5a5 5 0 0 0-7-7l-2 2"/><path d="M19 13a5 5 0 0 0-7 0l-5 5a5 5 0 0 0 7 7l2-2"/>',
-    "account": '<path d="M3 12 16 4l13 8z"/><path d="M6 14v10M12 14v10M20 14v10M26 14v10M3 28h26"/>',
 }
 APP_NAME = "lzw_/icons/financetracker_app.svg"
 
@@ -56,11 +56,13 @@ def main():
     for table, inner in GLYPHS.items():
         name = f"lzw_/icons/{table}.svg"
         ensure_webresource(name, f"Icon {table}", svg(inner))
-        m = dv.get(f"EntityDefinitions(LogicalName='{table}')?$select=MetadataId,IconVectorName")
+        path = f"EntityDefinitions(LogicalName='{table}')"
+        m = dv.get(path)  # the whole definition: table metadata only accepts PUT, not PATCH
         if m.get("IconVectorName") != name:
+            m["IconVectorName"] = name
             try:
-                dv.patch(f"EntityDefinitions({m['MetadataId']})", {"IconVectorName": name},
-                         headers={"MSCRM.MergeLabels": "true"})
+                dv.call("PUT", path, m, solution=True, headers={"MSCRM.MergeLabels": "true"},
+                        done=lambda: dv.get(path + "?$select=IconVectorName").get("IconVectorName") == name)
                 print(f"  icon set on {table}", flush=True)
             except dv.DvError as e:
                 print(f"  ICON FAILED {table}: {e}", flush=True)

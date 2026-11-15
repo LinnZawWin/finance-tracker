@@ -16,6 +16,8 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
 - If a host is blocked ("Host not in allowlist"), stop that step, report the host and wait. Do not work around it.
 - Match tables and columns by logical name. Add only what is missing. If a column exists with a different
   type, leave it and report it.
+- After pushing work to a `claude/` branch, open a pull request to `main` and merge it straight away,
+  without waiting for review. Never push to `main` directly.
 - Conventions: logical name = `lzw_` + display name in lowercase without spaces. Primary column `lzw_name`.
   Tables are user-owned, no security roles. Dates are Date Only. Money has precision 2. Lookups are 1:N with
   Restrict delete.

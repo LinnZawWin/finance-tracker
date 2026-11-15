@@ -25,7 +25,6 @@ Entity set: `lzw_bankaccounts`. Primary column: `lzw_name` (Name, text 200).
 | Account Currency | `lzw_accountcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankaccount_AccountCurrency`, navigation property `lzw_AccountCurrency`) |  |
 | Account Number | `lzw_accountnumber` | Text (50) |  |
 | Statements Imported | `lzw_statementsimported` | Yes/No (default Yes) |  |
-| Is Active | `lzw_isactive` | Yes/No (default Yes) |  |
 
 ### Bank Statement (`lzw_bankstatement`)
 
@@ -126,7 +125,6 @@ Entity set: `lzw_bankrules`. Primary column: `lzw_name` (Name, text 200).
 | Default Category | `lzw_defaultcategory` | Lookup to lzw_financecategory, Restrict delete (relationship `lzw_bankrule_DefaultCategory`, navigation property `lzw_DefaultCategory`) |  |
 | Default Share Type | `lzw_defaultsharetype` | Global choice lzw_sharetype |  |
 | Priority | `lzw_priority` | Whole number |  |
-| Is Active | `lzw_isactive` | Yes/No (default Yes) |  |
 
 ### Finance Category (`lzw_financecategory`)
 
@@ -136,7 +134,6 @@ Entity set: `lzw_financecategories`. Primary column: `lzw_name` (Name, text 200)
 |---|---|---|---|
 | Parent Category | `lzw_parentcategory` | Lookup to lzw_financecategory, Restrict delete (relationship `lzw_financecategory_ParentCategory`, navigation property `lzw_ParentCategory`) |  |
 | Category Type | `lzw_categorytype` | Choice: Expense (859130000), Income (859130001), Both (859130002) |  |
-| Is Active | `lzw_isactive` | Yes/No (default Yes) |  |
 
 ### Finance Project (`lzw_financeproject`)
 
@@ -147,7 +144,6 @@ Entity set: `lzw_financeprojects`. Primary column: `lzw_name` (Name, text 200).
 | Project Type | `lzw_projecttype` | Choice: Trip (859130000), Event (859130001), Home (859130002), Other (859130003) |  |
 | Start Date | `lzw_startdate` | Date Only |  |
 | End Date | `lzw_enddate` | Date Only |  |
-| Is Active | `lzw_isactive` | Yes/No (default Yes) |  |
 
 ### Finance Asset (`lzw_financeasset`)
 

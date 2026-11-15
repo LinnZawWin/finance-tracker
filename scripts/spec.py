@@ -70,7 +70,6 @@ TABLES = [
         lookup("Account Currency", "transactioncurrency"),
         s("Account Number", 50, description="As written on statements and in transfer descriptions; cards: last digits only"),
         yn("Statements Imported", True),
-        yn("Is Active", True),
     ]),
     dict(schema="lzw_BankStatement", display="Bank Statement", plural="Bank Statements", primary="Name", columns=[
         lookup("Bank Account", "lzw_bankaccount", True),
@@ -150,17 +149,14 @@ TABLES = [
         lookup("Default Category", "lzw_financecategory"),
         gchoice("Default Share Type"),
         integer("Priority"),
-        yn("Is Active", True),
     ]),
     dict(schema="lzw_FinanceCategory", display="Finance Category", plural="Finance Categories", primary="Name", columns=[
         lookup("Parent Category", "lzw_financecategory"),
         choice("Category Type", ["Expense", "Income", "Both"]),
-        yn("Is Active", True),
     ]),
     dict(schema="lzw_FinanceProject", display="Finance Project", plural="Finance Projects", primary="Name", columns=[
         choice("Project Type", ["Trip", "Event", "Home", "Other"]),
         date("Start Date"), date("End Date"),
-        yn("Is Active", True),
     ]),
     dict(schema="lzw_FinanceAsset", display="Finance Asset", plural="Finance Assets", primary="Name", columns=[
         choice("Asset Type", ["Clothing", "Gadget", "Furniture", "Appliance", "Equipment", "Other"]),

@@ -11,8 +11,8 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
   (`~/.azure`, `~/.pac`), exported data, statements, or any person's name. Write "Partner" instead of names.
 - Use the Dataverse Python SDK, PAC CLI, Azure CLI and Web API. Do not use or register the Dataverse MCP
   server (it is billed). If a skill says to register it, skip that step.
-- Never delete anything (tables, columns, rows, solutions, flows). If something blocks an item, skip it,
-  continue, and report it.
+- If something blocks an item, skip it, continue, and report it.
+- Active or inactive is the built-in **Status** on every table. Do not add "Is Active" columns.
 - If a host is blocked ("Host not in allowlist"), stop that step, report the host and wait. Do not work around it.
 - Match tables and columns by logical name. Add only what is missing. If a column exists with a different
   type, leave it and report it.
@@ -117,6 +117,7 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
    `read_file_content`: it loses the credit and debit columns.
 2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
    AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
+   ANZ Plus offers PDF only.
    When one statement is supplied in several formats, import one and move all of them.
 3. **Check the totals** against the statement's opening and closing balance before writing anything.
 4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
@@ -154,6 +155,15 @@ from (the row currency). A conversion between balances is two lines paired as a 
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 
+Bank Rules are for statement lines that have no Keep note behind them (rent, salary, interest, tolls, card
+fees, supermarkets). When such a line stays unmatched, the first rule whose Match Text fits its description
+supplies the payee, category and share type for a new Finance Transaction. A line that matches a Keep note
+never needs a rule: the note's own category wins.
+
+Projects: Start Date and End Date are the travel dates from the owner's Google Calendar "Travel" calendar.
+They are a guide only. Flights, hotels and tickets are often bought earlier, and the Keep note says which
+project they belong to.
+
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".
 
@@ -188,7 +198,7 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 |---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
 | 2 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
-| 3 | Import the statements waiting in `Statements/Inbox` (33 PDFs, AMEX xlsx and csv, Wise csv). Nothing is imported yet. Start with one statement | Claude, when the owner says so |
+| 3 | Import the statements waiting in `Statements/Inbox`. Nothing is imported yet. The owner is replacing the AMEX PDFs with xlsx exports first. Start with one statement | Claude, when the owner says so |
 | 4 | `statement_compare.py` does not yet fill the new columns (Posted Date, Bank Reference, Line Number, Card Holder, Fee Amount, Bank Category) or a per-line currency. Extend it before the first import | Claude |
 | 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

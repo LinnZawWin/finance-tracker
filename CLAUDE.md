@@ -149,6 +149,6 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 | # | Item | Who |
 |---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
-| 2 | Set up Claude Code GitHub Actions (the three GitHub secrets are added; the workflow and the Claude secret are not) | Owner |
+| 2 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
 | 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
 | 4 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

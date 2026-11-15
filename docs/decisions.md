@@ -8,7 +8,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | # | Item | Who | Notes |
 |---|---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" | Owner | Still off on 2026-11-15. It has never run; the first run is its real test |
-| 2 | Set up Claude Code GitHub Actions | Owner | The secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL` are added. Still needed: the Claude GitHub App, a Claude secret and the workflow file with an `azure/login` step |
+| 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
 | 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
 | 4 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536 ("root component CustomControlDefaultConfig is missing"). Only matters for a solution export |
 
@@ -107,8 +107,12 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   running on the `main` branch of this repository (subject `repo:<owner>/finance-tracker:ref:refs/heads/main`).
   Workflows on other branches or pull requests cannot sign in with it.
 - The client ID and tenant ID are not stored in this repo. They belong in GitHub secrets.
-- A workflow signs in with `azure/login` (OIDC, `allow-no-subscriptions: true`) and needs
-  `permissions: id-token: write`. The scripts then get their token from the Azure CLI as usual.
+- The workflow `.github/workflows/claude.yml` signs in with `azure/login` (OIDC, `allow-no-subscriptions: true`,
+  `permissions: id-token: write`), passes `DATAVERSE_URL` from the secret and installs `azure-identity`.
+  The scripts then get their token from the Azure CLI as usual. Claude is allowed to run `python scripts/*`.
+- The Azure step uses `continue-on-error`. Issues and conversation comments run on `main` and can sign in.
+  Pull request review events cannot, so Claude then runs without Dataverse access.
+- Claude signs in with the secret `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

@@ -96,7 +96,7 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 
 - Tools: `pac` (PAC CLI 2.x needs the .NET 10 SDK: `apt-get install -y dotnet-sdk-10.0`, then
   `dotnet tool install --global Microsoft.PowerApps.CLI.Tool`), `az` and the script dependencies
-  (`pip install azure-cli azure-identity` in a virtual environment). Sign-ins do not carry over: sign in
+  (`pip install azure-cli azure-identity pdfplumber openpyxl` in a virtual environment). Sign-ins do not carry over: sign in
   again as described under "Environment and sign-in".
 - Skills: the dataverse skills (dv-*) come from the plugin. The model-apps and power-automate skills are in
   the public repo `microsoft/power-platform-skills` under `plugins/`.
@@ -104,34 +104,58 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
 - The base currency is AUD (verified 2026-11-15). Scripts and the flow still set AUD on the rows they create.
-  Other currencies: CAD, CNY, EUR, GBP, NZD, USD. Exchange rates are units per 1 AUD and are only changed
+  Other currencies: CAD, CNY, EUR, GBP, IDR, JPY, NZD, SGD, THB, USD. Exchange rates are units per 1 AUD and are only changed
   when the owner asks.
 
 ## Statement import rules
 
-1. Before creating Bank Statement Lines, query the existing lines for that account and date range.
-2. Compare by **count per (date, amount, description)** and create only the shortfall, because identical
-   purchases on one day are real.
-3. Use **Running Balance** to separate identical lines.
-4. A **PDF statement is final**: update the matching screenshot rows (description, balance) and create only
-   the leftovers.
-5. Flag description or amount differences as **possible duplicates**.
-6. Show a summary (new, existing, possible duplicates) **before writing**.
-7. Do the comparison with `scripts/statement_compare.py` (dry run by default, `--apply` to write). Keep the
-   parsed lines file outside the repo.
+Files: the owner drops statements in the Google Drive folder `Statements/Inbox`. After a statement is imported
+and its balance check passes, move the file to `Statements/Processed`. A file that fails stays in the inbox.
+
+1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
+   disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from
+   `read_file_content`: it loses the credit and debit columns.
+2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
+   AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
+   When one statement is supplied in several formats, import one and move all of them.
+3. **Check the totals** against the statement's opening and closing balance before writing anything.
+4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
+5. Compare by **count per (date, amount, description)** and create only the shortfall, because identical
+   purchases on one day are real. Use **Bank Reference** when the bank gives one, **Running Balance** or
+   **Line Number** otherwise, to separate identical lines.
+6. A **PDF or spreadsheet statement is final**: update the matching screenshot rows (description, balance) and
+   create only the leftovers.
+7. Flag description or amount differences as **possible duplicates**.
+8. Show a summary (new, existing, possible duplicates) **before writing**.
+9. Do the comparison with `scripts/statement_compare.py` (dry run by default, `--apply` to write). Keep the
+   downloaded and parsed files outside the repo.
+
+Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
+"Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX.
+**Fee Amount** and **Bank Category** come from Wise. Refunded or cancelled lines (Wise status REFUNDED) are
+imported with Status = Ignored.
+
+Wise is one Bank Account with several currency balances. Each line keeps the currency of the balance it came
+from (the row currency). A conversion between balances is two lines paired as a transfer.
 
 ## Reconciliation rules
 
 1. **Rules first**:
    - Pair transfers: opposite amount, two of my accounts, within 3 days. Set Status = Transfer and
-     Transfer Counterpart on both lines.
+     Transfer Counterpart on both lines. ANZ shows the same receipt number (Bank Reference) and the other
+     account's number (Bank Account **Account Number**) on both sides. Credit card payments and Wise top-ups
+     ("PAYMENT TO" my own name) are transfers too.
    - Exact matches: same amount, date and account.
-   - Bank Rules (`lzw_bankrule`) by priority for payee, description, category and share type defaults.
+   - Bank Rules (`lzw_bankrule`) by priority (lowest number first) for payee, description, category and
+     share type defaults. The rules are data in Dataverse, not in this repo.
 2. **Then AI** for the rest.
 3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
 4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
-5. For **Wise**, match on Original Amount (CNY), not AUD.
+5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
+
+Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
+the owner's own name belong to the project "NZ House".
 
 ## Keep Inbox sheet
 
@@ -164,5 +188,7 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 |---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
 | 2 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
-| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
-| 4 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 3 | Import the statements waiting in `Statements/Inbox` (33 PDFs, AMEX xlsx and csv, Wise csv). Nothing is imported yet. Start with one statement | Claude, when the owner says so |
+| 4 | `statement_compare.py` does not yet fill the new columns (Posted Date, Bank Reference, Line Number, Card Holder, Fee Amount, Bank Category) or a per-line currency. Extend it before the first import | Claude |
+| 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
+| 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

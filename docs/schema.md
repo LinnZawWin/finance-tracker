@@ -23,6 +23,7 @@ Entity set: `lzw_bankaccounts`. Primary column: `lzw_name` (Name, text 200).
 | Bank | `lzw_bankid` | Lookup to account, Restrict delete (relationship `lzw_bankaccount_BankId`, navigation property `lzw_BankId`) |  |
 | Account Type | `lzw_accounttype` | Choice: Everyday (859130000), Savings (859130001), Credit Card (859130002), Wise (859130003), Other (859130004) |  |
 | Account Currency | `lzw_accountcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankaccount_AccountCurrency`, navigation property `lzw_AccountCurrency`) |  |
+| Account Number | `lzw_accountnumber` | Text (50) |  |
 | Statements Imported | `lzw_statementsimported` | Yes/No (default Yes) |  |
 | Is Active | `lzw_isactive` | Yes/No (default Yes) |  |
 
@@ -62,6 +63,12 @@ Entity set: `lzw_bankstatementlines`. Primary column: `lzw_name` (Description, t
 | Status | `lzw_status` | Choice: Unmatched (859130000), Partly Matched (859130001), Matched (859130002), Transfer (859130003), Ignored (859130004); default Unmatched |  |
 | Transfer Counterpart | `lzw_transfercounterpart` | Lookup to lzw_bankstatementline, Restrict delete (relationship `lzw_bankstatementline_TransferCounterpart`, navigation property `lzw_TransferCounterpart`) |  |
 | Duplicate Key | `lzw_duplicatekey` | Text (600) |  |
+| Posted Date | `lzw_posteddate` | Date Only |  |
+| Bank Reference | `lzw_bankreference` | Text (100) |  |
+| Line Number | `lzw_linenumber` | Whole number |  |
+| Card Holder | `lzw_cardholder` | Text (100) |  |
+| Fee Amount | `lzw_feeamount` | Currency, precision 2, 0 or more |  |
+| Bank Category | `lzw_bankcategory` | Text (100) |  |
 | Allocated Amount | `lzw_allocatedamount` | Rollup (currency): sum of lzw_allocatedamount in lzw_reconciliationmatch where lzw_matchstatus = Confirmed |  |
 | Unallocated Amount | `lzw_unallocatedamount` | Formula (Power Fx), decimal, 2 places |  |
 | Notes | `lzw_notes` | Multiline text |  |

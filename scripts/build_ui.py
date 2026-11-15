@@ -18,13 +18,14 @@ SUBGRID = "{E7A81278-8635-4d9e-8D4D-59480B391C5B}"
 # Default ("Active ...") view columns per table: (column, width). Sort: (column, descending)
 DEFAULT_COLS = {
     "lzw_bankaccount": ([("lzw_name", 200), ("lzw_shortname", 150), ("lzw_bankid", 120), ("lzw_accounttype", 120),
-                         ("lzw_accountcurrency", 120), ("lzw_isactive", 90)], ("lzw_name", False)),
+                         ("lzw_accountcurrency", 120), ("lzw_accountnumber", 150), ("lzw_isactive", 90)], ("lzw_name", False)),
     "lzw_bankstatement": ([("lzw_name", 220), ("lzw_bankaccount", 160), ("lzw_periodstart", 110), ("lzw_periodend", 110),
                            ("lzw_sourcetype", 110), ("lzw_closingbalance", 130), ("lzw_linecount", 100)],
                           ("lzw_periodend", True)),
     "lzw_bankstatementline": ([("lzw_transactiondate", 110), ("lzw_name", 300), ("lzw_amount", 110),
                                ("lzw_bankaccount", 150), ("lzw_status", 120), ("lzw_merchant", 150),
-                               ("lzw_runningbalance", 120), ("lzw_ispending", 90)], ("lzw_transactiondate", True)),
+                               ("lzw_runningbalance", 120), ("lzw_posteddate", 110), ("lzw_cardholder", 130),
+                               ("lzw_ispending", 90)], ("lzw_transactiondate", True)),
     "lzw_financetransaction": ([("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 150),
                                 ("lzw_estimatedamount", 120), ("lzw_paidfrom", 150), ("lzw_category", 150),
                                 ("lzw_sharetype", 150), ("lzw_reconciliationstatus", 140)], ("lzw_transactiondate", True)),
@@ -94,7 +95,8 @@ VIEWS = {
 # ("subgrid", label, target table, relationship schema name)
 FORMS = {
     "lzw_bankaccount": [("General", [
-        ("Account", ["lzw_name", "lzw_shortname", "lzw_bankid", "lzw_accounttype", "lzw_accountcurrency"]),
+        ("Account", ["lzw_name", "lzw_shortname", "lzw_bankid", "lzw_accounttype", "lzw_accountcurrency",
+                     "lzw_accountnumber"]),
         ("Settings", ["lzw_statementsimported", "lzw_isactive", "ownerid"]),
     ])],
     "lzw_bankstatement": [("General", [
@@ -104,10 +106,12 @@ FORMS = {
         ("Notes", ["lzw_notes"]),
     ]), ("Lines", [("subgrid", "Bank Statement Lines", BSL, "lzw_bankstatementline_BankStatement")])],
     BSL: [("General", [
-        ("Line", ["lzw_name", "lzw_transactiondate", "lzw_amount", "lzw_bankaccount", "lzw_bankstatement",
-                  "lzw_merchant", "lzw_runningbalance", "lzw_ispending"]),
+        ("Line", ["lzw_name", "lzw_transactiondate", "lzw_posteddate", "lzw_amount", "lzw_bankaccount",
+                  "lzw_bankstatement", "lzw_merchant", "lzw_runningbalance", "lzw_feeamount", "lzw_cardholder",
+                  "lzw_ispending"]),
         ("Matching", ["lzw_status", "lzw_allocatedamount", "lzw_unallocatedamount", "lzw_transfercounterpart",
-                      "lzw_originalamount", "lzw_originalcurrency", "lzw_source", "lzw_duplicatekey",
+                      "lzw_originalamount", "lzw_originalcurrency", "lzw_source", "lzw_bankcategory",
+                      "lzw_bankreference", "lzw_linenumber", "lzw_duplicatekey",
                       "transactioncurrencyid", "ownerid"]),
         ("Notes", ["lzw_notes"]),
     ]), ("Matches", [("subgrid", "Reconciliation Matches", RM, "lzw_reconciliationmatch_BankStatementLine")])],

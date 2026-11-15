@@ -7,14 +7,15 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 
 | # | Item | Who | Notes |
 |---|---|---|---|
-| 1 | Create the five calculated columns in the maker editor | Owner | See "Calculated columns" below for names and formulas |
-| 2 | Put the calculated columns back on forms and views, verify, regenerate `schema.md` | Claude | Run `build_ui.py`, then `verify.py --write-docs`, after item 1 |
-| 3 | Change the base currency from NZD to AUD, then add CNY and other currencies | Owner | Claude must not touch Currency |
-| 4 | Create the Google Sheet (worksheet `Inbox`, headers A to L) and set `lzw_KeepInboxSheetId` | Owner | Layout is in `CLAUDE.md` |
-| 5 | Create the Google Sheets connection, bind both connection references, turn the flow on | Owner | The flow has never run; the first run is its real test |
-| 6 | Agree the confidence threshold for auto-confirming AI matches | Owner | Not set yet; reconciliation rules depend on it |
-| 8 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL`, then set up Claude Code GitHub Actions (`/install-github-app`) | Owner | Needed before issue-triggered work can reach Dataverse |
-| 7 | Test `recalc.py` and `statement_compare.py --apply` with real rows | Claude | Both have only run against empty tables |
+| 1 | Turn on the flow "Finance Tracker - Import Keep Rows" | Owner | Still off on 2026-11-15. It has never run; the first run is its real test |
+| 2 | Add CNY and other currencies; review the NZD exchange rate | Owner | CNY does not exist yet and Wise matching needs it. NZD still has rate 1.0 from when it was the base. Claude must not touch Currency |
+| 3 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL`, then set up Claude Code GitHub Actions (`/install-github-app`) | Owner | Needed before issue-triggered work can reach Dataverse |
+| 4 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
+| 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536 ("root component CustomControlDefaultConfig is missing"). Only matters for a solution export |
+
+Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
+verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
+verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
 
 ## Decisions and reasoning
 
@@ -42,28 +43,34 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 - Each has one filter: Match Status = Confirmed (amounts), Role = Sale or not Sale (asset totals).
 - **Line Count counts active lines only.** A rollup without a filter had no known-good template, so the
   proven "active rows" filter was used.
-- Money rollups aggregate through the base currency, so totals can carry exchange-rate rounding until the
-  base currency is AUD.
+- Money rollups aggregate through the base currency, which is now AUD.
 
-### Calculated columns
-- Dataverse rejected every calculated formula sent through the API (error 0x80060424). Microsoft states
-  that formulas are only supported through the maker editor.
-- They were first created as plain currency columns "maintained by script". The owner then chose real
-  calculated columns, so those five plain columns were deleted (all were empty) and are to be recreated
-  by hand. A plain column cannot be converted to calculated, which is why they had to be deleted.
-- Create them in this order, type Currency, behaviour Calculated, precision 2:
+### Formula columns
+- History: Dataverse rejected calculated formulas sent through the API (error 0x80060424), so the five
+  columns were first plain columns, then deleted to be recreated by hand as Calculated columns. Before
+  that happened the owner chose **Formula** columns instead, because the Calculated behaviour is being
+  discontinued.
+- They are created by `build_formulas.py` as `DecimalAttributeMetadata` with `SourceType` 3 and the
+  Power Fx text in `FormulaDefinition`. The API accepted this. Microsoft's developer documentation says
+  that defining formulas with code is not supported, so if a later change is rejected, edit the formula in
+  the maker editor and keep `spec.py` in step.
+- **Decimal, not Currency.** A formula column cannot produce Currency. Currency inputs are wrapped in
+  `Decimal()`. The columns show no currency symbol and do not follow the convention "Money has precision 2".
+- Choices are compared by value (`Value(lzw_type) = 859130000`), which avoids display names in formulas.
+- An empty input counts as 0, so these columns show 0 where a Calculated column would be blank.
+- Formulas (logical names):
 
 | # | Table | Display name | Formula |
 |---|---|---|---|
-| 1 | Bank Statement Line | Unallocated Amount | `lzw_amount - lzw_allocatedamount` |
-| 2 | Finance Transaction | Actual Cost | IF Type = Expense: `lzw_actualamount * -1`. ELSE: `lzw_actualamount` |
-| 3 | Finance Transaction | Partner Share | IF Share Type = Shared with Partner (A): `lzw_actualcost * 0.5`. ELSE IF All for Partner (AA): `lzw_actualcost`. ELSE: `0` |
+| 1 | Bank Statement Line | Unallocated Amount | `Decimal(lzw_amount) - Decimal(lzw_allocatedamount)` |
+| 2 | Finance Transaction | Actual Cost | `If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
+| 3 | Finance Transaction | Partner Share | `If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)` |
 | 4 | Finance Transaction | My Cost | `lzw_actualcost - lzw_partnershare` |
-| 5 | Finance Asset | Net Cost | `lzw_totalcost - lzw_saleproceeds` |
+| 5 | Finance Asset | Net Cost | `Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)` |
 
-- A calculated column is blank while any column it uses is blank, so these stay empty until the rollup
-  they depend on has a value.
-- Never run `build_formulas.py --fallback`: it recreates them as plain columns.
+### Reconciliation
+- **Confidence threshold 0.95** (owner, 2026-11-15). AI matches at or above it are auto-confirmed, the
+  rest are Proposed. Confidence is stored with 2 decimal places.
 
 ### Views, forms and app
 - Each table's default "Active" view was given useful columns and is the view used by form subgrids.
@@ -85,9 +92,10 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 - The flow sets the row currency to AUD explicitly, because new rows otherwise take the base currency.
 
 ### Currency
-- The environment's base currency was NZD at build time and Currency was deliberately not touched.
-  AUD existed as an additional currency. The platform added `transactioncurrency` and `account` to the
-  solution as references only.
+- The base currency was NZD at build time and Currency was deliberately not touched. The owner has since
+  changed the base currency to AUD (verified 2026-11-15: AUD, rate 1.0). Other currencies present: NZD,
+  GBP, USD, EUR. CNY is not present yet.
+- The platform added `transactioncurrency` and `account` to the solution as references only.
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the

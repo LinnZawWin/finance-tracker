@@ -63,6 +63,7 @@ Entity set: `lzw_bankstatementlines`. Primary column: `lzw_name` (Description, t
 | Transfer Counterpart | `lzw_transfercounterpart` | Lookup to lzw_bankstatementline, Restrict delete (relationship `lzw_bankstatementline_TransferCounterpart`, navigation property `lzw_TransferCounterpart`) |  |
 | Duplicate Key | `lzw_duplicatekey` | Text (600) |  |
 | Allocated Amount | `lzw_allocatedamount` | Rollup (currency): sum of lzw_allocatedamount in lzw_reconciliationmatch where lzw_matchstatus = Confirmed |  |
+| Unallocated Amount | `lzw_unallocatedamount` | Formula (Power Fx), decimal, 2 places |  |
 | Notes | `lzw_notes` | Multiline text |  |
 
 ### Finance Transaction (`lzw_financetransaction`)
@@ -83,6 +84,9 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 | Source | `lzw_source` | Choice: Keep (859130000), Manual (859130001), Import (859130002) |  |
 | Source Row ID | `lzw_sourcerowid` | Text (100) |  |
 | Actual Amount | `lzw_actualamount` | Rollup (currency): sum of lzw_allocatedamount in lzw_reconciliationmatch where lzw_matchstatus = Confirmed |  |
+| Actual Cost | `lzw_actualcost` | Formula (Power Fx), decimal, 2 places |  |
+| Partner Share | `lzw_partnershare` | Formula (Power Fx), decimal, 2 places |  |
+| My Cost | `lzw_mycost` | Formula (Power Fx), decimal, 2 places |  |
 | Reconciliation Status | `lzw_reconciliationstatus` | Choice: Unreconciled (859130000), Partly Reconciled (859130001), Reconciled (859130002); default Unreconciled |  |
 | Notes | `lzw_notes` | Multiline text |  |
 
@@ -154,6 +158,7 @@ Entity set: `lzw_financeassets`. Primary column: `lzw_name` (Name, text 200).
 | Photo | `lzw_photo` | Image (primary image) |  |
 | Total Cost | `lzw_totalcost` | Rollup (currency): sum of lzw_allocatedamount in lzw_financeassetlink where lzw_role is not Sale |  |
 | Sale Proceeds | `lzw_saleproceeds` | Rollup (currency): sum of lzw_allocatedamount in lzw_financeassetlink where lzw_role = Sale |  |
+| Net Cost | `lzw_netcost` | Formula (Power Fx), decimal, 2 places |  |
 | Notes | `lzw_notes` | Multiline text |  |
 
 ### Finance Asset Link (`lzw_financeassetlink`)
@@ -176,17 +181,17 @@ Entity set: `lzw_financeassetlinks`. Primary column: `lzw_name` (Name, autonumbe
 
 Public view **Banks** (Is Bank = Yes, active). It is the only lookup view for Bank Account.Bank. No Account form was changed.
 
-## Calculated columns
+## Formula columns
 
-Created by hand in the maker editor (Dataverse does not accept calculated formulas through the API). They return no value while a column they use is empty.
+Power Fx formula columns (Decimal, 2 places), created by `build_formulas.py`. A formula column cannot be Currency, so they show no currency symbol. An empty input counts as 0.
 
 | Table | Column | Formula |
 |---|---|---|
-| `lzw_bankstatementline` | `lzw_unallocatedamount` | Amount - Allocated Amount |
-| `lzw_financetransaction` | `lzw_actualcost` | Actual Amount x -1 if Type = Expense, else Actual Amount |
-| `lzw_financetransaction` | `lzw_partnershare` | Actual Cost x 0.5 if Shared with Partner; Actual Cost if All for Partner; else 0 |
-| `lzw_financetransaction` | `lzw_mycost` | Actual Cost - Partner Share |
-| `lzw_financeasset` | `lzw_netcost` | Total Cost - Sale Proceeds |
+| `lzw_bankstatementline` | `lzw_unallocatedamount` | `Decimal(lzw_amount) - Decimal(lzw_allocatedamount)` |
+| `lzw_financetransaction` | `lzw_actualcost` | `If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
+| `lzw_financetransaction` | `lzw_partnershare` | `If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)` |
+| `lzw_financetransaction` | `lzw_mycost` | `lzw_actualcost - lzw_partnershare` |
+| `lzw_financeasset` | `lzw_netcost` | `Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)` |
 
 ## Rollup notes
 

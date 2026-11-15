@@ -68,10 +68,11 @@ Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 | `statement_compare.py` | Compare parsed statement lines with Dataverse before creating lines |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
-The five calculated columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are created by
-hand in the maker editor, because Dataverse rejects calculated formulas sent through the API. Do not run
-`build_formulas.py --fallback`: it would create them as plain columns. Run `build_ui.py` after creating them to
-put them on the forms and views.
+The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
+**Formula** columns, created by `build_formulas.py` (Decimal, 2 places, formulas in `spec.py`). Do not create
+Calculated columns: that behaviour is being discontinued. A formula column cannot be Currency, so currency
+inputs are wrapped in `Decimal()` and the result has no currency symbol. An empty input counts as 0.
+`--fallback` never applies to them.
 
 Run them with a Python that has `azure-identity` installed, from the repo root, with the Azure CLI on PATH.
 
@@ -86,7 +87,7 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 - The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
-- The base currency was NZD when the solution was built. Scripts and the flow set AUD on the rows they create.
+- The base currency is AUD (verified 2026-11-15). Scripts and the flow still set AUD on the rows they create.
 
 ## Statement import rules
 
@@ -109,7 +110,7 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
    - Exact matches: same amount, date and account.
    - Bank Rules (`lzw_bankrule`) by priority for payee, description, category and share type defaults.
 2. **Then AI** for the rest.
-3. Auto-confirm at or above the agreed confidence. Otherwise set Match Status = Proposed and ask in the session.
+3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
 4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
 5. For **Wise**, match on Original Amount (CNY), not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
@@ -136,3 +137,15 @@ variable `lzw_KeepInboxSheetId`. The flow "Finance Tracker - Import Keep Rows" r
 
 The Google Sheets connector adds its own `__PowerAppsId__` column after L on first use. Do not remove it:
 the flow uses it to update the row.
+
+## Outstanding work
+
+Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-15:
+
+| # | Item | Who |
+|---|---|---|
+| 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
+| 2 | Add CNY (needed for Wise matching on Original Amount) and any other currencies. Review the NZD exchange rate, still 1.0 | Owner |
+| 3 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `DATAVERSE_URL`, then set up Claude Code GitHub Actions | Owner |
+| 4 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
+| 5 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

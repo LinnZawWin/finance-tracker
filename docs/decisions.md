@@ -103,15 +103,15 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the
   environment as an application user with the **System Administrator** role (the owner's choice, so that
   automation can change schema as well as data).
-- **No client secret exists.** The only credential is a GitHub federated credential that trusts workflows
-  running on the `main` branch of this repository (subject `repo:<owner>/finance-tracker:ref:refs/heads/main`).
-  Workflows on other branches or pull requests cannot sign in with it.
+- **No client secret exists.** The only credentials are two GitHub federated credentials for this repository:
+  `repo:<owner>/finance-tracker:ref:refs/heads/main` (issues and conversation comments) and
+  `repo:<owner>/finance-tracker:pull_request` (pull request events, added 2026-11-15 so that reviews and
+  review comments can reach Dataverse). GitHub does not give an identity token to pull requests from forks.
 - The client ID and tenant ID are not stored in this repo. They belong in GitHub secrets.
 - The workflow `.github/workflows/claude.yml` signs in with `azure/login` (OIDC, `allow-no-subscriptions: true`,
   `permissions: id-token: write`), passes `DATAVERSE_URL` from the secret and installs `azure-identity`.
   The scripts then get their token from the Azure CLI as usual. Claude is allowed to run `python scripts/*`.
-- The Azure step uses `continue-on-error`. Issues and conversation comments run on `main` and can sign in.
-  Pull request review events cannot, so Claude then runs without Dataverse access.
+- The Azure step uses `continue-on-error`, so a failed sign-in leaves Claude running without Dataverse access.
 - Claude signs in with the secret `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ### Repository

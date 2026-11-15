@@ -32,9 +32,9 @@ jobs:
         with:
           fetch-depth: 1
 
-      # The federated credential only trusts runs on the main branch (issues and issue or PR
-      # conversation comments). Review events on a pull request cannot sign in, so this step
-      # may fail there and Claude then works without Dataverse access.
+      # Two federated credentials: one for runs on main (issues, conversation comments) and one
+      # for pull request events (reviews, review comments). A failed sign-in does not stop the
+      # run: Claude then works without Dataverse access.
       - name: Sign in to Azure
         id: azure
         continue-on-error: true

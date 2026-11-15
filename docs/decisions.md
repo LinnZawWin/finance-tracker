@@ -9,8 +9,11 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 |---|---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" | Owner | Still off on 2026-11-15. It has never run; the first run is its real test |
 | 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
-| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
-| 4 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536 ("root component CustomControlDefaultConfig is missing"). Only matters for a solution export |
+| 3 | Import the statements in `Statements/Inbox` | Claude | 33 PDFs, AMEX xlsx and csv, Wise csv, read and reviewed on 2026-11-15. Nothing imported. Waits for the owner |
+| 4 | Extend `statement_compare.py` for the new line columns and per-line currency | Claude | Needed before the first import |
+| 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
+| 6 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
+| 7 | Decide whether to replace the "Is Active" columns with the built-in Status | Owner | See "Statement review" below |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -116,6 +119,34 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   The scripts then get their token from the Azure CLI as usual. Claude is allowed to run `python scripts/*`.
 - The Azure step uses `continue-on-error`, so a failed sign-in leaves Claude running without Dataverse access.
 - Claude signs in with the secret `CLAUDE_CODE_OAUTH_TOKEN`.
+
+### Statement review (2026-11-15)
+- Every file in `Statements/Inbox` was read before any import, and the schema and reference data were
+  extended to fit. Added columns: Bank Account **Account Number**; Bank Statement Line **Posted Date**,
+  **Bank Reference**, **Line Number**, **Card Holder**, **Fee Amount**, **Bank Category**.
+- **Getting the real file.** The Drive connector's text view of a PDF drops the credit and debit columns.
+  `download_file_content` saves the binary to disk instead. Parsed by column position with `pdfplumber`,
+  an ANZ statement's credit and debit totals matched its opening and closing balance exactly.
+- **AMEX format.** The `.xlsx` export has one row per line with purchase date, processed date, card member,
+  foreign amount, a unique reference, and a balance summary. The `.csv` has the same rows without balances.
+  The PDF has neither the reference nor the processed date. So: xlsx, then csv, then PDF.
+- **Wise** stays one account. Lines keep the currency of the balance they came from. Refunded lines are
+  imported as Ignored. The CSV repeats an ID when one purchase is split across two balances, so the
+  duplicate key is ID plus source currency.
+- **Categories.** "Dining and Drinks" was renamed "Dining" and "Drinks" split out (bars and liquor stores).
+  New: Tobacco and Vape, Personal Care, Sport and Fitness, Home and Hardware, Pets, Tax, Fines, Legal and
+  Professional, Cash Withdrawal, Reimbursement (income), and six children of Transport.
+- **Accounts.** "ANZ Flex" and "ANZ Savings" were renamed to the statement names (ANZ Plus Flex Saver, ANZ
+  Plus Growth Saver). Kogan Money Black Card was added. `seed.py` renames before it creates, so old names
+  are not re-created.
+- **Kept out of the repo** because they are personal: account numbers, projects other than the seeded one,
+  and the Bank Rules (48 created). They live only in Dataverse.
+- **"Is Active" versus Status.** The built-in Status (Active / Inactive) can replace the custom "Is Active"
+  column on Bank Account, Bank Rule, Finance Category and Finance Project: inactive rows drop out of
+  lookups and the default views without any filter. Not changed yet. The columns cannot be deleted under
+  the "never delete" rule, only taken off forms and views.
+- JPY, SGD, THB and IDR were added with the Reserve Bank of Australia rates for 13 Nov 2026
+  (108.81, 0.8753, 23.02, 12385 per 1 AUD).
 
 ### Icons
 - `build_icons.py` creates one SVG web resource per table (`lzw_/icons/<table>.svg`) plus the app icon and

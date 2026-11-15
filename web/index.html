@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Finance Tracker</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1c2330; --muted:#667085; --line:#e3e6ec; --accent:#2b6cb0; --bad:#b42318; --ok:#067647; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12161d; --card:#1b212b; --text:#e8ecf2; --muted:#98a2b3; --line:#2c3441; --accent:#6ea8e6; --bad:#f97066; --ok:#47cd89; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:2; }
+  header h1 { font-size:17px; margin:0; flex:1; }
+  main { max-width:980px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:14px; }
+  .card h2 { font-size:15px; margin:0 0 10px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; }
+  label { display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--muted); }
+  input, select, textarea, button { font:inherit; color:var(--text); background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:7px 9px; min-width:0; }
+  textarea { width:100%; min-height:130px; font-family:ui-monospace, Menlo, Consolas, monospace; font-size:13px; }
+  button { cursor:pointer; background:var(--card); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.small { padding:2px 8px; font-size:13px; }
+  button:disabled { opacity:.5; cursor:default; }
+  .row-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+  .tabs { display:flex; gap:6px; margin-bottom:14px; }
+  .tabs button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .day { margin-top:14px; }
+  .day h3 { font-size:13px; margin:0 0 6px; color:var(--muted); display:flex; justify-content:space-between; }
+  .tx { display:grid; grid-template-columns:52px 1fr auto auto; gap:8px; align-items:center; padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin-bottom:5px; background:var(--card); }
+  .tx.dragging { opacity:.4; }
+  .tx.over { border-color:var(--accent); }
+  .tx .time { color:var(--muted); font-variant-numeric:tabular-nums; font-size:13px; cursor:grab; }
+  .tx .desc { min-width:0; }
+  .tx .desc b { font-weight:600; }
+  .tx .meta { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+  .tx .amt { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+  .tx .amt.income { color:var(--ok); }
+  .tx .btns { display:flex; gap:4px; }
+  .flag { color:var(--bad); font-size:12px; }
+  #msg { position:fixed; left:50%; transform:translateX(-50%); bottom:16px; padding:9px 14px; border-radius:8px; background:var(--text); color:var(--bg); display:none; max-width:92vw; z-index:5; }
+  #msg.err { background:var(--bad); color:#fff; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  th, td { text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tablewrap { overflow-x:auto; }
+  .hidden { display:none !important; }
+  .muted { color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Finance Tracker</h1>
+  <span id="who" class="muted"></span>
+  <button id="btnSettings" class="small">Settings</button>
+  <button id="btnSignOut" class="small hidden">Sign out</button>
+</header>
+<main>
+  <section id="setup" class="card hidden">
+    <h2>Connection</h2>
+    <p class="muted">These three values are kept only in this browser. They are never sent anywhere except to Microsoft sign-in and your Dataverse environment.</p>
+    <div class="grid">
+      <label>Dataverse URL<input id="cfgUrl" placeholder="https://yourorg.crm.dynamics.com" autocomplete="off"></label>
+      <label>Tenant ID<input id="cfgTenant" autocomplete="off"></label>
+      <label>App (client) ID<input id="cfgClient" autocomplete="off"></label>
+    </div>
+    <div class="row-actions"><button id="btnSaveCfg" class="primary">Save and sign in</button><button id="btnForget">Forget these values</button></div>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="tabs">
+      <button data-tab="entry" class="on">Transactions</button>
+      <button data-tab="bulk">Bulk entry</button>
+    </div>
+
+    <div id="tab-entry">
+      <div class="card">
+        <h2 id="formTitle">New transaction</h2>
+        <div class="grid">
+          <label>Date<input type="date" id="fDate"></label>
+          <label>Time (blank = automatic)<input type="time" id="fTime"></label>
+          <label>Description<input id="fDesc" autocomplete="off"></label>
+          <label>Payee<input id="fPayee" autocomplete="off"></label>
+          <label>Amount (AUD)<input id="fAmount" inputmode="decimal" autocomplete="off"></label>
+          <label>Type<select id="fType"></select></label>
+          <label>Paid from<select id="fAccount"></select></label>
+          <label>Category<select id="fCategory"></select></label>
+          <label>Project<select id="fProject"></select></label>
+          <label>Share<select id="fShare"></select></label>
+          <label>Notes<input id="fNotes" autocomplete="off"></label>
+        </div>
+        <div class="row-actions">
+          <button id="btnSave" class="primary">Add</button>
+          <button id="btnCancel" class="hidden">Cancel edit</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="grid">
+          <label>From<input type="date" id="qFrom"></label>
+          <label>To<input type="date" id="qTo"></label>
+          <label>&nbsp;<button id="btnLoad">Load</button></label>
+        </div>
+        <div id="list"></div>
+      </div>
+    </div>
+
+    <div id="tab-bulk" class="hidden">
+      <div class="card">
+        <h2>Bulk entry</h2>
+        <p class="muted">One transaction per line. Separate fields with a tab or <code>|</code>, in this order:<br>
+          <code>Date | Description | Merchant | Amount | Share flag | Account | Project</code><br>
+          Date: <code>2026-11-15</code>, <code>15/11/2026</code> or <code>15/11</code>. A line with only a date sets the date for the lines below it,
+          and a line without a date uses the last date. Share flag: blank = Mine, <code>A</code> = shared, <code>AA</code> = all for Partner.
+          Rows pasted from the Keep Inbox sheet work as they are.</p>
+        <div class="grid" style="margin-bottom:10px"><label>Date for lines without one<input type="date" id="bDate"></label></div>
+        <textarea id="bText" spellcheck="false"></textarea>
+        <div class="row-actions">
+          <button id="btnPreview">Preview</button>
+          <button id="btnBulkSave" class="primary" disabled>Save all</button>
+          <span id="bInfo" class="muted"></span>
+        </div>
+        <div class="tablewrap"><table id="bTable"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="msg"></div>
+
+<script>
+"use strict";
+// ---------------------------------------------------------------- helpers
+const $ = id => document.getElementById(id);
+const OPT = 859130000;                       // option value prefix of the lzw publisher
+const TYPES = ["Expense", "Income"];
+const SHARES = ["Mine", "Shared with Partner (A)", "All for Partner (AA)", "Paid for Others"];
+const SOURCE = { keep: OPT, manual: OPT + 1 };
+const LS = { cfg: "ft_cfg", tok: "ft_tok" };
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const localDate = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const money = v => v == null ? "" : Number(v).toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function toast(text, isErr) {
+  const m = $("msg"); m.textContent = text; m.className = isErr ? "err" : ""; m.style.display = "block";
+  clearTimeout(toast.t); toast.t = setTimeout(() => { m.style.display = "none"; }, isErr ? 8000 : 2500);
+}
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "text") e.textContent = v; else e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+}
+
+// ---------------------------------------------------------------- settings
+let cfg = null;
+function loadCfg() { try { cfg = JSON.parse(localStorage.getItem(LS.cfg)); } catch { cfg = null; } return cfg; }
+function redirectUri() { return location.origin + location.pathname; }
+function showSetup() {
+  $("setup").classList.remove("hidden");
+  $("cfgUrl").value = cfg?.url || ""; $("cfgTenant").value = cfg?.tenant || ""; $("cfgClient").value = cfg?.client || "";
+}
+$("btnSettings").onclick = () => { $("setup").classList.contains("hidden") ? showSetup() : $("setup").classList.add("hidden"); };
+$("btnSaveCfg").onclick = () => {
+  const url = $("cfgUrl").value.trim().replace(/\/+$/, ""), tenant = $("cfgTenant").value.trim(), client = $("cfgClient").value.trim();
+  if (!/^https:\/\/[a-z0-9.-]+$/i.test(url) || !tenant || !client) return toast("Enter the Dataverse URL (https://...), tenant ID and app ID.", true);
+  cfg = { url, tenant, client }; localStorage.setItem(LS.cfg, JSON.stringify(cfg)); localStorage.removeItem(LS.tok);
+  signIn();
+};
+$("btnForget").onclick = () => { localStorage.removeItem(LS.cfg); localStorage.removeItem(LS.tok); location.reload(); };
+$("btnSignOut").onclick = () => { localStorage.removeItem(LS.tok); location.reload(); };
+
+// ---------------------------------------------------------------- sign-in (authorization code flow with PKCE)
+const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const authBase = () => `https://login.microsoftonline.com/${encodeURIComponent(cfg.tenant)}/oauth2/v2.0`;
+const scope = () => `${cfg.url}/user_impersonation offline_access`;
+
+async function signIn() {
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const state = b64url(crypto.getRandomValues(new Uint8Array(16)));
+  const challenge = b64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
+  sessionStorage.setItem("ft_pkce", JSON.stringify({ verifier, state }));
+  const q = new URLSearchParams({ client_id: cfg.client, response_type: "code", redirect_uri: redirectUri(), scope: scope(),
+    code_challenge: challenge, code_challenge_method: "S256", state, response_mode: "query" });
+  location.assign(`${authBase()}/authorize?${q}`);
+}
+async function tokenRequest(params) {
+  const r = await fetch(`${authBase()}/token`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ client_id: cfg.client, scope: scope(), ...params }) });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error_description || j.error || "Sign-in failed");
+  const tok = { access: j.access_token, refresh: j.refresh_token, exp: Date.now() + (j.expires_in - 120) * 1000 };
+  localStorage.setItem(LS.tok, JSON.stringify(tok));
+  return tok;
+}
+async function finishRedirect() {
+  const p = new URLSearchParams(location.search);
+  if (!p.has("code") && !p.has("error")) return;
+  const saved = JSON.parse(sessionStorage.getItem("ft_pkce") || "null");
+  sessionStorage.removeItem("ft_pkce");
+  history.replaceState(null, "", redirectUri());
+  if (p.has("error")) throw new Error(p.get("error_description") || p.get("error"));
+  if (!saved || saved.state !== p.get("state")) throw new Error("Sign-in response did not match this browser session. Try again.");
+  await tokenRequest({ grant_type: "authorization_code", code: p.get("code"), redirect_uri: redirectUri(), code_verifier: saved.verifier });
+}
+async function accessToken() {
+  let tok = null;
+  try { tok = JSON.parse(localStorage.getItem(LS.tok)); } catch { /* ignore */ }
+  if (tok && tok.exp > Date.now()) return tok.access;
+  if (tok?.refresh) {
+    try { return (await tokenRequest({ grant_type: "refresh_token", refresh_token: tok.refresh })).access; }
+    catch { localStorage.removeItem(LS.tok); }
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------- Dataverse Web API
+async function api(method, path, body) {
+  const token = await accessToken();
+  if (!token) { await signIn(); throw new Error("Signing in..."); }
+  const r = await fetch(`${cfg.url}/api/data/v9.2/${path}`, {
+    method, body: body ? JSON.stringify(body) : undefined,
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "OData-MaxVersion": "4.0", "OData-Version": "4.0",
+      "Content-Type": "application/json; charset=utf-8",
+      Prefer: 'return=representation,odata.include-annotations="OData.Community.Display.V1.FormattedValue"' } });
+  if (r.status === 204) return null;
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error?.message || `HTTP ${r.status}`);
+  return j;
+}
+const SELECT = "lzw_financetransactionid,lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_estimatedamount,lzw_sharetype," +
+  "lzw_needsdetails,lzw_notes,_lzw_paidfrom_value,_lzw_category_value,_lzw_project_value";
+const FV = "@OData.Community.Display.V1.FormattedValue";
+
+// ---------------------------------------------------------------- reference data
+const ref = { accounts: [], categories: [], projects: [], aud: null };
+async function loadReference() {
+  const [a, c, p, cur, me] = await Promise.all([
+    api("GET", "lzw_bankaccounts?$select=lzw_name,lzw_shortname&$filter=statecode eq 0&$orderby=lzw_name"),
+    api("GET", "lzw_financecategories?$select=lzw_name,lzw_categorytype,_lzw_parentcategory_value&$filter=statecode eq 0&$orderby=lzw_name"),
+    api("GET", "lzw_financeprojects?$select=lzw_name&$filter=statecode eq 0&$orderby=lzw_name"),
+    api("GET", "transactioncurrencies?$select=isocurrencycode&$filter=isocurrencycode eq 'AUD'"),
+    api("GET", "WhoAmI"),
+  ]);
+  ref.accounts = a.value.map(x => ({ id: x.lzw_bankaccountid, name: x.lzw_name, short: (x.lzw_shortname || "").split(";").map(s => s.trim().toLowerCase()).filter(Boolean) }));
+  const byId = Object.fromEntries(c.value.map(x => [x.lzw_financecategoryid, x.lzw_name]));
+  ref.categories = c.value.map(x => ({ id: x.lzw_financecategoryid,
+    name: x._lzw_parentcategory_value ? `${byId[x._lzw_parentcategory_value] || ""} / ${x.lzw_name}` : x.lzw_name,
+    plain: x.lzw_name })).sort((x, y) => x.name.localeCompare(y.name));
+  ref.projects = p.value.map(x => ({ id: x.lzw_financeprojectid, name: x.lzw_name }));
+  ref.aud = cur.value[0]?.transactioncurrencyid || null;
+  try { const u = await api("GET", `systemusers(${me.UserId})?$select=fullname`); $("who").textContent = u.fullname || ""; } catch { /* optional */ }
+  fill($("fType"), TYPES.map((t, i) => ({ id: OPT + i, name: t })), false);
+  fill($("fShare"), SHARES.map((t, i) => ({ id: OPT + i, name: t })), false);
+  fill($("fAccount"), ref.accounts, true); fill($("fCategory"), ref.categories, true); fill($("fProject"), ref.projects, true);
+}
+function fill(sel, items, blank) {
+  sel.replaceChildren();
+  if (blank) sel.append(el("option", { value: "", text: "" }));
+  for (const i of items) sel.append(el("option", { value: i.id, text: i.name }));
+}
+
+// ---------------------------------------------------------------- list, grouped by day
+let rows = [];          // loaded transactions
+let editing = null;     // id being edited
+const rowDate = r => new Date(r.lzw_transactiondate);
+const dayKey = r => ymd(rowDate(r));
+
+async function loadList() {
+  const from = localDate($("qFrom").value), to = addDays(localDate($("qTo").value), 1);
+  const f = `statecode eq 0 and lzw_transactiondate ge ${from.toISOString()} and lzw_transactiondate lt ${to.toISOString()}`;
+  let url = `lzw_financetransactions?$select=${SELECT}&$filter=${encodeURIComponent(f)}&$orderby=lzw_transactiondate asc`;
+  rows = [];
+  while (url) {
+    const j = await api("GET", url);
+    rows.push(...j.value);
+    url = j["@odata.nextLink"] ? j["@odata.nextLink"].split("/api/data/v9.2/")[1] : null;
+  }
+  render();
+}
+function render() {
+  const list = $("list"); list.replaceChildren();
+  const days = {};
+  for (const r of rows) (days[dayKey(r)] ||= []).push(r);
+  const keys = Object.keys(days).sort().reverse();
+  if (!keys.length) list.append(el("p", { class: "muted", text: "No transactions in this range." }));
+  for (const k of keys) {
+    const items = days[k].sort((a, b) => rowDate(a) - rowDate(b));
+    const total = items.reduce((s, r) => s + (r.lzw_type === OPT + 1 ? 1 : -1) * (r.lzw_estimatedamount || 0), 0);
+    const box = el("div", { class: "day" },
+      el("h3", {}, el("span", { text: localDate(k).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) }),
+        el("span", { text: `${items.length} · net ${money(total)}` })));
+    items.forEach((r, i) => box.append(txRow(r, i, items, k)));
+    list.append(box);
+  }
+}
+function txRow(r, i, items, key) {
+  const income = r.lzw_type === OPT + 1;
+  const meta = [r.lzw_payee, r["_lzw_category_value" + FV], r["_lzw_paidfrom_value" + FV],
+    r.lzw_sharetype !== OPT ? r["lzw_sharetype" + FV] : null, r["_lzw_project_value" + FV], r.lzw_notes].filter(Boolean).join(" · ");
+  const row = el("div", { class: "tx", draggable: "true" },
+    el("div", { class: "time", text: hm(rowDate(r)), title: "Drag to reorder" }),
+    el("div", { class: "desc" }, el("b", { text: r.lzw_name || "" }),
+      r.lzw_needsdetails ? el("span", { class: "flag", text: "  needs details" }) : null, el("div", { class: "meta", text: meta })),
+    el("div", { class: "amt" + (income ? " income" : ""), text: (income ? "+" : "") + money(r.lzw_estimatedamount) }),
+    el("div", { class: "btns" },
+      el("button", { class: "small", text: "↑", title: "Move up", onclick: () => move(items, i, i - 1) }),
+      el("button", { class: "small", text: "↓", title: "Move down", onclick: () => move(items, i, i + 1) }),
+      el("button", { class: "small", text: "Edit", onclick: () => startEdit(r) })));
+  row.addEventListener("dragstart", e => { drag = { key, from: i }; row.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
+  row.addEventListener("dragend", () => { row.classList.remove("dragging"); drag = null; });
+  row.addEventListener("dragover", e => { if (drag && drag.key === key) { e.preventDefault(); row.classList.add("over"); } });
+  row.addEventListener("dragleave", () => row.classList.remove("over"));
+  row.addEventListener("drop", e => { e.preventDefault(); row.classList.remove("over"); if (drag && drag.key === key) move(items, drag.from, i); });
+  return row;
+}
+let drag = null;
+
+// Reorder inside one day. The day's existing times are handed out again in the new order, so only the
+// order changes. If two rows share a time, the day is re-spaced one minute apart from its first time.
+async function move(items, from, to) {
+  if (to < 0 || to >= items.length || from === to) return;
+  let times = items.map(r => rowDate(r).getTime()).sort((a, b) => a - b);
+  if (times.some((t, i) => i && t <= times[i - 1])) times = times.map((_, i) => times[0] + i * 60000);
+  const order = items.slice(); const [moved] = order.splice(from, 1); order.splice(to, 0, moved);
+  try {
+    for (let i = 0; i < order.length; i++) {
+      if (rowDate(order[i]).getTime() === times[i]) continue;
+      const iso = new Date(times[i]).toISOString();
+      await api("PATCH", `lzw_financetransactions(${order[i].lzw_financetransactionid})?$select=lzw_transactiondate`, { lzw_transactiondate: iso });
+      order[i].lzw_transactiondate = iso;
+    }
+    render();
+  } catch (e) { toast(e.message, true); await loadList(); }
+}
+
+// Time for a new row on a day: now when the day is today, otherwise one minute after the day's last row
+// (or 12:00 when the day is empty).
+async function autoTime(dateStr, skip = 0) {
+  if (dateStr === ymd(new Date())) return new Date(Date.now() + skip * 60000);
+  const start = localDate(dateStr), end = addDays(start, 1);
+  const f = `statecode eq 0 and lzw_transactiondate ge ${start.toISOString()} and lzw_transactiondate lt ${end.toISOString()}`;
+  const j = await api("GET", `lzw_financetransactions?$select=lzw_transactiondate&$filter=${encodeURIComponent(f)}&$orderby=lzw_transactiondate desc&$top=1`);
+  const base = j.value.length ? new Date(new Date(j.value[0].lzw_transactiondate).getTime() + 60000) : new Date(start.getTime() + 12 * 3600000);
+  const t = new Date(base.getTime() + skip * 60000);
+  return t < end ? t : new Date(end.getTime() - 60000);
+}
+
+// ---------------------------------------------------------------- add and edit
+function bind(body, nav, set, id) { body[`${nav}@odata.bind`] = id ? `/${set}(${id})` : null; }
+function readForm() {
+  const amountText = $("fAmount").value.trim().replace(/[$,\s]/g, "");
+  const amount = amountText === "" ? null : Number(amountText);
+  if (!$("fDate").value) throw new Error("Choose a date.");
+  if (!$("fDesc").value.trim()) throw new Error("Enter a description.");
+  if (amount !== null && !(amount >= 0)) throw new Error("Amount must be a positive number.");
+  const body = { lzw_name: $("fDesc").value.trim(), lzw_payee: $("fPayee").value.trim() || null, lzw_estimatedamount: amount,
+    lzw_type: Number($("fType").value), lzw_sharetype: Number($("fShare").value), lzw_notes: $("fNotes").value.trim() || null,
+    lzw_needsdetails: amount === null };
+  bind(body, "lzw_PaidFrom", "lzw_bankaccounts", $("fAccount").value);
+  bind(body, "lzw_Category", "lzw_financecategories", $("fCategory").value);
+  bind(body, "lzw_Project", "lzw_financeprojects", $("fProject").value);
+  return body;
+}
+function stripNullBinds(body) { for (const k of Object.keys(body)) if (k.endsWith("@odata.bind") && body[k] === null) delete body[k]; return body; }
+async function clearLookups(id, body) {   // a lookup is cleared with DELETE on its $ref, not with a null bind
+  for (const [nav, col] of [["lzw_PaidFrom", "_lzw_paidfrom_value"], ["lzw_Category", "_lzw_category_value"], ["lzw_Project", "_lzw_project_value"]]) {
+    const row = rows.find(r => r.lzw_financetransactionid === id);
+    if (body[`${nav}@odata.bind`] === null && row && row[col]) await api("DELETE", `lzw_financetransactions(${id})/${nav}/$ref`);
+  }
+}
+$("btnSave").onclick = async () => {
+  $("btnSave").disabled = true;
+  try {
+    const body = readForm(), date = $("fDate").value, time = $("fTime").value;
+    const old = editing && rows.find(r => r.lzw_financetransactionid === editing);
+    let when;
+    const sameDay = old && dayKey(old) === date;
+    if (sameDay && (!time || time === hm(rowDate(old)))) when = rowDate(old);      // time untouched: keep it to the second
+    else if (time) { const [h, m] = time.split(":").map(Number); when = new Date(localDate(date).getTime() + (h * 60 + m) * 60000); }
+    else when = await autoTime(date);
+    body.lzw_transactiondate = when.toISOString();
+    if (editing) {
+      await clearLookups(editing, body);
+      await api("PATCH", `lzw_financetransactions(${editing})?$select=lzw_financetransactionid`, stripNullBinds(body));
+      toast("Saved");
+    } else {
+      body.lzw_source = SOURCE.manual;
+      if (ref.aud) body["transactioncurrencyid@odata.bind"] = `/transactioncurrencies(${ref.aud})`;
+      await api("POST", "lzw_financetransactions?$select=lzw_financetransactionid", stripNullBinds(body));
+      toast("Added");
+    }
+    if (date < $("qFrom").value) $("qFrom").value = date;
+    if (date > $("qTo").value) $("qTo").value = date;
+    resetForm(date); await loadList();
+  } catch (e) { toast(e.message, true); }
+  $("btnSave").disabled = false;
+};
+function startEdit(r) {
+  editing = r.lzw_financetransactionid;
+  $("formTitle").textContent = "Edit transaction"; $("btnSave").textContent = "Save"; $("btnCancel").classList.remove("hidden");
+  $("fDate").value = dayKey(r); $("fTime").value = hm(rowDate(r)); $("fDesc").value = r.lzw_name || ""; $("fPayee").value = r.lzw_payee || "";
+  $("fAmount").value = r.lzw_estimatedamount ?? ""; $("fType").value = r.lzw_type ?? OPT; $("fShare").value = r.lzw_sharetype ?? OPT;
+  $("fAccount").value = r._lzw_paidfrom_value || ""; $("fCategory").value = r._lzw_category_value || ""; $("fProject").value = r._lzw_project_value || "";
+  $("fNotes").value = r.lzw_notes || "";
+  window.scrollTo({ top: 0, behavior: "smooth" }); $("fDesc").focus();
+}
+function resetForm(date) {
+  editing = null;
+  $("formTitle").textContent = "New transaction"; $("btnSave").textContent = "Add"; $("btnCancel").classList.add("hidden");
+  $("fDate").value = date || ymd(new Date());
+  for (const id of ["fTime", "fDesc", "fPayee", "fAmount", "fNotes"]) $(id).value = "";
+  $("fType").value = OPT; $("fShare").value = OPT;
+  $("fDesc").focus();
+}
+$("btnCancel").onclick = () => resetForm($("fDate").value);
+$("btnLoad").onclick = () => loadList().catch(e => toast(e.message, true));
+
+// ---------------------------------------------------------------- bulk entry
+let bulk = [];
+function parseDate(text, fallbackYear) {
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text);
+  if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+  m = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/.exec(text);
+  if (!m) return null;
+  const y = m[3] ? (m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3])) : fallbackYear;
+  const d = new Date(y, Number(m[2]) - 1, Number(m[1]));
+  return d.getMonth() === Number(m[2]) - 1 ? ymd(d) : null;
+}
+function parseBulk() {
+  let current = $("bDate").value || ymd(new Date());
+  const year = new Date().getFullYear(), out = [];
+  for (const raw of $("bText").value.split(/\r?\n/)) {
+    if (!raw.trim()) continue;
+    let parts = raw.split(raw.includes("\t") ? "\t" : "|").map(s => s.trim());
+    const d = parseDate(parts[0], year);
+    if (d) { current = d; parts = parts.slice(1); if (!parts.some(Boolean)) continue; }
+    const [desc = "", merchant = "", amountText = "", flag = "", account = "", project = ""] = parts;
+    const problems = [];
+    if (!desc) problems.push("no description");
+    const cleaned = amountText.replace(/[$,\s]/g, "");
+    const amount = cleaned !== "" && isFinite(Number(cleaned)) ? Math.abs(Number(cleaned)) : null;
+    if (amount === null) problems.push("no amount (needs details)");
+    const f = flag.toUpperCase();
+    const share = f === "" ? 0 : f === "A" ? 1 : f === "AA" ? 2 : null;
+    if (share === null) problems.push(`unknown share flag "${flag}"`);
+    const acct = account ? ref.accounts.find(a => a.short.some(s => s.includes(account.toLowerCase())) || a.name.toLowerCase() === account.toLowerCase()) : null;
+    if (account && !acct) problems.push(`account "${account}" not found`);
+    const proj = project ? ref.projects.find(p => p.name.toLowerCase() === project.toLowerCase()) : null;
+    if (project && !proj) problems.push(`project "${project}" not found`);
+    out.push({ date: current, desc, merchant, amount, share: share ?? 0, acct, proj, problems, skip: !desc });
+  }
+  return out;
+}
+$("btnPreview").onclick = () => {
+  bulk = parseBulk();
+  const t = $("bTable"); t.replaceChildren(el("tr", {}, ...["Date", "Description", "Merchant", "Amount", "Share", "Account", "Project", "Notes"].map(h => el("th", { text: h }))));
+  for (const b of bulk) t.append(el("tr", {}, el("td", { text: b.date }), el("td", { text: b.desc }), el("td", { text: b.merchant }),
+    el("td", { text: money(b.amount) }), el("td", { text: SHARES[b.share] }), el("td", { text: b.acct?.name || "" }), el("td", { text: b.proj?.name || "" }),
+    el("td", { class: b.problems.length ? "flag" : "", text: b.skip ? "skipped: " + b.problems.join("; ") : b.problems.join("; ") })));
+  const n = bulk.filter(b => !b.skip).length;
+  $("bInfo").textContent = `${n} to save, ${bulk.length - n} skipped`;
+  $("btnBulkSave").disabled = !n;
+};
+$("btnBulkSave").onclick = async () => {
+  $("btnBulkSave").disabled = true;
+  const perDay = {}; let done = 0;
+  try {
+    for (const b of bulk.filter(x => !x.skip)) {
+      const n = perDay[b.date] = (perDay[b.date] ?? -1) + 1;      // keep the pasted order inside each day
+      if (!(b.date in (perDay.base ||= {}))) perDay.base[b.date] = await autoTime(b.date);
+      const when = new Date(perDay.base[b.date].getTime() + n * 60000);
+      const body = { lzw_name: b.desc.slice(0, 200), lzw_payee: b.merchant || null, lzw_estimatedamount: b.amount, lzw_type: OPT,
+        lzw_sharetype: OPT + b.share, lzw_needsdetails: b.amount === null, lzw_source: SOURCE.keep, lzw_transactiondate: when.toISOString() };
+      if (b.acct) bind(body, "lzw_PaidFrom", "lzw_bankaccounts", b.acct.id);
+      if (b.proj) bind(body, "lzw_Project", "lzw_financeprojects", b.proj.id);
+      if (ref.aud) body["transactioncurrencyid@odata.bind"] = `/transactioncurrencies(${ref.aud})`;
+      await api("POST", "lzw_financetransactions?$select=lzw_financetransactionid", body);
+      b.skip = true; done++;
+      $("bInfo").textContent = `Saved ${done}...`;
+    }
+    toast(`Saved ${done} transactions`); $("bText").value = ""; $("bTable").replaceChildren(); $("bInfo").textContent = "";
+    await loadList();
+  } catch (e) {
+    toast(`Stopped after ${done}: ${e.message}`, true);
+    $("bInfo").textContent = `Saved ${done}. Press Save all again to continue with the rest.`;
+    $("btnBulkSave").disabled = false;
+  }
+};
+
+// ---------------------------------------------------------------- tabs and start-up
+for (const b of document.querySelectorAll(".tabs button")) b.onclick = () => {
+  for (const x of document.querySelectorAll(".tabs button")) x.classList.toggle("on", x === b);
+  $("tab-entry").classList.toggle("hidden", b.dataset.tab !== "entry");
+  $("tab-bulk").classList.toggle("hidden", b.dataset.tab !== "bulk");
+};
+(async function start() {
+  if (!loadCfg()) return showSetup();
+  try {
+    await finishRedirect();
+    if (!(await accessToken())) return signIn();
+    $("btnSignOut").classList.remove("hidden");
+    await loadReference();
+    const today = new Date();
+    $("qTo").value = ymd(today); $("qFrom").value = ymd(addDays(today, -6)); $("bDate").value = ymd(today);
+    resetForm(); $("app").classList.remove("hidden");
+    await loadList();
+  } catch (e) { toast(e.message, true); showSetup(); }
+})();
+</script>
+</body>
+</html>

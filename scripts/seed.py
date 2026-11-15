@@ -7,6 +7,7 @@ BANKS = ["ANZ", "AMEX", "Wise", "Kogan Money"]
 ACCOUNT_TYPES = ["Everyday", "Savings", "Credit Card", "Wise", "Other"]
 # Old name -> new name. Applied first, so a rename is never re-created under its old name.
 RENAMED_ACCOUNTS = {"ANZ Flex": "ANZ Plus Flex Saver", "ANZ Savings": "ANZ Plus Growth Saver"}
+RENAMED_PROJECTS = {"Yunnan Trip": "China Yunnan Trip"}
 RENAMED_CATEGORIES = {"Dining and Drinks": "Dining", "Tobacco and Vape": "Smoking"}
 BANK_ACCOUNTS = [  # name, short name, account type, bank
     ("ANZ Plus Everyday", "Everyday;ANZ", "Everyday", "ANZ"),
@@ -50,6 +51,7 @@ def main():
     rename("lzw_bankaccounts", "lzw_bankaccountid", RENAMED_ACCOUNTS,
            {"ANZ Plus Flex Saver": {"lzw_accounttype": O + ACCOUNT_TYPES.index("Savings")}})
     rename("lzw_financecategories", "lzw_financecategoryid", RENAMED_CATEGORIES)
+    rename("lzw_financeprojects", "lzw_financeprojectid", RENAMED_PROJECTS)
     bank_ids = {}
     for b in BANKS:
         rid, created = ensure("accounts", "accountid", "name", b, {"lzw_isbank": True})
@@ -73,8 +75,9 @@ def main():
             _, created = ensure("lzw_financecategories", "lzw_financecategoryid", "lzw_name", name, {
                 "lzw_categorytype": O, "lzw_ParentCategory@odata.bind": f"/lzw_financecategories({pid})"})
             print("created" if created else "exists ", "category", parent, ">", name)
-    _, created = ensure("lzw_financeprojects", "lzw_financeprojectid", "lzw_name", "Yunnan Trip", {"lzw_projecttype": O})
-    print("created" if created else "exists ", "project Yunnan Trip")
+    _, created = ensure("lzw_financeprojects", "lzw_financeprojectid", "lzw_name", "China Yunnan Trip",
+                        {"lzw_projecttype": O})
+    print("created" if created else "exists ", "project China Yunnan Trip")
 
 
 if __name__ == "__main__":

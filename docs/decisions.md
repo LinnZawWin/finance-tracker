@@ -152,6 +152,25 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - JPY, SGD, THB and IDR were added with the Reserve Bank of Australia rates for 13 Nov 2026
   (108.81, 0.8753, 23.02, 12385 per 1 AUD).
 
+### Web page for transactions (2026-11-15)
+- **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet
+  and the hourly flow.
+- **Transaction Date became date and time.** A Date Only column cannot be changed, so the column on Finance
+  Transaction was deleted and recreated as date and time (user local) while the table was empty. Bank
+  Statement Line keeps Date Only, so matching compares the date part in Brisbane time.
+- **Static page on GitHub Pages**, calling the Dataverse Web API from the browser. Dataverse allows this
+  for single-page apps that sign in with Microsoft Entra ID.
+- **No library.** The sign-in (authorization code with PKCE) is about 40 lines in the page itself, so there
+  is nothing to build or update.
+- **Nothing private in the page.** The Dataverse URL, tenant ID and app ID are typed in once and kept in
+  the browser's local storage, together with the sign-in tokens.
+- **App registration "Finance Tracker Web"**: single tenant, single-page redirect to the Pages address,
+  delegated Dataverse permission, consent granted for the tenant. No secret.
+- **Tested** in a browser against the environment with the automation identity's token: load, add,
+  reorder, edit, clear a lookup and bulk entry. The Microsoft sign-in itself could not be tested from a
+  cloud session and waits for the owner's first use.
+- The project "Yunnan Trip" was renamed "China Yunnan Trip".
+
 ### Icons
 - `build_icons.py` creates one SVG web resource per table (`lzw_/icons/<table>.svg`) plus the app icon and
   sets `IconVectorName`. Run against the environment on 2026-11-15.

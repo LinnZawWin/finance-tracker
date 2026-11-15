@@ -8,10 +8,9 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | # | Item | Who | Notes |
 |---|---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" | Owner | Still off on 2026-11-15. It has never run; the first run is its real test |
-| 2 | Add CNY and other currencies; review the NZD exchange rate | Owner | CNY does not exist yet and Wise matching needs it. NZD still has rate 1.0 from when it was the base. Claude must not touch Currency |
-| 3 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL`, then set up Claude Code GitHub Actions (`/install-github-app`) | Owner | Needed before issue-triggered work can reach Dataverse |
-| 4 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
-| 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536 ("root component CustomControlDefaultConfig is missing"). Only matters for a solution export |
+| 2 | Set up Claude Code GitHub Actions | Owner | The secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `DATAVERSE_URL` are added. Still needed: the Claude GitHub App, a Claude secret and the workflow file with an `azure/login` step |
+| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
+| 4 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536 ("root component CustomControlDefaultConfig is missing"). Only matters for a solution export |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -92,9 +91,12 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - The flow sets the row currency to AUD explicitly, because new rows otherwise take the base currency.
 
 ### Currency
-- The base currency was NZD at build time and Currency was deliberately not touched. The owner has since
-  changed the base currency to AUD (verified 2026-11-15: AUD, rate 1.0). Other currencies present: NZD,
-  GBP, USD, EUR. CNY is not present yet.
+- The base currency was NZD at build time. The owner has since changed it to AUD (verified 2026-11-15).
+- On 2026-11-15, at the owner's request, CNY and CAD were added and every exchange rate was set from the
+  Reserve Bank of Australia table for 13 Nov 2026 (units of foreign currency per 1 AUD):
+  USD 0.6804, CNY 4.5380, EUR 0.6153, GBP 0.5142, NZD 1.2273, CAD 0.9701.
+  Source: https://www.rba.gov.au/statistics/frequency/exchange-rates.html
+- Rates are not updated automatically. A row keeps the rate it was saved with.
 - The platform added `transactioncurrency` and `account` to the solution as references only.
 
 ### Automation identity

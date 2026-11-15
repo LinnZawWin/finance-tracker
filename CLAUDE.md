@@ -88,6 +88,8 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
 - The base currency is AUD (verified 2026-11-15). Scripts and the flow still set AUD on the rows they create.
+  Other currencies: CAD, CNY, EUR, GBP, NZD, USD. Exchange rates are units per 1 AUD and are only changed
+  when the owner asks.
 
 ## Statement import rules
 
@@ -145,7 +147,6 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 | # | Item | Who |
 |---|---|---|
 | 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
-| 2 | Add CNY (needed for Wise matching on Original Amount) and any other currencies. Review the NZD exchange rate, still 1.0 | Owner |
-| 3 | Add the GitHub secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `DATAVERSE_URL`, then set up Claude Code GitHub Actions | Owner |
-| 4 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
-| 5 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 2 | Set up Claude Code GitHub Actions (the three GitHub secrets are added; the workflow and the Claude secret are not) | Owner |
+| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
+| 4 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

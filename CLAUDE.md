@@ -298,8 +298,9 @@ Finance Transactions. It has no build step and no dependencies.
   Statement Lines with Status Unmatched or Partly Matched (both active only), filtered by account and search.
   Suggested pairs: same remaining amount (or the same original amount, or for an estimated transaction the
   same account and a shared payee word), the same account when the transaction has Paid From, within 7 days;
-  best first, each row used once; a pair with another equally good candidate is flagged. Confirm creates a
-  match with Method Rule. Manual: one transaction with several lines (each line gives its remaining amount)
+  best first, each row used once; a pair with another equally good candidate is flagged. Each pair has a
+  checkbox, ticked by default except flagged pairs (never auto-confirm those). Confirm (one pair) or Confirm
+  selected (the ticked pairs, one after another, stopping at the first error) creates a match with Method Rule. Manual: one transaction with several lines (each line gives its remaining amount)
   or one line over several transactions (each takes its remaining amount, the last takes the rest), Method
   Manual. Matches are Confirmed with Confirmed On. The page then recalculates the rollups
   (CalculateRollupField), sets the line to Matched (nothing left) or Partly Matched, and the transaction to

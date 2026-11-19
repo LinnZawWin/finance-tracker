@@ -114,7 +114,9 @@ TABLES = [
            description="Date and time. The time orders the transactions within a day"),
         choice("Type", ["Expense", "Income"], "Expense"),
         s("Payee", 200),
-        money("Estimated Amount", False, description="Positive amount (AUD)"),
+        money("Amount", False, description="The real amount, positive for income and expenses. Type sets the "
+                                           "direction. Estimates (Payment Type Estimated) are overwritten with the "
+                                           "bank figure when reconciled"),
         lookup("Paid From", "lzw_bankaccount"),
         lookup("Category", "lzw_financecategory"),
         lookup("Project", "lzw_financeproject"),
@@ -124,10 +126,12 @@ TABLES = [
         s("Source Row ID", 100),
         rollup("Actual Amount", "money", "lzw_reconciliationmatch", "lzw_FinanceTransaction", "Sum",
                source="lzw_allocatedamount", flt=("lzw_matchstatus", "Equal", "Confirmed")),
-        calc("Actual Cost", "If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))"),
-        calc("Partner Share", "If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, "
-                              "Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)"),
-        calc("My Cost", "lzw_actualcost - lzw_partnershare"),
+        # Amount minus the bank's confirmed amount with its sign turned into a cost: 0 once fully reconciled.
+        calc("Reconciliation Difference", "Decimal(lzw_amount) - If(Value(lzw_type) = 859130000, "
+                                          "Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))"),
+        calc("Partner Share", "If(Value(lzw_sharetype) = 859130001, Decimal(lzw_amount) * 0.5, "
+                              "Value(lzw_sharetype) = 859130002, Decimal(lzw_amount), 0)"),
+        calc("My Cost", "Decimal(lzw_amount) - lzw_partnershare"),
         choice("Reconciliation Status", ["Unreconciled", "Partly Reconciled", "Reconciled"], "Unreconciled"),
         memo("Notes"),
     ]),

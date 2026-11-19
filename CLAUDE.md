@@ -1,12 +1,16 @@
 # Finance Tracker
 
-Personal finance tracker on Dataverse: capture expenses (Google Keep notes via a Google Sheet inbox),
+Personal finance tracker on Dataverse: capture expenses (Google Keep notes entered through the web page),
 import bank statements, reconcile bank lines against transactions, and track assets.
 Model-driven app **Finance Tracker**. Schema as built: [docs/schema.md](docs/schema.md).
 Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions.md). Read it before changing anything.
 
 ## Rules
 
+- **Keep this file current.** After every change to Dataverse, the flows, the scripts or the data, update
+  this file in the same session so a new session can start from it without losing context: the current state
+  (tables, columns, flows and whether they are on, sign conventions, rules learned), not a history.
+  Put the reasoning and the pending items in `docs/decisions.md`. Do this before reporting the work as done.
 - This repo is public. Never commit the Dataverse URL, an email address, a tenant ID, tokens, token caches
   (`~/.azure`, `~/.pac`), exported data, statements, or any person's name. Write "Partner" instead of names.
 - Use the Dataverse Python SDK, PAC CLI, Azure CLI and Web API. Do not use or register the Dataverse MCP
@@ -36,6 +40,10 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
     the environment. Sign in with
     `az login --service-principal -u "$AZURE_CLIENT_ID" -p "$AZURE_CLIENT_SECRET" --tenant "$AZURE_TENANT_ID" --allow-no-subscriptions`.
     Never print or commit these values.
+  - **Claude Code on the owner's Windows machine**: the git-ignored `.claude/settings.local.json` sets
+    `DATAVERSE_URL`, `DATAVERSE_USER` and `AZURE_CONFIG_DIR` (`~/.azure-personal`, the owner's own sign-in,
+    kept apart from other Azure CLI sign-ins on that machine). The refresh token there renews itself;
+    if it expires, sign in again with device code with `AZURE_CONFIG_DIR` set to that folder.
   - **Fallback**, only if neither works: device code as `$DATAVERSE_USER`
     (`az login --use-device-code --allow-no-subscriptions`).
 - Both automatic sign-ins act as the application user "Finance Tracker Automation" (System Administrator),
@@ -63,9 +71,91 @@ Unmanaged solution `lzw_FinanceTracker` ("Finance Tracker", publisher prefix `lz
 | Finance Project | `lzw_financeproject` |
 | Finance Asset | `lzw_financeasset` |
 | Finance Asset Link | `lzw_financeassetlink` |
+| Planned Transaction (OOTB Appointment, renamed) | `appointment` |
+| Recurring Transaction (OOTB Recurring Appointment, renamed) | `recurringappointmentmaster` |
 
 Plus `account.lzw_isbank` and the Account view "Banks". Global choice `lzw_sharetype`:
 Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
+Finance Transaction **Source**: Keep (859130000), Manual, Import, Recurring (859130003).
+
+Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
+Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
+Estimated), Paid From `lzw_paidfrom` (Bank Account), Finance Category `lzw_financecategory`, Processed
+`lzw_processed` (Yes/No, default No). Forms "Planned Transaction" / "Recurring Transaction", views
+"Planned Transactions" / "Recurring Transactions". Both tables are under Capture in the app. The old lookups
+Financial Account and Transaction Category (to the old MoneyManagement tables) were deleted.
+
+## Flows
+
+| Flow | Schedule | State | Script |
+|---|---|---|---|
+| Scheduled: Create Finance Transactions from Planned Transactions | Daily 6 AM Brisbane | **On** since 2026-11-19. Tested 2026-11-20 (manual runs: one Succeeded, one Cancelled with nothing due) | `build_recurring_flow.py` |
+
+It uses the connection reference `lzw_FinanceTrackerDataverse` (bound). The build scripts update a flow's
+definition only while it is off. `build_recurring_flow.py --update-on` turns the flow off, updates it and
+turns it back on. Name new flows `<Table>: <Flow Name>`
+(`Scheduled:` for recurrence).
+
+To run a flow by hand, call the Power Automate API with an Azure CLI token for
+`https://service.flow.microsoft.com/`: `POST .../environments/<env id>/flows/<workflowid>/triggers/<trigger>/run`
+(api-version 2016-11-01). Take the environment ID from the `environments` list in that API, matching
+`instanceUrl`: the PAC profile and FlowAgent on this machine are signed in to another account.
+
+## Planned Transactions
+
+- The scheduled flow takes open or scheduled appointments with Processed = No and Start before tomorrow
+  (Brisbane) and creates a Finance Transaction for each: Description and Payee = Subject, Date = Start,
+  Type = Income if Amount < 0 else Expense, Estimated Amount = abs(Amount), Share Type = Mine, Source =
+  Recurring, Source Row ID = appointment ID, Paid From and Category from the appointment or else its
+  series, Needs Details = Yes when Paid
+  From is empty or Payment Type = Estimated, Notes = "Created from Planned Transaction. Payment Type: <x>"
+  plus the appointment's Description on a new line, currency = the appointment's (AUD if none). Then it
+  sets Processed = Yes. It skips an appointment that already has a Recurring transaction with that Source
+  Row ID.
+- The appointment **Description** holds the payee or how to pay ("Manual - ..." = paid by hand). Every
+  series has a Paid From (the account the money leaves), including Manual ones.
+- **Current series** (owner's list, applied 2026-11-19; all AUD; amounts positive = expense):
+
+| Series | Amount | Pattern | Paid From | Payment Type | Finance Category |
+|---|---|---|---|---|---|
+| Salary | -18,333.33 | Monthly, 5th | Everyday | Auto | Salary and Contract Income |
+| Rent | 560.00 | Weekly, Sunday | Flex | Auto | Rent and Housing |
+| Health Insurance | 81.50 | Weekly, Monday | Flex | Auto | Insurance |
+| Broadband | 71.95 | Monthly, 20th | AMEX | Auto | Utilities |
+| Utility (Electricity/Gas) | 140.55 | Monthly, 24th (from 24 Dec 2026) | Flex | Estimated | Utilities |
+| YouTube Premium | 6.60 | Monthly, 25th | Flex | Auto | Subscriptions |
+| Claude Pro | 34.00 | Monthly, 4th | AMEX | Auto | Subscriptions |
+| Crunchyroll | 3.33 | Monthly, 21st | Flex | Manual | Subscriptions |
+| Water Use | 130.00 | Every 3 months, 1st (from 1 Jan 2027) | Flex | Estimated | Utilities |
+| Spotify Premium | 34.23 | Every 6 months, 28th (Jan, Jul) | Flex | Manual | Subscriptions |
+| Mobile | 154.00 | Yearly, 12 Aug | AMEX | Manual | Utilities |
+| Super Duolingo | 28.54 | Yearly, 12 Oct | Flex | Manual | Subscriptions |
+| Car Servicing | 400.00 | Yearly, 1 Dec | AMEX | Manual | Car Maintenance |
+| Car Insurance and Roadside Assist | 602.42 | Yearly, 11 Mar | AMEX | Manual | Insurance |
+| Car Registration | 1,049.72 | Yearly, 28 Feb | AMEX | Manual | Transport |
+
+  These 15 are the only series with an Amount. All other old series (24 open, 59 cancelled) were deleted on
+  2026-11-19 at the owner's request. 2 cancelled series without an Amount are calendar items: leave them.
+- **Bills whose amount or date varies:**
+  - Regular (monthly, for example electricity): a series on the typical debit day with Payment Type =
+    Estimated and the average of recent bills. When a bill arrives, put its exact amount and due date in a
+    one-off appointment and move the series start past it, or edit the Finance Transaction if it already
+    exists. "Utility (Electricity/Gas)" is set up this way: monthly on the 24th from 24 Dec 2026, $140.55
+    (average of May to Oct 2026), plus a one-off $122.22 on 24 Nov 2026 (Payment Type Auto).
+  - Irregular (for example water, about quarterly): no series. Create a one-off appointment from each invoice
+    (exact amount, due date, Payment Type Manual).
+  - Changing a series' recurrence pattern deletes and regenerates its open instances (tested). Editing
+    a single instance has not been tested: a later series edit may overwrite it.
+- Platform behaviour, tested:
+  - Updating a series rewrites the same columns on **all its open instances**, past and future. Completed
+    and cancelled appointments are read-only and keep their values.
+  - Amount, Payment Type, Description and currency are copied from a series to its instances (on create
+    and on update). **Paid From and Finance Category are not** (tested 2026-11-19: empty on every instance),
+    so the flow reads them from the series (`seriesid`) when the instance has none. Set them on the series.
+  - Keep Processed = No on series.
+  - Deleting every instance of a series deletes the series too.
+- Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
+  real meetings: leave them.
 
 ## Sign convention
 
@@ -74,21 +164,28 @@ Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 - Finance Transaction **Estimated Amount** is positive.
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
+- Planned and Recurring Transaction **Amount** is the opposite of the bank: positive = expense, negative =
+  income. The open series were converted to this on 2026-11-19.
 
 ## Scripts (`scripts/`)
 
 | Script | Purpose |
 |---|---|
 | `dv.py`, `spec.py` | Web API helper and the schema specification |
-| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `build_flow.py`, `seed.py` | Idempotent build, in this order |
+| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_flow.py` (the retired Keep flow) only provides helpers now |
+| `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
-| `statement_compare.py` | Compare parsed statement lines with Dataverse before creating lines |
+| `statement_parse.py <inbox> <out>` | Parse and check ANZ, Kogan and AMEX files into lines files (no writes) |
+| `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
+| `statement_import.py <out> [--apply]` | Create the Bank Statements and only the missing lines (dry run by default) |
+| `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
 **Formula** columns, created by `build_formulas.py` (Decimal, 2 places, formulas in `spec.py`). Do not create
 Calculated columns: that behaviour is being discontinued. A formula column cannot be Currency, so currency
 inputs are wrapped in `Decimal()` and the result has no currency symbol. An empty input counts as 0.
+Formula columns cannot be audited (they are not stored); the API accepts the setting but ignores it.
 `--fallback` never applies to them.
 
 Run them with a Python that has `azure-identity` installed, from the repo root, with the Azure CLI on PATH.
@@ -104,9 +201,10 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 - The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
+  It does not yet cover the Planned / Recurring Transaction components.
 - The base currency is AUD (verified 2026-11-15). Scripts and the flow still set AUD on the rows they create.
   Other currencies: CAD, CNY, EUR, GBP, IDR, JPY, NZD, SGD, THB, USD. Exchange rates are units per 1 AUD and are only changed
-  when the owner asks.
+  when the owner asks. The Planned Transactions flow uses the appointment's currency.
 
 ## Statement import rules
 
@@ -115,7 +213,10 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
 
 1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
    disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from
-   `read_file_content`: it loses the credit and debit columns.
+   `read_file_content`: it loses the credit and debit columns. On the owner's Windows machine the Drive folder
+   is mounted locally (`G:\My Drive\Statements`), so read the files there. Its Python is ARM64, where
+   `pdfplumber` does not install (no `cryptography` wheel): use `pypdf` with `extraction_mode="layout"` and
+   take each ANZ line's sign from the running balance change, which checks every line as well.
 2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
    AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
    ANZ Plus offers PDF only.
@@ -129,16 +230,29 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
    create only the leftovers.
 7. Flag description or amount differences as **possible duplicates**.
 8. Show a summary (new, existing, possible duplicates) **before writing**.
-9. Do the comparison with `scripts/statement_compare.py` (dry run by default, `--apply` to write). Keep the
+9. Parse with `scripts/statement_parse.py` and `scripts/wise_lines.py`, then compare and write with
+   `scripts/statement_import.py` (dry run by default, `--apply` to write). Keep the
    downloaded and parsed files outside the repo.
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
-"Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX.
-**Fee Amount** and **Bank Category** come from Wise. Refunded or cancelled lines (Wise status REFUNDED) are
-imported with Status = Ignored.
+"Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX
+(a name other than the owner's = supplementary card; those lines are imported like the others).
+**Fee Amount** and **Bank Category** come from Wise. **Bank Reference**: the ANZ receipt number (`#123456`),
+the AMEX Reference, the Wise ID. **Line Number** is the order in the statement, oldest first.
+AMEX `.xlsx` totals: the "Transaction Summary" sheet (Previous Balance, Payments & Credits, Charges &
+Adjustments, Statement Balance); Opening / Closing Balance are stored signed like the bank (owed = negative).
 
-Wise is one Bank Account with several currency balances. Each line keeps the currency of the balance it came
-from (the row currency). A conversion between balances is two lines paired as a transfer.
+Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
+- One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
+  newer full-year export; compare it against the existing lines and create only the new ones.
+- Skip REFUNDED rows and conversions between balances (Direction NEUTRAL). They are not imported.
+- Amount is AUD. AUD-funded rows: source amount plus fee. Original Amount and Original Currency are the
+  target (merchant) amount and currency; Fee Amount is the Wise fee.
+- Rows paid from a foreign balance: AUD = foreign amount / the rate of the last AUD-to-that-currency
+  conversion before the row (effective rate, fee included). Without one: the first later conversion, then
+  the rate of an AUD-funded card payment in that currency, then a cross rate through another currency's
+  conversion. Notes say which rate was used. This applies to USD, NZD, THB, EUR, JPY, CAD and SGD balances.
+- A payment split across two balances (the CSV repeats its ID) is one line; Notes list the parts.
 
 ## Reconciliation rules
 
@@ -150,6 +264,10 @@ from (the row currency). A conversion between balances is two lines paired as a 
    - Exact matches: same amount, date and account.
    - Bank Rules (`lzw_bankrule`) by priority (lowest number first) for payee, description, category and
      share type defaults. The rules are data in Dataverse, not in this repo.
+   - **Estimated transactions** (Source = Recurring, Notes contain "Payment Type: Estimated"): they never
+     match on amount. Match a bank line with the same payee (directly or through a Bank Rule) on the same
+     account, within 7 days of the Transaction Date, any amount. Auto-confirm only when exactly one line
+     fits; otherwise Proposed. After confirming, set Needs Details = No (the bank line gives the actual).
 2. **Then AI** for the rest.
 3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
 4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
@@ -199,11 +317,12 @@ Finance Transactions. It has no build step and no dependencies.
 
 ## Keep Inbox sheet
 
-The web page above can replace this sheet and flow. Both still exist. The flow writes the sheet's date into
-Transaction Date without a time, which Dataverse stores as midnight UTC (10:00 in Brisbane).
+**Retired on 2026-11-20.** The web page replaces the sheet and its flow. The flow "Finance Tracker - Import
+Keep Rows" was deleted (backup outside the repo); `build_flow.py` refuses to recreate it without
+`--recreate`. The environment variable `lzw_KeepInboxSheetId` and the connection reference
+`lzw_FinanceTrackerGoogleSheets` were used only by that flow and still exist (owner to decide).
 
-Google Sheet, worksheet name `Inbox`, header row exactly as below. The sheet ID goes in the environment
-variable `lzw_KeepInboxSheetId`. The flow "Finance Tracker - Import Keep Rows" reads it every hour.
+The layout below is kept because the web page's bulk entry accepts rows pasted from the sheet as they are.
 
 | Col | Header | Notes |
 |---|---|---|
@@ -220,20 +339,20 @@ variable `lzw_KeepInboxSheetId`. The flow "Finance Tracker - Import Keep Rows" r
 | K | Processed | Set to "Processed" by the flow. Leave empty for new rows |
 | L | Processed On | Set by the flow (Brisbane time) |
 
-The Google Sheets connector adds its own `__PowerAppsId__` column after L on first use. Do not remove it:
-the flow uses it to update the row.
+Columns K and L and the `__PowerAppsId__` column were used only by the deleted flow.
 
 ## Outstanding work
 
-Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-15:
+Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-20:
 
 | # | Item | Who |
 |---|---|---|
-| 1 | Turn on the flow "Finance Tracker - Import Keep Rows" (still off) and check its first run against the sheet | Owner |
-| 2 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
-| 3 | Turn on GitHub Pages: repo Settings, Pages, Source = GitHub Actions. Then run the "Deploy web page" workflow and sign in on the page once | Owner |
-| 4 | Decide whether the web page replaces the Keep Inbox sheet and its flow | Owner |
-| 5 | Import the statements waiting in `Statements/Inbox`. Nothing is imported yet. The owner is replacing the AMEX PDFs with xlsx exports first. Start with one statement | Claude, when the owner says so |
-| 6 | `statement_compare.py` does not yet fill the new columns (Posted Date, Bank Reference, Line Number, Card Holder, Fee Amount, Bank Category) or a per-line currency. Extend it before the first import | Claude |
-| 7 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows (tables are empty) | Claude |
-| 8 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
+| 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
+| 3 | Reconcile the imported statement lines (all Unmatched; the only Finance Transaction so far is Broadband from the Planned Transactions flow) | Claude, when the owner says so |
+| 4 | Import the next Wise export (owner uploads a full-year file each month) into "Wise 2026" | Claude |
+| 5 | Test `recalc.py` and the formula columns with real rows (statement lines now exist) | Claude |
+| 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+
+Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
+the Keep Inbox sheet and the Keep flow was deleted.

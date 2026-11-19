@@ -99,10 +99,12 @@
 
       <div class="card">
         <h2>Bulk entry</h2>
-        <p class="muted">One transaction per line. Separate fields with a tab or <code>|</code>, in this order:<br>
-          <code>Date | Description | Merchant | Amount | Share flag | Account | Project</code><br>
-          Date: <code>2026-11-15</code>, <code>15/11/2026</code> or <code>15/11</code>. A line with only a date sets the date for the lines below it,
-          and a line without a date uses the last date. Share flag: blank = Mine, <code>A</code> = shared, <code>AA</code> = all for Partner.
+        <p class="muted">One transaction per line, in either form:<br>
+          <code>Description Amount [A|AA] [Account]</code>, for example <code>Grocery Asian 113.56 A Flex</code><br>
+          <code>Date | Description | Merchant | Amount | Share flag | Account | Project</code> (tab or <code>|</code> between fields)<br>
+          A line with only a date (<code>19 Nov</code>, <code>19/11</code>, <code>2026-11-19</code>) sets the date for the lines below it.
+          Without a year it is this year, or last year for a month after this one. Share flag: blank = Mine, <code>A</code> = shared,
+          <code>AA</code> = all for Partner. Rows of a day are saved 10 minutes apart, top line first.
           Rows pasted from the Keep Inbox sheet work as they are.</p>
         <div class="grid" style="margin-bottom:10px"><label>Date for lines without one<input type="date" id="bDate"></label></div>
         <textarea id="bText" spellcheck="false"></textarea>
@@ -235,7 +237,7 @@ async function api(method, path, body) {
   if (!r.ok) throw new Error(j.error?.message || `HTTP ${r.status}`);
   return j;
 }
-const SELECT = "lzw_financetransactionid,lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_estimatedamount,lzw_sharetype," +
+const SELECT = "lzw_financetransactionid,lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_amount,lzw_sharetype," +
   "lzw_needsdetails,lzw_notes,_lzw_paidfrom_value,_lzw_category_value,_lzw_project_value";
 const FV = "@OData.Community.Display.V1.FormattedValue";
 
@@ -293,7 +295,7 @@ function render() {
   if (!keys.length) list.append(el("p", { class: "muted", text: "No transactions in this range." }));
   for (const k of keys) {
     const items = days[k].sort((a, b) => rowDate(a) - rowDate(b));
-    const total = items.reduce((s, r) => s + (r.lzw_type === OPT + 1 ? 1 : -1) * (r.lzw_estimatedamount || 0), 0);
+    const total = items.reduce((s, r) => s + (r.lzw_type === OPT + 1 ? 1 : -1) * (r.lzw_amount || 0), 0);
     const box = el("div", { class: "day" },
       el("h3", {}, el("span", { text: localDate(k).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) }),
         el("span", { text: `${items.length} · net ${money(total)}` })));
@@ -309,7 +311,7 @@ function txRow(r, i, items, key) {
     el("div", { class: "time", text: hm(rowDate(r)), title: "Drag to reorder" }),
     el("div", { class: "desc" }, el("b", { text: r.lzw_name || "" }),
       r.lzw_needsdetails ? el("span", { class: "flag", text: "  needs details" }) : null, el("div", { class: "meta", text: meta })),
-    el("div", { class: "amt" + (income ? " income" : ""), text: (income ? "+" : "") + money(r.lzw_estimatedamount) }),
+    el("div", { class: "amt" + (income ? " income" : ""), text: (income ? "+" : "") + money(r.lzw_amount) }),
     el("div", { class: "btns" },
       el("button", { class: "small", text: "↑", title: "Move up", onclick: () => move(items, i, i - 1) }),
       el("button", { class: "small", text: "↓", title: "Move down", onclick: () => move(items, i, i + 1) }),
@@ -361,7 +363,7 @@ function readForm() {
   if (!$("fDate").value) throw new Error("Choose a date.");
   if (!$("fDesc").value.trim()) throw new Error("Enter a description.");
   if (amount !== null && !(amount >= 0)) throw new Error("Amount must be a positive number.");
-  const body = { lzw_name: $("fDesc").value.trim(), lzw_payee: $("fPayee").value.trim() || null, lzw_estimatedamount: amount,
+  const body = { lzw_name: $("fDesc").value.trim(), lzw_payee: $("fPayee").value.trim() || null, lzw_amount: amount,
     lzw_type: Number($("fType").value), lzw_sharetype: Number($("fShare").value), lzw_notes: $("fNotes").value.trim() || null,
     lzw_needsdetails: amount === null };
   bind(body, "lzw_PaidFrom", "lzw_bankaccounts", $("fAccount").value);
@@ -409,7 +411,7 @@ function startEdit(r) {
   editing = r.lzw_financetransactionid; showTab("create");
   $("formTitle").textContent = "Edit transaction"; $("btnSave").textContent = "Save"; $("btnCancel").classList.remove("hidden");
   $("fDate").value = dayKey(r); $("fTime").value = hm(rowDate(r)); $("fDesc").value = r.lzw_name || ""; $("fPayee").value = r.lzw_payee || "";
-  $("fAmount").value = r.lzw_estimatedamount ?? ""; $("fType").value = r.lzw_type ?? OPT; $("fShare").value = r.lzw_sharetype ?? OPT;
+  $("fAmount").value = r.lzw_amount ?? ""; $("fType").value = r.lzw_type ?? OPT; $("fShare").value = r.lzw_sharetype ?? OPT;
   $("fAccount").value = r._lzw_paidfrom_value || ""; $("fCategory").value = r._lzw_category_value || ""; $("fProject").value = r._lzw_project_value || "";
   $("fNotes").value = r.lzw_notes || "";
   window.scrollTo({ top: 0, behavior: "smooth" }); $("fDesc").focus();
@@ -427,37 +429,99 @@ $("btnLoad").onclick = () => loadList().catch(e => toast(e.message, true));
 
 // ---------------------------------------------------------------- bulk entry
 let bulk = [];
-function parseDate(text, fallbackYear) {
+const BULK_STEP = 10 * 60000;
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+// A date without a year is in the current year, unless its month is later than this month
+// (December lines pasted in January): then it is last year.
+function yearFor(month) {
+  const now = new Date();
+  return month - 1 > now.getMonth() ? now.getFullYear() - 1 : now.getFullYear();
+}
+function makeDate(y, mo, d) {
+  const dt = new Date(y, mo - 1, d);
+  return dt.getMonth() === mo - 1 ? ymd(dt) : null;
+}
+// 2026-11-15, 15/11/2026, 15/11, 15 Nov, 15 November, 15 Nov 2026
+function parseDate(text) {
+  text = text.trim();
   let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text);
-  if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+  if (m) return makeDate(Number(m[1]), Number(m[2]), Number(m[3]));
   m = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/.exec(text);
-  if (!m) return null;
-  const y = m[3] ? (m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3])) : fallbackYear;
-  const d = new Date(y, Number(m[2]) - 1, Number(m[1]));
-  return d.getMonth() === Number(m[2]) - 1 ? ymd(d) : null;
+  if (m) {
+    const mo = Number(m[2]);
+    const y = m[3] ? (m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3])) : yearFor(mo);
+    return makeDate(y, mo, Number(m[1]));
+  }
+  m = /^(\d{1,2})\s+([a-z]{3,9})\.?(?:\s+(\d{4}))?$/i.exec(text);
+  if (m) {
+    const word = m[2].toLowerCase(), mo = MONTHS.indexOf(word.slice(0, 3)) + 1;
+    const full = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    if (!mo || !(word.length === 3 || full[mo - 1].startsWith(word))) return null;
+    return makeDate(m[3] ? Number(m[3]) : yearFor(mo), mo, Number(m[1]));
+  }
+  return null;
+}
+function parseAmount(text) {
+  const cleaned = (text || "").replace(/[$,\s]/g, "");
+  return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(cleaned) ? Math.abs(Number(cleaned)) : null;
+}
+const findAccount = t => ref.accounts.find(a => a.short.some(s => s.includes(t.toLowerCase())) || a.name.toLowerCase() === t.toLowerCase());
+const findProject = t => ref.projects.find(p => p.name.toLowerCase() === t.toLowerCase());
+// Free text: "Description Amount [A|AA] [Account or Project]", for example "Grocery Asian 113.56 A Flex".
+// The amount is the last number on the line; the words after it are the share flag and the account or project.
+function parseFreeText(line) {
+  const words = line.split(/\s+/);
+  let i = words.length - 1;
+  while (i >= 0 && parseAmount(words[i]) === null) i--;
+  if (i <= 0) return { desc: line, amountText: "", flag: "", account: "", project: "" };
+  const rest = words.slice(i + 1);
+  const r = { desc: words.slice(0, i).join(" "), amountText: words[i], flag: "", account: "", project: "" };
+  if (rest.length && /^a{1,2}$/i.test(rest[0])) {
+    r.flag = rest.shift();
+  }
+  const tail = rest.join(" ");
+  if (tail) {
+    if (findAccount(tail) || !findProject(tail)) {
+      r.account = tail;
+    } else {
+      r.project = tail;
+    }
+  }
+  return r;
 }
 function parseBulk() {
   let current = $("bDate").value || ymd(new Date());
-  const year = new Date().getFullYear(), out = [];
+  const out = [];
   for (const raw of $("bText").value.split(/\r?\n/)) {
-    if (!raw.trim()) continue;
-    let parts = raw.split(raw.includes("\t") ? "\t" : "|").map(s => s.trim());
-    const d = parseDate(parts[0], year);
-    if (d) { current = d; parts = parts.slice(1); if (!parts.some(Boolean)) continue; }
-    const [desc = "", merchant = "", amountText = "", flag = "", account = "", project = ""] = parts;
+    const line = raw.trim();
+    if (!line) continue;
+    const headerDate = parseDate(line);
+    if (headerDate) { current = headerDate; continue; }
+    let f;
+    if (/[\t|]/.test(raw)) {                       // Date | Description | Merchant | Amount | Share flag | Account | Project
+      let parts = raw.split(raw.includes("\t") ? "\t" : "|").map(x => x.trim());
+      const d = parseDate(parts[0]);
+      if (d) { current = d; parts = parts.slice(1); if (!parts.some(Boolean)) continue; }
+      const [desc = "", merchant = "", amountText = "", flag = "", account = "", project = ""] = parts;
+      f = { desc, merchant, amountText, flag, account, project };
+    } else {
+      let text = line;
+      const m = /^(\S+)\s+(.*)$/.exec(line);          // a leading 2026-11-15 or 15/11
+      if (m && parseDate(m[1])) { current = parseDate(m[1]); text = m[2]; }
+      f = { merchant: "", ...parseFreeText(text) };
+    }
     const problems = [];
-    if (!desc) problems.push("no description");
-    const cleaned = amountText.replace(/[$,\s]/g, "");
-    const amount = cleaned !== "" && isFinite(Number(cleaned)) ? Math.abs(Number(cleaned)) : null;
+    if (!f.desc) problems.push("no description");
+    const amount = parseAmount(f.amountText);
     if (amount === null) problems.push("no amount (needs details)");
-    const f = flag.toUpperCase();
-    const share = f === "" ? 0 : f === "A" ? 1 : f === "AA" ? 2 : null;
-    if (share === null) problems.push(`unknown share flag "${flag}"`);
-    const acct = account ? ref.accounts.find(a => a.short.some(s => s.includes(account.toLowerCase())) || a.name.toLowerCase() === account.toLowerCase()) : null;
-    if (account && !acct) problems.push(`account "${account}" not found`);
-    const proj = project ? ref.projects.find(p => p.name.toLowerCase() === project.toLowerCase()) : null;
-    if (project && !proj) problems.push(`project "${project}" not found`);
-    out.push({ date: current, desc, merchant, amount, share: share ?? 0, acct, proj, problems, skip: !desc });
+    const fl = f.flag.toUpperCase();
+    const share = fl === "" ? 0 : fl === "A" ? 1 : fl === "AA" ? 2 : null;
+    if (share === null) problems.push(`unknown share flag "${f.flag}"`);
+    const acct = f.account ? findAccount(f.account) : null;
+    if (f.account && !acct) problems.push(`account "${f.account}" not found`);
+    const proj = f.project ? findProject(f.project) : null;
+    if (f.project && !proj) problems.push(`project "${f.project}" not found`);
+    out.push({ date: current, desc: f.desc, merchant: f.merchant, amount, share: share ?? 0, acct, proj, problems, skip: !f.desc });
   }
   return out;
 }
@@ -473,13 +537,20 @@ $("btnPreview").onclick = () => {
 };
 $("btnBulkSave").onclick = async () => {
   $("btnBulkSave").disabled = true;
-  const perDay = {}; let done = 0;
+  let done = 0;
   try {
-    for (const b of bulk.filter(x => !x.skip)) {
-      const n = perDay[b.date] = (perDay[b.date] ?? -1) + 1;      // keep the pasted order inside each day
-      if (!(b.date in (perDay.base ||= {}))) perDay.base[b.date] = await autoTime(b.date);
-      const when = new Date(perDay.base[b.date].getTime() + n * 60000);
-      const body = { lzw_name: b.desc.slice(0, 200), lzw_payee: b.merchant || null, lzw_estimatedamount: b.amount, lzw_type: OPT,
+    // Rows of a day are 10 minutes apart in the pasted order, starting where a new row would go
+    // (now for today, otherwise after the day's last row). Closer together if 10 minutes would pass midnight.
+    const todo = bulk.filter(x => !x.skip), slots = {};
+    for (const date of [...new Set(todo.map(b => b.date))]) {
+      const count = todo.filter(b => b.date === date).length, base = await autoTime(date);
+      const room = addDays(localDate(date), 1).getTime() - 60000 - base.getTime();
+      slots[date] = { base, step: count > 1 ? Math.max(0, Math.min(BULK_STEP, room / (count - 1))) : 0, n: 0 };
+    }
+    for (const b of todo) {
+      const slot = slots[b.date];
+      const when = new Date(slot.base.getTime() + Math.floor(slot.n++ * slot.step / 1000) * 1000);
+      const body = { lzw_name: b.desc.slice(0, 200), lzw_payee: b.merchant || null, lzw_amount: b.amount, lzw_type: OPT,
         lzw_sharetype: OPT + b.share, lzw_needsdetails: b.amount === null, lzw_source: SOURCE.keep, lzw_transactiondate: when.toISOString() };
       if (b.acct) bind(body, "lzw_PaidFrom", "lzw_bankaccounts", b.acct.id);
       if (b.proj) bind(body, "lzw_Project", "lzw_financeprojects", b.proj.id);

@@ -183,7 +183,13 @@ Finance Transactions. It has no build step and no dependencies.
   registration "Finance Tracker Web". Rows are created as the owner, not as the automation identity.
 - The time part of **Transaction Date** is the order within a day. A new row for today gets the current
   time; for another day, one minute after that day's last row. Reordering hands the day's existing times
-  out again in the new order. Bulk entry keeps the pasted order.
+  out again in the new order. Bulk entry saves the rows of a day 10 minutes apart in the pasted order
+  (closer together if they would pass midnight).
+- Bulk entry takes `Description Amount [A|AA] [Account or Project]` lines (the amount is the last number)
+  or `Date | Description | Merchant | Amount | Share flag | Account | Project` (tab or `|`). A line with only
+  a date (`19 Nov`, `19/11`, `2026-11-19`) sets the date below it; without a year it is this year, or last
+  year for a month after the current one.
+- The page writes the amount to Finance Transaction `lzw_amount`.
 - Page entries have Source = Manual, bulk entries Source = Keep.
 - Test changes with a browser against Dataverse before merging, and remove the test rows afterwards.
 

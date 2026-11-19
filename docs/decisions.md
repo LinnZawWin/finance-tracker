@@ -97,8 +97,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Estimated transactions (Payment Type Estimated) get their Amount overwritten with the bank figure when
   they are reconciled.
 - At the owner's request both old columns were deleted after backups outside the repo (definition, and the
-  values of Estimated Amount). Nothing depended on them. The owner chose to delete Estimated Amount before the
-  updated web page was deployed, so the live page fails until the new `web/index.html` reaches `main`.
+  values of Estimated Amount). Nothing depended on them. The web page already used
+  `lzw_amount` (merged in PR #14), so nothing broke.
 
 ### Reconciliation
 - **Confidence threshold 0.95** (owner, 2026-11-15). AI matches at or above it are auto-confirmed, the

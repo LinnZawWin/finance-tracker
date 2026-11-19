@@ -26,8 +26,30 @@
   button.small { padding:2px 8px; font-size:13px; }
   button:disabled { opacity:.5; cursor:default; }
   .row-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
-  .tabs { display:flex; gap:6px; margin-bottom:14px; }
-  .tabs button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:14px; flex-wrap:wrap; }
+  .tabs button { background:none; border:0; border-bottom:2px solid transparent; border-radius:0; margin-bottom:-1px;
+    padding:9px 16px; color:var(--muted); font-weight:600; white-space:nowrap; }
+  .tabs button:hover { color:var(--text); }
+  .tabs button.on { color:var(--accent); border-bottom-color:var(--accent); }
+  .rc-cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:760px) { .rc-cols { grid-template-columns:1fr; } }
+  .rc-cols h2 { display:flex; justify-content:space-between; gap:8px; }
+  .rc-item { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:start; padding:7px 9px; border:1px solid var(--line);
+    border-radius:8px; margin-bottom:5px; background:var(--card); cursor:pointer; }
+  .rc-item.sel { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .rc-item input { margin-top:3px; }
+  .rc-item .meta { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+  .rc-item .amt, .pair .amt { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; text-align:right; }
+  .amt.in { color:var(--ok); }
+  .pair { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center; padding:8px 10px; border:1px solid var(--line);
+    border-radius:8px; margin-bottom:6px; }
+  .pair > div { display:grid; grid-template-columns:1fr auto; gap:6px; min-width:0; }
+  .pair .meta { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+  @media (max-width:760px) { .pair { grid-template-columns:1fr; } }
+  #rcBar { position:sticky; bottom:0; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center; box-shadow:0 -2px 8px rgba(0,0,0,.06); }
+  #rcBar .tot { font-variant-numeric:tabular-nums; }
+  #rcBar label { flex-direction:row; align-items:center; gap:6px; font-size:13px; color:var(--text); }
   .day { margin-top:14px; }
   .day h3 { font-size:13px; margin:0 0 6px; color:var(--muted); display:flex; justify-content:space-between; }
   .tx { display:grid; grid-template-columns:52px 1fr auto auto; gap:8px; align-items:center; padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin-bottom:5px; background:var(--card); }
@@ -73,6 +95,7 @@
     <div class="tabs">
       <button data-tab="create" class="on">Create</button>
       <button data-tab="view">View</button>
+      <button data-tab="reconcile">Reconcile</button>
     </div>
 
     <div id="tab-create">
@@ -127,6 +150,42 @@
           <label>&nbsp;<button id="btnLoad">Load</button></label>
         </div>
         <div id="list"></div>
+      </div>
+    </div>
+
+    <div id="tab-reconcile" class="hidden">
+      <div class="card">
+        <div class="grid">
+          <label>Account<select id="rcAccount"></select></label>
+          <label>Search<input id="rcSearch" autocomplete="off" placeholder="Description, payee or amount"></label>
+          <label>&nbsp;<button id="btnRcLoad">Reload</button></label>
+        </div>
+        <p id="rcInfo" class="muted" style="margin:10px 0 0"></p>
+      </div>
+
+      <div class="card">
+        <h2>Suggested pairs</h2>
+        <p class="muted" style="margin-top:0">Same amount (or the same account and payee for an estimated amount), the same account when the
+          transaction has one, within 7 days. Check each pair, then confirm it.</p>
+        <div id="rcPairs"></div>
+      </div>
+
+      <div class="rc-cols">
+        <div class="card">
+          <h2><span>Finance Transactions</span><span id="rcFtCount" class="muted"></span></h2>
+          <div id="rcFts"></div>
+        </div>
+        <div class="card">
+          <h2><span>Bank Statement Lines</span><span id="rcLnCount" class="muted"></span></h2>
+          <div id="rcLines"></div>
+        </div>
+      </div>
+
+      <div id="rcBar">
+        <span class="tot" id="rcTotals">Select transactions and bank lines to match them.</span>
+        <label><input type="checkbox" id="rcFull" checked> Transactions fully reconciled</label>
+        <button id="btnRcMatch" class="primary" disabled>Match</button>
+        <button id="btnRcClear">Clear</button>
       </div>
     </div>
   </section>
@@ -263,7 +322,7 @@ async function loadReference() {
   try { const u = await api("GET", `systemusers(${me.UserId})?$select=fullname`); $("who").textContent = u.fullname || ""; } catch { /* optional */ }
   fill($("fType"), TYPES.map((t, i) => ({ id: OPT + i, name: t })), false);
   fill($("fShare"), SHARES.map((t, i) => ({ id: OPT + i, name: t })), false);
-  fill($("fAccount"), ref.accounts, true); fill($("fCategory"), ref.categories, true); fill($("fProject"), ref.projects, true);
+  fill($("fAccount"), ref.accounts, true); fill($("rcAccount"), ref.accounts, true); $("rcAccount").options[0].textContent = "All accounts"; fill($("fCategory"), ref.categories, true); fill($("fProject"), ref.projects, true);
 }
 function fill(sel, items, blank) {
   sel.replaceChildren();
@@ -575,11 +634,205 @@ $("btnBulkSave").onclick = async () => {
   }
 };
 
+// ---------------------------------------------------------------- reconcile
+// Signs: Bank Statement Line Amount and Reconciliation Match Allocated Amount are signed like the bank
+// (negative = money out). Finance Transaction Amount is positive and Type gives the direction; Actual Amount
+// (rollup of confirmed matches) is signed like the bank.
+const LINE_STATUS = { unmatched: OPT, partly: OPT + 1, matched: OPT + 2 };
+const RECON = { unreconciled: OPT, partly: OPT + 1, reconciled: OPT + 2 };
+const MATCH = { rule: OPT, manual: OPT + 3, confirmed: OPT + 1 };
+const rc = { fts: [], lines: [], selFt: new Set(), selLn: new Set(), loaded: false };
+const cents = v => Math.round(Number(v || 0) * 100);
+const ftExpected = t => (t.lzw_type === OPT + 1 ? 1 : -1) * Number(t.lzw_amount || 0);      // signed like the bank
+const ftRemaining = t => (cents(ftExpected(t)) - cents(t.lzw_actualamount)) / 100;
+const lnRemaining = l => (cents(l.lzw_amount) - cents(l.lzw_allocatedamount)) / 100;
+const isEstimated = t => /Payment Type: Estimated/i.test(t.lzw_notes || "");
+const acctName = id => ref.accounts.find(a => a.id === id)?.name || "";
+const daysApart = (a, b) => Math.abs(Math.round((localDate(a) - localDate(b)) / 86400000));
+const signed = v => (v > 0 ? "+" : "") + money(v);
+const words = t => new Set((t || "").toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2));
+
+async function rcLoad() {
+  const ftSel = "lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_amount,lzw_actualamount,lzw_notes,lzw_needsdetails," +
+    "lzw_reconciliationstatus,_lzw_paidfrom_value";
+  const ftFlt = `statecode eq 0 and (lzw_reconciliationstatus eq null or lzw_reconciliationstatus ne ${RECON.reconciled})`;
+  const lnSel = "lzw_name,lzw_transactiondate,lzw_amount,lzw_allocatedamount,lzw_originalamount,lzw_merchant,lzw_status,lzw_ispending," +
+    "_lzw_bankaccount_value,_transactioncurrencyid_value";
+  const lnFlt = `statecode eq 0 and (lzw_status eq ${LINE_STATUS.unmatched} or lzw_status eq ${LINE_STATUS.partly})`;
+  const [f, l] = await Promise.all([
+    api("GET", `lzw_financetransactions?$select=${ftSel}&$filter=${encodeURIComponent(ftFlt)}&$orderby=lzw_transactiondate`),
+    api("GET", `lzw_bankstatementlines?$select=${lnSel}&$filter=${encodeURIComponent(lnFlt)}&$orderby=lzw_transactiondate`),
+  ]);
+  rc.fts = f.value.map(t => ({ ...t, day: dayKey(t) }));
+  rc.lines = l.value.map(x => ({ ...x, day: x.lzw_transactiondate.slice(0, 10) }));
+  const ftIds = new Set(rc.fts.map(t => t.lzw_financetransactionid)), lnIds = new Set(rc.lines.map(x => x.lzw_bankstatementlineid));
+  rc.selFt = new Set([...rc.selFt].filter(id => ftIds.has(id))); rc.selLn = new Set([...rc.selLn].filter(id => lnIds.has(id)));
+  rc.loaded = true;
+  rcRender();
+}
+
+// Candidate pairs, best first, each transaction and each line used once.
+function rcSuggest(fts, lines) {
+  const cands = [];
+  for (const t of fts) {
+    if (!t.lzw_amount && !isEstimated(t)) continue;
+    const want = ftRemaining(t), est = isEstimated(t), tw = words(`${t.lzw_payee} ${t.lzw_name}`);
+    for (const l of lines) {
+      if (t._lzw_paidfrom_value && t._lzw_paidfrom_value !== l._lzw_bankaccount_value) continue;
+      const days = daysApart(t.day, l.day);
+      if (days > 7) continue;
+      const have = lnRemaining(l);
+      let reason = null, score = 0;
+      if (cents(have) === cents(want)) { reason = "same amount"; score = 1; }
+      else if (l.lzw_originalamount != null && cents(Math.abs(l.lzw_originalamount)) === cents(Math.abs(want)) && Math.sign(have) === Math.sign(want)) {
+        reason = "same original amount"; score = 0.9;
+      } else if (est && Math.sign(have) === Math.sign(want) && [...words(`${l.lzw_merchant} ${l.lzw_name}`)].some(w => tw.has(w))) {
+        reason = "estimated, same payee"; score = 0.7;
+      }
+      if (!reason) continue;
+      score += (t._lzw_paidfrom_value ? 0.1 : 0) - days * 0.03;
+      cands.push({ t, l, reason, score, days });
+    }
+  }
+  cands.sort((a, b) => b.score - a.score);
+  const usedT = new Set(), usedL = new Set(), pairs = [];
+  for (const c of cands) {
+    const tid = c.t.lzw_financetransactionid, lid = c.l.lzw_bankstatementlineid;
+    if (usedT.has(tid) || usedL.has(lid)) continue;
+    usedT.add(tid); usedL.add(lid);
+    // Other equally good candidates for either side: do not confirm blindly.
+    c.others = cands.filter(o => o !== c && (o.t === c.t || o.l === c.l) && o.reason === c.reason).length;
+    pairs.push(c);
+  }
+  return pairs;
+}
+
+function rcVisible() {
+  const acct = $("rcAccount").value, q = $("rcSearch").value.trim().toLowerCase();
+  const hit = (...xs) => !q || xs.some(x => String(x ?? "").toLowerCase().includes(q));
+  const fts = rc.fts.filter(t => (!acct || !t._lzw_paidfrom_value || t._lzw_paidfrom_value === acct) &&
+    hit(t.lzw_name, t.lzw_payee, t.lzw_notes, money(t.lzw_amount), t.lzw_amount));
+  const lines = rc.lines.filter(l => (!acct || l._lzw_bankaccount_value === acct) &&
+    hit(l.lzw_name, l.lzw_merchant, money(Math.abs(l.lzw_amount)), Math.abs(l.lzw_amount)));
+  return { fts, lines };
+}
+
+function rcFtNode(t, compact) {
+  const rem = ftRemaining(t), part = cents(t.lzw_actualamount) !== 0;
+  const meta = [t.day, t.lzw_payee, acctName(t._lzw_paidfrom_value) || "no account", isEstimated(t) ? "estimated" : "",
+    part ? `remaining ${signed(rem)}` : "", compact ? "" : t.lzw_notes && !/^Created from Planned/.test(t.lzw_notes) ? t.lzw_notes : ""].filter(Boolean).join(" · ");
+  return [el("div", {}, el("div", { text: t.lzw_name || "(no description)" }), el("div", { class: "meta", text: meta })),
+    el("div", { class: "amt" + (ftExpected(t) > 0 ? " in" : ""), text: signed(ftExpected(t)) })];
+}
+function rcLnNode(l) {
+  const part = cents(l.lzw_allocatedamount) !== 0;
+  const meta = [l.day, l.lzw_merchant, acctName(l._lzw_bankaccount_value), l.lzw_ispending ? "pending" : "",
+    l.lzw_originalamount != null ? `original ${money(l.lzw_originalamount)}` : "", part ? `remaining ${signed(lnRemaining(l))}` : ""].filter(Boolean).join(" · ");
+  return [el("div", {}, el("div", { text: l.lzw_name || "" }), el("div", { class: "meta", text: meta })),
+    el("div", { class: "amt" + (l.lzw_amount > 0 ? " in" : ""), text: signed(l.lzw_amount) })];
+}
+
+function rcRender() {
+  const { fts, lines } = rcVisible();
+  const pairs = rcSuggest(fts, lines);
+  const box = $("rcPairs");
+  box.replaceChildren(...pairs.map(c => el("div", { class: "pair" },
+    el("div", {}, ...rcFtNode(c.t, true)),
+    el("div", {}, ...rcLnNode(c.l)),
+    el("div", { class: "btns" },
+      el("span", { class: c.others ? "flag" : "muted", text: c.reason + (c.days ? `, ${c.days} d` : "") + (c.others ? `, ${c.others} other candidate(s)` : "") }),
+      el("button", { class: "small primary", text: "Confirm", onclick: e => rcMatch([c.t], [c.l], MATCH.rule, true, e.target) })))));
+  if (!pairs.length) box.append(el("p", { class: "muted", text: "No suggested pairs." }));
+  const item = (row, id, sel, nodes) => {
+    const cb = el("input", { type: "checkbox" }); cb.checked = sel.has(id);
+    const d = el("div", { class: "rc-item" + (cb.checked ? " sel" : ""), onclick: e => {
+      if (e.target !== cb) cb.checked = !cb.checked;
+      cb.checked ? sel.add(id) : sel.delete(id); d.classList.toggle("sel", cb.checked); rcTotals();
+    } }, cb, ...nodes);
+    return d;
+  };
+  $("rcFts").replaceChildren(...fts.map(t => item(t, t.lzw_financetransactionid, rc.selFt, rcFtNode(t))));
+  $("rcLines").replaceChildren(...lines.map(l => item(l, l.lzw_bankstatementlineid, rc.selLn, rcLnNode(l))));
+  if (!fts.length) $("rcFts").append(el("p", { class: "muted", text: "Nothing to reconcile." }));
+  if (!lines.length) $("rcLines").append(el("p", { class: "muted", text: "No unmatched lines." }));
+  $("rcFtCount").textContent = fts.length === rc.fts.length ? `${fts.length}` : `${fts.length} of ${rc.fts.length}`;
+  $("rcLnCount").textContent = lines.length === rc.lines.length ? `${lines.length}` : `${lines.length} of ${rc.lines.length}`;
+  $("rcInfo").textContent = `${rc.fts.length} transactions not reconciled, ${rc.lines.length} bank lines unmatched or partly matched, ${pairs.length} suggested pairs.`;
+  rcTotals();
+}
+
+function rcTotals() {
+  const fts = rc.fts.filter(t => rc.selFt.has(t.lzw_financetransactionid)), lines = rc.lines.filter(l => rc.selLn.has(l.lzw_bankstatementlineid));
+  const a = fts.reduce((s, t) => s + cents(ftRemaining(t)), 0) / 100, b = lines.reduce((s, l) => s + cents(lnRemaining(l)), 0) / 100;
+  const ok = fts.length && lines.length && !(fts.length > 1 && lines.length > 1);
+  $("btnRcMatch").disabled = !ok;
+  $("rcTotals").textContent = !fts.length && !lines.length ? "Select transactions and bank lines to match them."
+    : `Transactions ${fts.length}: ${signed(a)} · Bank lines ${lines.length}: ${signed(b)} · Difference ${signed((cents(b) - cents(a)) / 100)}` +
+      (fts.length > 1 && lines.length > 1 ? " · Choose one transaction or one bank line" : "");
+}
+
+async function rollup(set, id, field) {
+  const t = encodeURIComponent(JSON.stringify({ "@odata.id": `${set}(${id})` }));
+  return (await api("GET", `CalculateRollupField(Target=@t,FieldName=@f)?@t=${t}&@f='${field}'`))?.[field];
+}
+
+// One transaction with one or more lines (each line gives its remaining amount), or one line split over
+// several transactions (each gets its remaining amount, the last one takes what is left of the line).
+async function rcMatch(fts, lines, method, full, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const allocs = [];
+    if (fts.length === 1) {
+      for (const l of lines) allocs.push({ t: fts[0], l, amount: lnRemaining(l) });
+    } else {
+      let left = cents(lnRemaining(lines[0]));
+      fts.forEach((t, i) => {
+        const a = i === fts.length - 1 ? left : cents(ftRemaining(t));
+        left -= a; allocs.push({ t, l: lines[0], amount: a / 100 });
+      });
+    }
+    const now = new Date().toISOString();
+    for (const a of allocs) {
+      const body = { "lzw_BankStatementLine@odata.bind": `/lzw_bankstatementlines(${a.l.lzw_bankstatementlineid})`,
+        "lzw_FinanceTransaction@odata.bind": `/lzw_financetransactions(${a.t.lzw_financetransactionid})`,
+        lzw_allocatedamount: a.amount, lzw_matchmethod: method, lzw_matchstatus: MATCH.confirmed, lzw_confirmedon: now };
+      if (a.l._transactioncurrencyid_value) body["transactioncurrencyid@odata.bind"] = `/transactioncurrencies(${a.l._transactioncurrencyid_value})`;
+      await api("POST", "lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid", body);
+    }
+    for (const l of new Set(allocs.map(a => a.l))) {
+      const allocated = await rollup("lzw_bankstatementlines", l.lzw_bankstatementlineid, "lzw_allocatedamount");
+      const rem = cents(l.lzw_amount) - cents(allocated);
+      await api("PATCH", `lzw_bankstatementlines(${l.lzw_bankstatementlineid})?$select=lzw_bankstatementlineid`,
+        { lzw_status: rem === 0 ? LINE_STATUS.matched : LINE_STATUS.partly });
+    }
+    for (const t of new Set(allocs.map(a => a.t))) {
+      const actual = await rollup("lzw_financetransactions", t.lzw_financetransactionid, "lzw_actualamount");
+      const done = full || cents(ftExpected(t)) === cents(actual);
+      const body = { lzw_reconciliationstatus: done ? RECON.reconciled : RECON.partly };
+      if (done && isEstimated(t)) body.lzw_needsdetails = false;       // the bank line gives the actual amount
+      await api("PATCH", `lzw_financetransactions(${t.lzw_financetransactionid})?$select=lzw_financetransactionid`, body);
+    }
+    for (const a of allocs) { rc.selFt.delete(a.t.lzw_financetransactionid); rc.selLn.delete(a.l.lzw_bankstatementlineid); }
+    toast(`Matched ${allocs.length}`);
+  } catch (e) { toast(e.message, true); }
+  await rcLoad().catch(e => toast(e.message, true));
+}
+$("btnRcMatch").onclick = () => {
+  const fts = rc.fts.filter(t => rc.selFt.has(t.lzw_financetransactionid)), lines = rc.lines.filter(l => rc.selLn.has(l.lzw_bankstatementlineid));
+  rcMatch(fts, lines, MATCH.manual, $("rcFull").checked, $("btnRcMatch"));
+};
+$("btnRcClear").onclick = () => { rc.selFt.clear(); rc.selLn.clear(); rcRender(); };
+$("btnRcLoad").onclick = () => rcLoad().catch(e => toast(e.message, true));
+$("rcAccount").onchange = () => rcRender();
+$("rcSearch").oninput = () => rcRender();
+
 // ---------------------------------------------------------------- tabs and start-up
 function showTab(tab) {
-  for (const x of document.querySelectorAll(".tabs button")) x.classList.toggle("on", x.dataset.tab === tab);
-  $("tab-create").classList.toggle("hidden", tab !== "create");
-  $("tab-view").classList.toggle("hidden", tab !== "view");
+  for (const x of document.querySelectorAll(".tabs button")) {
+    x.classList.toggle("on", x.dataset.tab === tab);
+    $(`tab-${x.dataset.tab}`).classList.toggle("hidden", x.dataset.tab !== tab);
+  }
+  if (tab === "reconcile" && !rc.loaded) rcLoad().catch(e => toast(e.message, true));
 }
 for (const b of document.querySelectorAll(".tabs button")) b.onclick = () => showTab(b.dataset.tab);
 (async function start() {

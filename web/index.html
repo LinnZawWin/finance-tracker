@@ -71,11 +71,11 @@
 
   <section id="app" class="hidden">
     <div class="tabs">
-      <button data-tab="entry" class="on">Transactions</button>
-      <button data-tab="bulk">Bulk entry</button>
+      <button data-tab="create" class="on">Create</button>
+      <button data-tab="view">View</button>
     </div>
 
-    <div id="tab-entry">
+    <div id="tab-create">
       <div class="card">
         <h2 id="formTitle">New transaction</h2>
         <div class="grid">
@@ -98,17 +98,6 @@
       </div>
 
       <div class="card">
-        <div class="grid">
-          <label>From<input type="date" id="qFrom"></label>
-          <label>To<input type="date" id="qTo"></label>
-          <label>&nbsp;<button id="btnLoad">Load</button></label>
-        </div>
-        <div id="list"></div>
-      </div>
-    </div>
-
-    <div id="tab-bulk" class="hidden">
-      <div class="card">
         <h2>Bulk entry</h2>
         <p class="muted">One transaction per line. Separate fields with a tab or <code>|</code>, in this order:<br>
           <code>Date | Description | Merchant | Amount | Share flag | Account | Project</code><br>
@@ -123,6 +112,17 @@
           <span id="bInfo" class="muted"></span>
         </div>
         <div class="tablewrap"><table id="bTable"></table></div>
+      </div>
+    </div>
+
+    <div id="tab-view" class="hidden">
+      <div class="card">
+        <div class="grid">
+          <label>From<input type="date" id="qFrom"></label>
+          <label>To<input type="date" id="qTo"></label>
+          <label>&nbsp;<button id="btnLoad">Load</button></label>
+        </div>
+        <div id="list"></div>
       </div>
     </div>
   </section>
@@ -387,6 +387,7 @@ $("btnSave").onclick = async () => {
     else if (time) { const [h, m] = time.split(":").map(Number); when = new Date(localDate(date).getTime() + (h * 60 + m) * 60000); }
     else when = await autoTime(date);
     body.lzw_transactiondate = when.toISOString();
+    const wasEdit = !!editing;
     if (editing) {
       await clearLookups(editing, body);
       await api("PATCH", `lzw_financetransactions(${editing})?$select=lzw_financetransactionid`, stripNullBinds(body));
@@ -400,11 +401,12 @@ $("btnSave").onclick = async () => {
     if (date < $("qFrom").value) $("qFrom").value = date;
     if (date > $("qTo").value) $("qTo").value = date;
     resetForm(date); await loadList();
+    if (wasEdit) showTab("view");
   } catch (e) { toast(e.message, true); }
   $("btnSave").disabled = false;
 };
 function startEdit(r) {
-  editing = r.lzw_financetransactionid;
+  editing = r.lzw_financetransactionid; showTab("create");
   $("formTitle").textContent = "Edit transaction"; $("btnSave").textContent = "Save"; $("btnCancel").classList.remove("hidden");
   $("fDate").value = dayKey(r); $("fTime").value = hm(rowDate(r)); $("fDesc").value = r.lzw_name || ""; $("fPayee").value = r.lzw_payee || "";
   $("fAmount").value = r.lzw_estimatedamount ?? ""; $("fType").value = r.lzw_type ?? OPT; $("fShare").value = r.lzw_sharetype ?? OPT;
@@ -420,7 +422,7 @@ function resetForm(date) {
   $("fType").value = OPT; $("fShare").value = OPT;
   $("fDesc").focus();
 }
-$("btnCancel").onclick = () => resetForm($("fDate").value);
+$("btnCancel").onclick = () => { resetForm($("fDate").value); showTab("view"); };
 $("btnLoad").onclick = () => loadList().catch(e => toast(e.message, true));
 
 // ---------------------------------------------------------------- bulk entry
@@ -496,11 +498,12 @@ $("btnBulkSave").onclick = async () => {
 };
 
 // ---------------------------------------------------------------- tabs and start-up
-for (const b of document.querySelectorAll(".tabs button")) b.onclick = () => {
-  for (const x of document.querySelectorAll(".tabs button")) x.classList.toggle("on", x === b);
-  $("tab-entry").classList.toggle("hidden", b.dataset.tab !== "entry");
-  $("tab-bulk").classList.toggle("hidden", b.dataset.tab !== "bulk");
-};
+function showTab(tab) {
+  for (const x of document.querySelectorAll(".tabs button")) x.classList.toggle("on", x.dataset.tab === tab);
+  $("tab-create").classList.toggle("hidden", tab !== "create");
+  $("tab-view").classList.toggle("hidden", tab !== "view");
+}
+for (const b of document.querySelectorAll(".tabs button")) b.onclick = () => showTab(b.dataset.tab);
 (async function start() {
   if (!loadCfg()) return showSetup();
   try {

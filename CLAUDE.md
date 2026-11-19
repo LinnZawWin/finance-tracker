@@ -186,9 +186,13 @@ Finance Transactions. It has no build step and no dependencies.
   out again in the new order. Bulk entry saves the rows of a day 10 minutes apart in the pasted order
   (closer together if they would pass midnight).
 - Bulk entry takes `Description Amount [A|AA] [Account or Project]` lines (the amount is the last number)
-  or `Date | Description | Merchant | Amount | Share flag | Account | Project` (tab or `|`). A line with only
-  a date (`19 Nov`, `19/11`, `2026-11-19`) sets the date below it; without a year it is this year, or last
-  year for a month after the current one.
+  or `Date | Description | Merchant | Amount | Share flag | Account | Project or Notes` (tab or `|`). A line
+  with only a date (`19 Nov`, `19/11`, `2026-11-19`) sets the date below it; without a year it is this year,
+  or last year for a month after the current one.
+- A negative amount is saved as Type = Income with a positive Amount. The last field is the project when it
+  matches one, otherwise it goes to Notes: the owner writes how a split bill was shared there (who owes
+  what), which is used to reconcile refunds and friends' transfers back.
+- Cash payments use the Bank Account "Cash" (short name `Cash`, Account Type Other, no bank, no statements).
 - The page writes the amount to Finance Transaction `lzw_amount`.
 - Page entries have Source = Manual, bulk entries Source = Keep.
 - Test changes with a browser against Dataverse before merging, and remove the test rows afterwards.

@@ -173,6 +173,10 @@ the owner's own name belong to the project "NZ House".
 A single static page, published with GitHub Pages by `.github/workflows/pages.yml`, for entering and editing
 Finance Transactions. It has no build step and no dependencies.
 
+- Two tabs: **Create** (the single-transaction form, then Bulk entry) and **View** (date range and the
+  transaction list, with reordering). Editing a row from View opens it in the Create form; saving or
+  cancelling the edit returns to View.
+
 - The page is public, so it contains no environment details. On first use it asks for the Dataverse URL,
   tenant ID and app ID and keeps them in the browser. Never put those values in the file.
 - Sign-in is the owner's own Microsoft account (authorization code flow with PKCE) through the app

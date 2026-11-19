@@ -101,7 +101,9 @@
         <h2>Bulk entry</h2>
         <p class="muted">One transaction per line, in either form:<br>
           <code>Description Amount [A|AA] [Account]</code>, for example <code>Grocery Asian 113.56 A Flex</code><br>
-          <code>Date | Description | Merchant | Amount | Share flag | Account | Project</code> (tab or <code>|</code> between fields)<br>
+          <code>Date | Description | Merchant | Amount | Share flag | Account | Project or Notes</code> (tab or <code>|</code> between fields).
+          The last field is the project when it matches one, otherwise it goes to Notes.<br>
+          A negative amount is saved as Income.<br>
           A line with only a date (<code>19 Nov</code>, <code>19/11</code>, <code>2026-11-19</code>) sets the date for the lines below it.
           Without a year it is this year, or last year for a month after this one. Share flag: blank = Mine, <code>A</code> = shared,
           <code>AA</code> = all for Partner. Rows of a day are saved 10 minutes apart, top line first.
@@ -461,9 +463,9 @@ function parseDate(text) {
   }
   return null;
 }
-function parseAmount(text) {
-  const cleaned = (text || "").replace(/[$,\s]/g, "");
-  return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(cleaned) ? Math.abs(Number(cleaned)) : null;
+function parseAmount(text) {                   // signed; negative = income
+  const cleaned = (text || "").replace(/[$,\s\u2212]/g, m => (m === "\u2212" ? "-" : ""));
+  return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(cleaned) ? Number(cleaned) : null;
 }
 const findAccount = t => ref.accounts.find(a => a.short.some(s => s.includes(t.toLowerCase())) || a.name.toLowerCase() === t.toLowerCase());
 const findProject = t => ref.projects.find(p => p.name.toLowerCase() === t.toLowerCase());
@@ -502,17 +504,20 @@ function parseBulk() {
       let parts = raw.split(raw.includes("\t") ? "\t" : "|").map(x => x.trim());
       const d = parseDate(parts[0]);
       if (d) { current = d; parts = parts.slice(1); if (!parts.some(Boolean)) continue; }
-      const [desc = "", merchant = "", amountText = "", flag = "", account = "", project = ""] = parts;
-      f = { desc, merchant, amountText, flag, account, project };
+      const [desc = "", merchant = "", amountText = "", flag = "", account = "", sixth = "", ...more] = parts;
+      const isProject = sixth && findProject(sixth);
+      const notes = [isProject ? "" : sixth, ...more].filter(Boolean).join(" | ");
+      f = { desc, merchant, amountText, flag, account, project: isProject ? sixth : "", notes };
     } else {
       let text = line;
       const m = /^(\S+)\s+(.*)$/.exec(line);          // a leading 2026-11-15 or 15/11
       if (m && parseDate(m[1])) { current = parseDate(m[1]); text = m[2]; }
-      f = { merchant: "", ...parseFreeText(text) };
+      f = { merchant: "", notes: "", ...parseFreeText(text) };
     }
     const problems = [];
     if (!f.desc) problems.push("no description");
-    const amount = parseAmount(f.amountText);
+    const signed = parseAmount(f.amountText);
+    const amount = signed === null ? null : Math.abs(signed), income = signed !== null && signed < 0;
     if (amount === null) problems.push("no amount (needs details)");
     const fl = f.flag.toUpperCase();
     const share = fl === "" ? 0 : fl === "A" ? 1 : fl === "AA" ? 2 : null;
@@ -521,15 +526,17 @@ function parseBulk() {
     if (f.account && !acct) problems.push(`account "${f.account}" not found`);
     const proj = f.project ? findProject(f.project) : null;
     if (f.project && !proj) problems.push(`project "${f.project}" not found`);
-    out.push({ date: current, desc: f.desc, merchant: f.merchant, amount, share: share ?? 0, acct, proj, problems, skip: !f.desc });
+    out.push({ date: current, desc: f.desc, merchant: f.merchant, amount, income, share: share ?? 0, acct, proj, notes: f.notes,
+      problems, skip: !f.desc });
   }
   return out;
 }
 $("btnPreview").onclick = () => {
   bulk = parseBulk();
-  const t = $("bTable"); t.replaceChildren(el("tr", {}, ...["Date", "Description", "Merchant", "Amount", "Share", "Account", "Project", "Notes"].map(h => el("th", { text: h }))));
+  const t = $("bTable"); t.replaceChildren(el("tr", {}, ...["Date", "Description", "Merchant", "Type", "Amount", "Share", "Account", "Project", "Notes", "Check"].map(h => el("th", { text: h }))));
   for (const b of bulk) t.append(el("tr", {}, el("td", { text: b.date }), el("td", { text: b.desc }), el("td", { text: b.merchant }),
-    el("td", { text: money(b.amount) }), el("td", { text: SHARES[b.share] }), el("td", { text: b.acct?.name || "" }), el("td", { text: b.proj?.name || "" }),
+    el("td", { text: TYPES[b.income ? 1 : 0] }), el("td", { text: money(b.amount) }), el("td", { text: SHARES[b.share] }),
+    el("td", { text: b.acct?.name || "" }), el("td", { text: b.proj?.name || "" }), el("td", { text: b.notes || "" }),
     el("td", { class: b.problems.length ? "flag" : "", text: b.skip ? "skipped: " + b.problems.join("; ") : b.problems.join("; ") })));
   const n = bulk.filter(b => !b.skip).length;
   $("bInfo").textContent = `${n} to save, ${bulk.length - n} skipped`;
@@ -550,7 +557,7 @@ $("btnBulkSave").onclick = async () => {
     for (const b of todo) {
       const slot = slots[b.date];
       const when = new Date(slot.base.getTime() + Math.floor(slot.n++ * slot.step / 1000) * 1000);
-      const body = { lzw_name: b.desc.slice(0, 200), lzw_payee: b.merchant || null, lzw_amount: b.amount, lzw_type: OPT,
+      const body = { lzw_name: b.desc.slice(0, 200), lzw_payee: b.merchant || null, lzw_amount: b.amount, lzw_type: OPT + (b.income ? 1 : 0), lzw_notes: b.notes || null,
         lzw_sharetype: OPT + b.share, lzw_needsdetails: b.amount === null, lzw_source: SOURCE.keep, lzw_transactiondate: when.toISOString() };
       if (b.acct) bind(body, "lzw_PaidFrom", "lzw_bankaccounts", b.acct.id);
       if (b.proj) bind(body, "lzw_Project", "lzw_financeprojects", b.proj.id);

@@ -294,6 +294,17 @@ Finance Transactions. It has no build step and no dependencies.
 - Two tabs: **Create** (the single-transaction form, then Bulk entry) and **View** (date range and the
   transaction list, with reordering). Editing a row from View opens it in the Create form; saving or
   cancelling the edit returns to View.
+- Third tab **Reconcile**: Finance Transactions with Reconciliation Status other than Reconciled, and Bank
+  Statement Lines with Status Unmatched or Partly Matched (both active only), filtered by account and search.
+  Suggested pairs: same remaining amount (or the same original amount, or for an estimated transaction the
+  same account and a shared payee word), the same account when the transaction has Paid From, within 7 days;
+  best first, each row used once; a pair with another equally good candidate is flagged. Confirm creates a
+  match with Method Rule. Manual: one transaction with several lines (each line gives its remaining amount)
+  or one line over several transactions (each takes its remaining amount, the last takes the rest), Method
+  Manual. Matches are Confirmed with Confirmed On. The page then recalculates the rollups
+  (CalculateRollupField), sets the line to Matched (nothing left) or Partly Matched, and the transaction to
+  Reconciled (difference 0, or "fully reconciled" ticked) or Partly Reconciled; an estimated transaction
+  that is reconciled gets Needs Details = No.
 
 - The page is public, so it contains no environment details. On first use it asks for the Dataverse URL,
   tenant ID and app ID and keeps them in the browser. Never put those values in the file.

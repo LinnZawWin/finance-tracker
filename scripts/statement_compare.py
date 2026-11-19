@@ -42,18 +42,37 @@ def cents(x):
 
 def duplicate_key(line):
     bal = "" if line.get("balance") is None else f"{float(line['balance']):.2f}"
-    return f"{line['date']}|{float(line['amount']):.2f}|{norm(line['description'])}|{bal}"[:600]
+    ref = line.get("bank_reference") or ""
+    return f"{line['date']}|{float(line['amount']):.2f}|{norm(line['description'])}|{bal}|{ref}"[:600]
+
+
+# Optional line fields -> Bank Statement Line columns
+OPTIONAL = {"posted_date": ("lzw_posteddate", None), "bank_reference": ("lzw_bankreference", 100),
+            "card_holder": ("lzw_cardholder", 100), "fee": ("lzw_feeamount", None),
+            "bank_category": ("lzw_bankcategory", 100), "line_number": ("lzw_linenumber", None),
+            "notes": ("lzw_notes", None)}
+STATUS = ["Unmatched", "Partly Matched", "Matched", "Transfer", "Ignored"]
+_currency = {}
+
+
+def currency_id(iso):
+    if iso not in _currency:
+        cur = dv.get(f"transactioncurrencies?$select=transactioncurrencyid&$filter=isocurrencycode eq '{iso}'")["value"]
+        if not cur:
+            raise SystemExit(f"Currency not in Dataverse: {iso}")
+        _currency[iso] = cur[0]["transactioncurrencyid"]
+    return _currency[iso]
 
 
 def load_existing(account_id, start, end):
     rows = dv.get_all(
         "lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_transactiondate,lzw_amount,"
-        "lzw_runningbalance,lzw_source,lzw_ispending"
+        "lzw_runningbalance,lzw_source,lzw_ispending,lzw_bankreference"
         f"&$filter=_lzw_bankaccount_value eq {account_id} and statecode eq 0 and "
         f"lzw_transactiondate ge {start} and lzw_transactiondate le {end}")
     return [{"id": r["lzw_bankstatementlineid"], "date": r["lzw_transactiondate"][:10], "amount": r["lzw_amount"],
              "description": r["lzw_name"], "balance": r.get("lzw_runningbalance"), "source": r.get("lzw_source"),
-             "used": False} for r in rows]
+             "ref": r.get("lzw_bankreference"), "used": False} for r in rows]
 
 
 def compare(incoming, existing, is_pdf):
@@ -69,7 +88,8 @@ def compare(incoming, existing, is_pdf):
 
     def same_balance(line, row):
         a, b = cents(line.get("balance")), cents(row["balance"])
-        return a is None or b is None or a == b
+        r1, r2 = line.get("bank_reference"), row.get("ref")
+        return (a is None or b is None or a == b) and (not r1 or not r2 or r1 == r2)
 
     rest = []
     for line in incoming:  # 1. exact matches, counted one for one
@@ -112,6 +132,14 @@ def line_body(line, account_id, statement_id, source, aud):
         body["lzw_merchant"] = line["merchant"][:200]
     if line.get("original_amount") is not None:
         body["lzw_originalamount"] = line["original_amount"]
+    if line.get("original_currency"):
+        body["lzw_OriginalCurrency@odata.bind"] = f"/transactioncurrencies({currency_id(line['original_currency'])})"
+    for key, (col, length) in OPTIONAL.items():
+        val = line.get(key)
+        if val is not None and val != "":
+            body[col] = val[:length] if length else val
+    if line.get("status"):
+        body["lzw_status"] = O + STATUS.index(line["status"])
     if aud:
         body["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({aud})"
     return body

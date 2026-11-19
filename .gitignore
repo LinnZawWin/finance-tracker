@@ -4,6 +4,7 @@
 .token_cache.bin
 .dataverse/
 .claude/mcp_settings.json
+.claude/settings.local.json
 .vscode/settings.json
 __pycache__/
 *.pyc

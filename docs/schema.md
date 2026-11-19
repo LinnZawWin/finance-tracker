@@ -81,7 +81,7 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 | Transaction Date | `lzw_transactiondate` | Date and time (user local) | Yes |
 | Type | `lzw_type` | Choice: Expense (859130000), Income (859130001); default Expense |  |
 | Payee | `lzw_payee` | Text (200) |  |
-| Estimated Amount | `lzw_estimatedamount` | Currency, precision 2, 0 or more |  |
+| Amount | `lzw_amount` | Currency, precision 2, 0 or more |  |
 | Paid From | `lzw_paidfrom` | Lookup to lzw_bankaccount, Restrict delete (relationship `lzw_financetransaction_PaidFrom`, navigation property `lzw_PaidFrom`) |  |
 | Category | `lzw_category` | Lookup to lzw_financecategory, Restrict delete (relationship `lzw_financetransaction_Category`, navigation property `lzw_Category`) |  |
 | Project | `lzw_project` | Lookup to lzw_financeproject, Restrict delete (relationship `lzw_financetransaction_Project`, navigation property `lzw_Project`) |  |
@@ -90,7 +90,7 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 | Source | `lzw_source` | Choice: Keep (859130000), Manual (859130001), Import (859130002) |  |
 | Source Row ID | `lzw_sourcerowid` | Text (100) |  |
 | Actual Amount | `lzw_actualamount` | Rollup (currency): sum of lzw_allocatedamount in lzw_reconciliationmatch where lzw_matchstatus = Confirmed |  |
-| Actual Cost | `lzw_actualcost` | Formula (Power Fx), decimal, 2 places |  |
+| Reconciliation Difference | `lzw_reconciliationdifference` | Formula (Power Fx), decimal, 2 places |  |
 | Partner Share | `lzw_partnershare` | Formula (Power Fx), decimal, 2 places |  |
 | My Cost | `lzw_mycost` | Formula (Power Fx), decimal, 2 places |  |
 | Reconciliation Status | `lzw_reconciliationstatus` | Choice: Unreconciled (859130000), Partly Reconciled (859130001), Reconciled (859130002); default Unreconciled |  |
@@ -191,9 +191,9 @@ Power Fx formula columns (Decimal, 2 places), created by `build_formulas.py`. A 
 | Table | Column | Formula |
 |---|---|---|
 | `lzw_bankstatementline` | `lzw_unallocatedamount` | `Decimal(lzw_amount) - Decimal(lzw_allocatedamount)` |
-| `lzw_financetransaction` | `lzw_actualcost` | `If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
-| `lzw_financetransaction` | `lzw_partnershare` | `If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)` |
-| `lzw_financetransaction` | `lzw_mycost` | `lzw_actualcost - lzw_partnershare` |
+| `lzw_financetransaction` | `lzw_reconciliationdifference` | `Decimal(lzw_amount) - If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
+| `lzw_financetransaction` | `lzw_partnershare` | `If(Value(lzw_sharetype) = 859130001, Decimal(lzw_amount) * 0.5, Value(lzw_sharetype) = 859130002, Decimal(lzw_amount), 0)` |
+| `lzw_financetransaction` | `lzw_mycost` | `Decimal(lzw_amount) - lzw_partnershare` |
 | `lzw_financeasset` | `lzw_netcost` | `Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)` |
 
 ## Rollup notes
@@ -224,7 +224,7 @@ Each table's default "Active ..." view was given useful columns and is used by t
 
 - Model-driven app `lzw_FinanceTracker` (Finance Tracker) with site map groups Capture, Reconcile, Statements, Assets and Setup. Setup > Banks opens Account with the Banks view.
 - Power Apps grid control with editing enabled as the default grid for `lzw_reconciliationmatch` (applies to all of its views, so Match Status can be changed inline in Proposed Matches).
-- Cloud flow "Finance Tracker - Import Keep Rows" (created off).
+- Cloud flow "Scheduled: Create Finance Transactions from Planned Transactions" (on). The Keep flow "Finance Tracker - Import Keep Rows" was deleted on 2026-11-20.
 - Environment variable `lzw_KeepInboxSheetId` (text, no value).
 - Connection references `lzw_FinanceTrackerDataverse` (Microsoft Dataverse) and `lzw_FinanceTrackerGoogleSheets` (Google Sheets, standard connector).
 - The platform added `transactioncurrency` and `account` to the solution as references only (no changes to Currency).

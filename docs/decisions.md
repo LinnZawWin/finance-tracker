@@ -7,16 +7,27 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 
 | # | Item | Who | Notes |
 |---|---|---|---|
-| 1 | Turn on the flow "Finance Tracker - Import Keep Rows" | Owner | Still off on 2026-11-15. It has never run; the first run is its real test |
+| 6 | Delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets`? | Owner | Used only by the deleted Keep flow. Kept until the owner decides |
 | 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
-| 3 | Import the statements in `Statements/Inbox` | Claude | 33 PDFs, AMEX xlsx and csv, Wise csv, read and reviewed on 2026-11-15. Nothing imported. Waits for the owner |
-| 4 | Extend `statement_compare.py` for the new line columns and per-line currency | Claude | Needed before the first import |
-| 5 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
-| 6 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
+| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
+| 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
 verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
+
+Done on 2026-11-20: the Planned Transactions flow was tested with a dummy one-off appointment and a dummy
+one-occurrence series, run manually at 00:32 Brisbane. All values came out as specified, including Paid
+From and Category taken from the series, and the real Broadband instance due that day was processed. A
+second run ended Cancelled (nothing due), so nothing is created twice. The owner asked for the test data to
+be removed: the two test Finance Transactions, the one-off appointment and the series (with its instance)
+were deleted after a backup outside the repo. The Broadband transaction is real and was kept.
+
+Also on 2026-11-20: **the web page replaces the Keep Inbox sheet and its flow** (owner's decision). At the
+owner's request the flow "Finance Tracker - Import Keep Rows" (off, never run) was backed up outside the
+repo and deleted, so turning it on is no longer pending. `build_flow.py` stays for the helpers that
+`build_recurring_flow.py` imports, but its `main()` only runs with `--recreate`. `verify.py` now checks that
+the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages was confirmed on.
 
 ## Decisions and reasoning
 
@@ -59,15 +70,35 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   `Decimal()`. The columns show no currency symbol and do not follow the convention "Money has precision 2".
 - Choices are compared by value (`Value(lzw_type) = 859130000`), which avoids display names in formulas.
 - An empty input counts as 0, so these columns show 0 where a Calculated column would be blank.
+- **Not audited.** Formula columns are computed when a row is read and never stored, so there is nothing to
+  audit: setting `IsAuditEnabled` through the API returns success but the value stays false (tried
+  2026-11-20). This is the one exception to "audit every column on a form".
+- They are in the solution through their tables, which are included with all subcomponents (no separate
+  column rows in `solutioncomponents`).
 - Formulas (logical names):
 
 | # | Table | Display name | Formula |
 |---|---|---|---|
 | 1 | Bank Statement Line | Unallocated Amount | `Decimal(lzw_amount) - Decimal(lzw_allocatedamount)` |
-| 2 | Finance Transaction | Actual Cost | `If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
-| 3 | Finance Transaction | Partner Share | `If(Value(lzw_sharetype) = 859130001, lzw_actualcost * 0.5, Value(lzw_sharetype) = 859130002, lzw_actualcost, 0)` |
-| 4 | Finance Transaction | My Cost | `lzw_actualcost - lzw_partnershare` |
+| 2 | Finance Transaction | Reconciliation Difference | `Decimal(lzw_amount) - If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
+| 3 | Finance Transaction | Partner Share | `If(Value(lzw_sharetype) = 859130001, Decimal(lzw_amount) * 0.5, Value(lzw_sharetype) = 859130002, Decimal(lzw_amount), 0)` |
+| 4 | Finance Transaction | My Cost | `Decimal(lzw_amount) - lzw_partnershare` |
 | 5 | Finance Asset | Net Cost | `Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)` |
+
+### Amount instead of Estimated Amount (2026-11-20)
+- Finance Transaction holds the **actual** income and expenses, and the owner wants real-time reporting. The
+  costs were based on the Actual Amount rollup, which has a value only after a match is confirmed (weeks
+  after the purchase) and then only after the rollup job or `recalc.py`.
+- So the entered amount is the real amount: **Estimated Amount** (`lzw_estimatedamount`) was recreated as
+  **Amount** (`lzw_amount`, Currency, positive, audited), and Partner Share and My Cost now use it. Recreated
+  rather than renamed so the logical name matches the display name. Only one row existed (Broadband, copied).
+- **Actual Cost** (`lzw_actualcost`) was replaced by **Reconciliation Difference**, which shows what the bank
+  has not yet confirmed. The bank stays the check, not the source of the amount.
+- Estimated transactions (Payment Type Estimated) get their Amount overwritten with the bank figure when
+  they are reconciled.
+- At the owner's request both old columns were deleted after backups outside the repo (definition, and the
+  values of Estimated Amount). Nothing depended on them. The owner chose to delete Estimated Amount before the
+  updated web page was deployed, so the live page fails until the new `web/index.html` reaches `main`.
 
 ### Reconciliation
 - **Confidence threshold 0.95** (owner, 2026-11-15). AI matches at or above it are auto-confirmed, the
@@ -92,6 +123,69 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - Each row runs inside a scope. A failure leaves the row unprocessed and the loop continues.
 - The flow sets the row currency to AUD explicitly, because new rows otherwise take the base currency.
 
+### Planned Transactions (Appointment and Recurring Appointment)
+- Appointments are repurposed as planned payments. The tables are renamed **Planned Transaction(s)**
+  (Appointment) and **Recurring Transaction(s)** (Recurring Appointment), environment-wide, and sit under
+  Capture in the Finance Tracker app. Amount and Payment Type came from an older solution.
+- The old lookups (Financial Account, Transaction Category) pointed at the old tables, so **new lookups**
+  were added: Paid From (Bank Account) and Finance Category (Finance Category). "Finance Category", not
+  "Category", because Appointment has an OOTB Category column.
+- **On 2026-11-19 the owner asked for these deletions** (an exception to the no-delete rule): the four old
+  lookup columns (removed from forms and views first; their relationship maps are system maps and went
+  with the relationships), and the 1,823 planned-transaction appointments dated before 2026-11-19. 20 past
+  appointments without an Amount were kept. Deleting all instances of the ended "Car Loan" series also
+  removed the series itself. Backups of the deleted values were kept outside the repo.
+- **Processed** (Yes/No, default No) exists on both tables. The flow only reads and sets it on Appointment.
+  Leave it No on the series: the platform copies series values to new instances.
+- **Sign convention:** Amount on the series is positive = expense, negative = income (the reverse of the
+  bank). The old data used negative = money out, so the open series were flipped on 2026-11-19 (the
+  platform carried the change to their open instances). Appointments were not patched directly.
+- **Updating a series rewrites all its open instances** (past and future), tested on Netflix: 21 open
+  instances took the new amount, the 3 completed ones kept the old one. Completed and cancelled
+  appointments are read-only. A series edit may also reset Processed on its open instances, which is why
+  the flow checks for an existing transaction before creating one.
+- The flow runs daily at 6 AM Brisbane and takes open or scheduled appointments with Processed = No and
+  Start before tomorrow (Brisbane). Each gets a Finance Transaction: Description and Payee = Subject, Date =
+  Start (Brisbane), Type = Income if Amount < 0 else Expense, Amount = abs(Amount), Share Type =
+  Mine, Source = Recurring (new option 859130003), Source Row ID = appointment ID, currency = the
+  appointment's currency (AUD if it has none). The flow then sets Processed = Yes. A failed appointment
+  stays No, is retried next run, and the run ends Failed.
+
+### Bills with a varying amount or date (2026-11-19)
+- A planned amount is only a plan: the actual comes from the matched bank line (Actual Amount rollup).
+  So varying bills get an estimate, flagged with Payment Type = Estimated, and the flow sets Needs Details =
+  Yes on those so open estimates are visible.
+- Regular bills use a series at the average amount on the typical debit day. Irregular bills (water: periods
+  of 1 and 3 months) use one-off appointments from each invoice, which arrives about a month before it is due.
+- "Utility (Electricity/Gas)" was every 4 weeks on Thursday at $117.49, which matched neither the dates
+  (debits on the 23rd to 26th) nor the amounts. It is now monthly on the 24th from 24 Dec 2026 at $140.55,
+  Estimated. Its open instance on 19 Nov was removed when the pattern changed, and the Oct bill ($122.22,
+  due 24 Nov) is a one-off appointment. The series' previous values were backed up outside the repo.
+- Exact-match reconciliation can never match an estimate, so estimated transactions match on payee,
+  account and a 7-day window, at any amount (rule in `CLAUDE.md`).
+
+### Owner's recurring list (2026-11-19)
+- The owner's list is the source of truth for series. Six existing series were updated (the old salary
+  series was renamed "Salary"), six were created. Pattern changes start from 19 Nov 2026, so each series'
+  open instances were regenerated from that date. The list gave no day for Salary, so its 5th was kept.
+- Bank Account "Manual" in the list is not an account: those series have no Paid From, so their
+  transactions get Needs Details = Yes.
+- Of the 27 old open series not on the list, the owner kept three car series, reshaped as Car Servicing,
+  Car Insurance and Roadside Assist (Car Roadside Assistance merged into it) and Car Registration, and
+  asked to delete the other 24 and the 59 cancelled series with an Amount. All were backed up outside the
+  repo first. Deleting a series also deletes its instances.
+- The list's description column went into the appointment Description, and the flow appends it to the
+  transaction Notes. Descriptions are kept out of this repo because some name people.
+
+### Lookups on series instances (2026-11-19)
+- Earlier notes said custom columns are copied from a series to its instances. That holds for Amount,
+  Payment Type, Description and currency, but not for the new lookups Paid From and Finance Category: after
+  setting them on all 15 series, every open instance stayed empty, including instances generated afterwards.
+- Patching the instances would not last (the platform keeps generating new ones), so the flow reads both
+  lookups from the series when the instance has none. A one-off appointment keeps its own values.
+- Categories chosen for the 15 series are in `CLAUDE.md`. Debatable choices: Mobile as Utilities, Super
+  Duolingo as Subscriptions (not Education), Car Registration as Transport.
+
 ### Currency
 - The base currency was NZD at build time. The owner has since changed it to AUD (verified 2026-11-15).
 - On 2026-11-15, at the owner's request, CNY and CAD were added and every exchange rate was set from the
@@ -100,6 +194,7 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   Source: https://www.rba.gov.au/statistics/frequency/exchange-rates.html
 - Rates are not updated automatically. A row keeps the rate it was saved with.
 - The platform added `transactioncurrency` and `account` to the solution as references only.
+- The GitHub secrets and Claude Code GitHub Actions are set up (owner, 2026-11-19).
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the
@@ -129,9 +224,8 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
 - **AMEX format.** The `.xlsx` export has one row per line with purchase date, processed date, card member,
   foreign amount, a unique reference, and a balance summary. The `.csv` has the same rows without balances.
   The PDF has neither the reference nor the processed date. So: xlsx, then csv, then PDF.
-- **Wise** stays one account. Lines keep the currency of the balance they came from. Refunded lines are
-  imported as Ignored. The CSV repeats an ID when one purchase is split across two balances, so the
-  duplicate key is ID plus source currency.
+- **Wise** stays one account. (Superseded on 2026-11-20, see "First statement import": lines are in AUD,
+  refunded rows and conversions are not imported, and a split purchase is one line.)
 - **Categories.** "Dining and Drinks" was renamed "Dining" and "Drinks" split out (bars and liquor stores).
   New: Tobacco and Vape, Personal Care, Sport and Fitness, Home and Hardware, Pets, Tax, Fines, Legal and
   Professional, Cash Withdrawal, Reimbursement (income), and six children of Transport.
@@ -151,6 +245,32 @@ verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks,
   read during reconciliation.
 - JPY, SGD, THB and IDR were added with the Reserve Bank of Australia rates for 13 Nov 2026
   (108.81, 0.8753, 23.02, 12385 per 1 AUD).
+
+### First statement import (2026-11-20)
+- Imported from `Statements/Inbox`: ANZ Plus Everyday, Flex Saver and Growth Saver (Apr to Oct 2026, PDF),
+  AMEX (14 Mar to 13 Nov 2026, xlsx), Kogan Money Black Card (to 19 Oct 2026, PDF) and Wise (CSV, 9 Jan to
+  1 Nov 2026). 34 Bank Statements, 1,729 lines, all Unmatched. Dataverse had no lines before.
+- **Checks before writing:** every ANZ running balance, each statement's opening against the previous
+  closing, the Kogan account summary, the AMEX "Transaction Summary" sheet, filename against period, and
+  no gaps between statements. All passed. All 102 transfers between the three ANZ accounts pair up by
+  receipt number (useful for reconciliation).
+- **Kogan** keeps the period printed on the statement, even the first one (20 Sep 2025 to 19 Jul 2026):
+  Kogan does not issue a statement for a period without transactions (owner).
+- **AMEX supplementary card:** the owner wanted a column to mark these lines. The existing **Card Holder**
+  already holds the card member on every AMEX line, so no new column was added (3 lines in this import).
+- **Wise** (owner's rules, replacing the 2026-11-15 design): amounts in AUD so the account reads like the
+  others; refunded rows (14) and conversions (11) are not imported; a split purchase (8) is one line.
+  Rows paid from a foreign balance (33) get an estimated AUD amount from the last AUD conversion into that
+  currency. CAD had no AUD conversion in the file, so the rate of an AUD-funded CAD card payment was used;
+  SGD had no AUD rate at all, so a cross rate (SGD to USD conversion, then USD per AUD) of 0.907 SGD per
+  AUD was used (the Reserve Bank rate in Dataverse is 0.8753). The rate and its source are in each line's
+  Notes. The statement "Wise 2026" covers the whole year and is topped up from a newer export each month.
+- **Dates:** ANZ Transaction Date is the Effective Date when the statement shows one (345 of 668 lines),
+  Posted Date the listed date. Wise dates are as exported (the export is probably UTC).
+- **No Exchange Rate column.** Original Amount / Amount gives it; the Wise estimate rate is in Notes.
+- Parsing, checks and the import are in `statement_parse.py`, `wise_lines.py` and `statement_import.py`
+  so the monthly imports repeat the same rules. `statement_compare.py` now fills the new line columns and
+  the Original Currency, and uses Bank Reference to keep identical lines apart.
 
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet

@@ -194,11 +194,15 @@ def main():
         for it in items:
             check(('Title="Banks"' if it == "BANKS" else f'Entity="{it}"') in sm[0]["sitemapxml"], f"site map item {it}")
 
-    fl = dv.get("workflows?$select=workflowid,statecode,clientdata&$filter=category eq 5 and name eq 'Finance Tracker - Import Keep Rows'")["value"]
-    check(bool(fl) and fl[0]["workflowid"].lower() in in_sol, "flow in solution")
-    check(bool(fl) and fl[0]["statecode"] == 0, "flow is OFF")
-    check(bool(fl) and "shared_googlesheet" in fl[0]["clientdata"] and "lzw_FinanceTrackerGoogleSheets" in fl[0]["clientdata"],
-          "flow uses the Google Sheets connection reference")
+    # The Keep flow was deleted on 2026-11-20 (the web page replaced the Keep Inbox sheet).
+    fl = dv.get("workflows?$select=workflowid&$filter=category eq 5 and name eq 'Finance Tracker - Import Keep Rows'")["value"]
+    check(not fl, "Keep flow is deleted")
+    fl = dv.get("workflows?$select=workflowid,statecode,clientdata&$filter=category eq 5 and "
+                "name eq 'Scheduled: Create Finance Transactions from Planned Transactions'")["value"]
+    check(bool(fl) and fl[0]["workflowid"].lower() in in_sol, "Planned Transactions flow in solution")
+    check(bool(fl) and fl[0]["statecode"] == 1, "Planned Transactions flow is ON")
+    check(bool(fl) and "lzw_FinanceTrackerDataverse" in fl[0]["clientdata"],
+          "Planned Transactions flow uses the Dataverse connection reference")
     ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid,defaultvalue&$filter=schemaname eq 'lzw_KeepInboxSheetId'")["value"]
     check(bool(ev) and ev[0]["environmentvariabledefinitionid"].lower() in in_sol and not ev[0].get("defaultvalue"),
           "environment variable lzw_KeepInboxSheetId (empty) in solution")
@@ -216,7 +220,8 @@ def main():
             "Statements, Assets and Setup. Setup > Banks opens Account with the Banks view.",
             "- Power Apps grid control with editing enabled as the default grid for `lzw_reconciliationmatch` "
             "(applies to all of its views, so Match Status can be changed inline in Proposed Matches).",
-            "- Cloud flow \"Finance Tracker - Import Keep Rows\" (created off).",
+            "- Cloud flow \"Scheduled: Create Finance Transactions from Planned Transactions\" (on). The Keep "
+            "flow \"Finance Tracker - Import Keep Rows\" was deleted on 2026-11-20.",
             "- Environment variable `lzw_KeepInboxSheetId` (text, no value).",
             "- Connection references `lzw_FinanceTrackerDataverse` (Microsoft Dataverse) and "
             "`lzw_FinanceTrackerGoogleSheets` (Google Sheets, standard connector).",

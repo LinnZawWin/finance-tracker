@@ -27,7 +27,7 @@ DEFAULT_COLS = {
                                ("lzw_runningbalance", 120), ("lzw_posteddate", 110), ("lzw_cardholder", 130),
                                ("lzw_ispending", 90)], ("lzw_transactiondate", True)),
     "lzw_financetransaction": ([("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 150),
-                                ("lzw_estimatedamount", 120), ("lzw_paidfrom", 150), ("lzw_category", 150),
+                                ("lzw_amount", 120), ("lzw_mycost", 110), ("lzw_paidfrom", 150), ("lzw_category", 150),
                                 ("lzw_sharetype", 150), ("lzw_reconciliationstatus", 140)], ("lzw_transactiondate", True)),
     "lzw_reconciliationmatch": ([("lzw_name", 110), ("lzw_bankstatementline", 260), ("lzw_financetransaction", 240),
                                  ("lzw_allocatedamount", 120), ("lzw_matchstatus", 120), ("lzw_matchmethod", 120),
@@ -59,7 +59,7 @@ VIEWS = {
         ("Last 30 Days", ACTIVE + cond("lzw_transactiondate", "last-x-days", 30), None, None),
         ("By Project", ACTIVE + cond("lzw_project", "not-null"),
          [("lzw_project", 170), ("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 150),
-          ("lzw_estimatedamount", 120), ("lzw_category", 150), ("lzw_sharetype", 150)], ("lzw_project", False)),
+          ("lzw_amount", 120), ("lzw_mycost", 110), ("lzw_category", 150), ("lzw_sharetype", 150)], ("lzw_project", False)),
     ],
     BSL: [
         ("Unmatched Lines", ACTIVE + '<filter type="or">' + cond("lzw_status", "eq", O) + cond("lzw_status", "eq", O + 1)
@@ -114,10 +114,11 @@ FORMS = {
         ("Notes", ["lzw_notes"]),
     ]), ("Matches", [("subgrid", "Reconciliation Matches", RM, "lzw_reconciliationmatch_BankStatementLine")])],
     FT: [("General", [
-        ("Transaction", ["lzw_name", "lzw_transactiondate", "lzw_type", "lzw_payee", "lzw_estimatedamount",
-                         "lzw_paidfrom", "lzw_category", "lzw_project", "lzw_sharetype", "lzw_needsdetails"]),
-        ("Actuals", ["lzw_actualamount", "lzw_actualcost", "lzw_partnershare", "lzw_mycost",
-                     "lzw_reconciliationstatus", "lzw_source", "lzw_sourcerowid", "transactioncurrencyid", "ownerid"]),
+        ("Transaction", ["lzw_name", "lzw_transactiondate", "lzw_type", "lzw_payee", "lzw_amount",
+                         "lzw_paidfrom", "lzw_category", "lzw_project", "lzw_sharetype", "lzw_partnershare",
+                         "lzw_mycost", "lzw_needsdetails"]),
+        ("Reconciliation", ["lzw_actualamount", "lzw_reconciliationdifference", "lzw_reconciliationstatus",
+                            "lzw_source", "lzw_sourcerowid", "transactioncurrencyid", "ownerid"]),
         ("Notes", ["lzw_notes"]),
     ]), ("Matches and Assets", [
         ("subgrid", "Reconciliation Matches", RM, "lzw_reconciliationmatch_FinanceTransaction"),
@@ -155,7 +156,7 @@ FORMS = {
 }
 
 SITEMAP = [
-    ("Capture", [FT]),
+    ("Capture", [FT, "appointment", "recurringappointmentmaster"]),  # Planned / Recurring Transactions
     ("Reconcile", [BSL, RM]),
     ("Statements", ["lzw_bankstatement", "lzw_bankaccount"]),
     ("Assets", [FA, "lzw_financeassetlink"]),
@@ -369,7 +370,7 @@ def sitemap_xml(view_ids):
                 subs += (f'<SubArea Id="lzw_ft_banks" Url="{url}" Icon="/_imgs/imagestrips/transparent_spacer.gif">'
                          '<Titles><Title LCID="1033" Title="Banks" /></Titles></SubArea>')
             else:
-                subs += f'<SubArea Id="lzw_ft_{it[4:]}" Entity="{it}" />'
+                subs += f'<SubArea Id="lzw_ft_{it.removeprefix("lzw_")}" Entity="{it}" />'
         groups += (f'<Group Id="lzw_ft_{title.lower()}"><Titles><Title LCID="1033" Title="{title}" /></Titles>{subs}</Group>')
     return ('<SiteMap IntroducedVersion="7.0.0.0"><Area Id="lzw_ft_area" ShowGroups="true">'
             f'<Titles><Title LCID="1033" Title="Finance Tracker" /></Titles>{groups}</Area></SiteMap>')

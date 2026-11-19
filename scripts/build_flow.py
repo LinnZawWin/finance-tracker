@@ -1,5 +1,6 @@
 """Phase 2d: environment variable, connection references and the Keep import cloud flow (created OFF)."""
 import json
+import sys
 
 import dv
 import spec
@@ -67,7 +68,7 @@ def definition(sets):
         "item/lzw_name": f"@{col('Description')}",
         "item/lzw_transactiondate": f"@{col('Date')}",
         "item/lzw_payee": f"@{col('Merchant')}",
-        "item/lzw_estimatedamount": f"@if(isFloat({amount}), float({amount}), null)",
+        "item/lzw_amount": f"@if(isFloat({amount}), float({amount}), null)",
         "item/lzw_sharetype": f"@if(equals({flag}, 'AA'), {O + 2}, if(equals({flag}, 'A'), {O + 1}, {O}))",
         "item/lzw_type": O,            # Expense
         "item/lzw_source": O,          # Keep
@@ -203,4 +204,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # Retired on 2026-11-20: the web page replaced the Keep Inbox sheet and this flow was deleted.
+    # The module stays because build_recurring_flow.py uses its helpers (action, TZ, DV_API, CR_DV).
+    if "--recreate" not in sys.argv:
+        raise SystemExit("The Keep flow is retired. Pass --recreate only if the owner asks for it back.")
     main()

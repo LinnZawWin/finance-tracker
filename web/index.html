@@ -41,11 +41,12 @@
   .rc-item .meta { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
   .rc-item .amt, .pair .amt { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; text-align:right; }
   .amt.in { color:var(--ok); }
-  .pair { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center; padding:8px 10px; border:1px solid var(--line);
+  .pair { display:grid; grid-template-columns:auto 1fr 1fr auto; gap:10px; align-items:center; padding:8px 10px; border:1px solid var(--line);
     border-radius:8px; margin-bottom:6px; }
   .pair > div { display:grid; grid-template-columns:1fr auto; gap:6px; min-width:0; }
   .pair .meta { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
-  @media (max-width:760px) { .pair { grid-template-columns:1fr; } }
+  .pair.sel { border-color:var(--accent); }
+  @media (max-width:760px) { .pair { grid-template-columns:auto 1fr; } .pair > div { grid-column:2; } }
   #rcBar { position:sticky; bottom:0; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px;
     display:flex; flex-wrap:wrap; gap:12px; align-items:center; box-shadow:0 -2px 8px rgba(0,0,0,.06); }
   #rcBar .tot { font-variant-numeric:tabular-nums; }
@@ -166,7 +167,13 @@
       <div class="card">
         <h2>Suggested pairs</h2>
         <p class="muted" style="margin-top:0">Same amount (or the same account and payee for an estimated amount), the same account when the
-          transaction has one, within 7 days. Check each pair, then confirm it.</p>
+          transaction has one, within 7 days. Pairs are ticked unless another row is an equally good candidate (shown in red):
+          check those yourself. Untick any pair that is wrong, then confirm the ticked ones.</p>
+        <div class="row-actions" style="margin:0 0 10px">
+          <button id="btnRcConfirmSel" class="primary" disabled>Confirm selected</button>
+          <button id="btnRcPairsAll" class="small">Tick all</button>
+          <button id="btnRcPairsNone" class="small">Untick all</button>
+        </div>
         <div id="rcPairs"></div>
       </div>
 
@@ -641,7 +648,15 @@ $("btnBulkSave").onclick = async () => {
 const LINE_STATUS = { unmatched: OPT, partly: OPT + 1, matched: OPT + 2 };
 const RECON = { unreconciled: OPT, partly: OPT + 1, reconciled: OPT + 2 };
 const MATCH = { rule: OPT, manual: OPT + 3, confirmed: OPT + 1 };
-const rc = { fts: [], lines: [], selFt: new Set(), selLn: new Set(), loaded: false };
+const rc = { fts: [], lines: [], selFt: new Set(), selLn: new Set(), loaded: false, pairs: [], pairPick: new Map() };
+// A suggested pair is ticked unless another row is an equally good candidate; the user's own tick wins.
+const pairKey = c => `${c.t.lzw_financetransactionid}|${c.l.lzw_bankstatementlineid}`;
+const pairTicked = c => rc.pairPick.has(pairKey(c)) ? rc.pairPick.get(pairKey(c)) : !c.others;
+function rcPairCount() {
+  const n = rc.pairs.filter(pairTicked).length;
+  $("btnRcConfirmSel").textContent = n ? `Confirm selected (${n})` : "Confirm selected";
+  $("btnRcConfirmSel").disabled = !n;
+}
 const cents = v => Math.round(Number(v || 0) * 100);
 const ftExpected = t => (t.lzw_type === OPT + 1 ? 1 : -1) * Number(t.lzw_amount || 0);      // signed like the bank
 const ftRemaining = t => (cents(ftExpected(t)) - cents(t.lzw_actualamount)) / 100;
@@ -736,13 +751,20 @@ function rcRender() {
   const { fts, lines } = rcVisible();
   const pairs = rcSuggest(fts, lines);
   const box = $("rcPairs");
-  box.replaceChildren(...pairs.map(c => el("div", { class: "pair" },
-    el("div", {}, ...rcFtNode(c.t, true)),
-    el("div", {}, ...rcLnNode(c.l)),
-    el("div", { class: "btns" },
-      el("span", { class: c.others ? "flag" : "muted", text: c.reason + (c.days ? `, ${c.days} d` : "") + (c.others ? `, ${c.others} other candidate(s)` : "") }),
-      el("button", { class: "small primary", text: "Confirm", onclick: e => rcMatch([c.t], [c.l], MATCH.rule, true, e.target) })))));
+  rc.pairs = pairs;
+  box.replaceChildren(...pairs.map(c => {
+    const cb = el("input", { type: "checkbox" }); cb.checked = pairTicked(c);
+    const row = el("div", { class: "pair" + (cb.checked ? " sel" : "") }, cb,
+      el("div", {}, ...rcFtNode(c.t, true)),
+      el("div", {}, ...rcLnNode(c.l)),
+      el("div", { class: "btns" },
+        el("span", { class: c.others ? "flag" : "muted", text: c.reason + (c.days ? `, ${c.days} d` : "") + (c.others ? `, ${c.others} other candidate(s)` : "") }),
+        el("button", { class: "small", text: "Confirm", onclick: e => rcMatch([c.t], [c.l], MATCH.rule, true, e.target) })));
+    cb.onchange = () => { rc.pairPick.set(pairKey(c), cb.checked); row.classList.toggle("sel", cb.checked); rcPairCount(); };
+    return row;
+  }));
   if (!pairs.length) box.append(el("p", { class: "muted", text: "No suggested pairs." }));
+  rcPairCount();
   const item = (row, id, sel, nodes) => {
     const cb = el("input", { type: "checkbox" }); cb.checked = sel.has(id);
     const d = el("div", { class: "rc-item" + (cb.checked ? " sel" : ""), onclick: e => {
@@ -778,8 +800,10 @@ async function rollup(set, id, field) {
 
 // One transaction with one or more lines (each line gives its remaining amount), or one line split over
 // several transactions (each gets its remaining amount, the last one takes what is left of the line).
-async function rcMatch(fts, lines, method, full, btn) {
+// Returns true when it worked. reload = false leaves the reload to the caller (Confirm selected).
+async function rcMatch(fts, lines, method, full, btn, reload = true) {
   if (btn) btn.disabled = true;
+  let ok = false;
   try {
     const allocs = [];
     if (fts.length === 1) {
@@ -813,10 +837,28 @@ async function rcMatch(fts, lines, method, full, btn) {
       await api("PATCH", `lzw_financetransactions(${t.lzw_financetransactionid})?$select=lzw_financetransactionid`, body);
     }
     for (const a of allocs) { rc.selFt.delete(a.t.lzw_financetransactionid); rc.selLn.delete(a.l.lzw_bankstatementlineid); }
-    toast(`Matched ${allocs.length}`);
+    ok = true;
+    if (reload) toast(`Matched ${allocs.length}`);
   } catch (e) { toast(e.message, true); }
-  await rcLoad().catch(e => toast(e.message, true));
+  if (reload) await rcLoad().catch(e => toast(e.message, true));
+  return ok;
 }
+$("btnRcConfirmSel").onclick = async () => {
+  const todo = rc.pairs.filter(pairTicked), btn = $("btnRcConfirmSel");
+  btn.disabled = true;
+  let done = 0;
+  for (const c of todo) {
+    btn.textContent = `Confirming ${done + 1} of ${todo.length}...`;
+    if (!(await rcMatch([c.t], [c.l], MATCH.rule, true, null, false))) break;      // stop at the first error
+    done++;
+  }
+  if (done === todo.length) toast(`Confirmed ${done} pairs`);
+  else toast(`Stopped after ${done} of ${todo.length} pairs. The rest are still listed.`, true);
+  await rcLoad().catch(e => toast(e.message, true));
+};
+const tickAll = on => () => { for (const c of rc.pairs) rc.pairPick.set(pairKey(c), on); rcRender(); };
+$("btnRcPairsAll").onclick = tickAll(true);
+$("btnRcPairsNone").onclick = tickAll(false);
 $("btnRcMatch").onclick = () => {
   const fts = rc.fts.filter(t => rc.selFt.has(t.lzw_financetransactionid)), lines = rc.lines.filter(l => rc.selLn.has(l.lzw_bankstatementlineid));
   rcMatch(fts, lines, MATCH.manual, $("rcFull").checked, $("btnRcMatch"));

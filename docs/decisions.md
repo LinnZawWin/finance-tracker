@@ -106,6 +106,14 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - **Reconcile on every inbox run** (owner, 2026-11-21). Processing the statement inbox always ends with
   reconciling the open bank lines against the Finance Transactions as far as the rules allow, so the owner
   does not have to ask for it separately.
+- `scripts/reconcile.py` does it. Transfers need a transfer description on **both** lines, and a line that
+  fits a Bank Rule is never a transfer (otherwise "PAYMENT TO ANZ ACCESS ADVANTAGE", an expense, paired
+  with a Wise top-up of the same amount). Identical top-ups on the same day are paired either way. A pair
+  with a rival is not written as a Proposed match: the web page would create a second match when the owner
+  confirms it there, so it is listed in the session instead.
+- Creating Finance Transactions from Bank Rules is left to the owner's go-ahead (pending): it would add
+  hundreds of rows, including months where Keep notes (with their own category and project) were never
+  entered.
 
 ### Views, forms and app
 - Each table's default "Active" view was given useful columns and is the view used by form subgrids.

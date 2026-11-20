@@ -179,6 +179,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
 | `statement_import.py <out> [--apply]` | Create the Bank Statements and only the missing lines (dry run by default) |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
+| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival), then a count of lines a Bank Rule fits (dry run by default) |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
@@ -237,6 +238,8 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
     every Unmatched or Partly Matched bank line (all accounts, not only the new ones) against the Finance
     Transactions as far as the Reconciliation rules below allow, without being asked. Confirm what the
     rules allow, leave the rest Proposed or unmatched, and report what was matched, proposed and left.
+    Use `python scripts/reconcile.py` (dry run; `--verbose` lists the transfer pairs), check the pairs, then
+    `--apply` and `python scripts/recalc.py --days 1`.
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
 "Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX
@@ -365,7 +368,7 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 |---|---|---|
 | 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
 | 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
-| 3 | Reconcile the imported statement lines (all Unmatched). Done as part of every inbox run from 2026-11-21 (statement import rule 10) | Claude |
+| 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 152 transfer pairs and 3 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (483 lines fit a rule) | Owner |
 | 4 | Import the next Wise export (owner uploads a full-year file each month) into "Wise 2026" | Claude |
 | 5 | Test `recalc.py` and the formula columns with real rows (statement lines now exist) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

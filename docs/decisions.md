@@ -103,6 +103,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 ### Reconciliation
 - **Confidence threshold 0.95** (owner, 2026-11-15). AI matches at or above it are auto-confirmed, the
   rest are Proposed. Confidence is stored with 2 decimal places.
+- **Reconcile on every inbox run** (owner, 2026-11-21). Processing the statement inbox always ends with
+  reconciling the open bank lines against the Finance Transactions as far as the rules allow, so the owner
+  does not have to ask for it separately.
 
 ### Views, forms and app
 - Each table's default "Active" view was given useful columns and is the view used by form subgrids.

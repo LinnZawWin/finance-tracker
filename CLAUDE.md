@@ -166,8 +166,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   **Last Rate Date**. A cash spend: Amount (AUD) = foreign amount / Last Rate, rounded to cents; Original
   Amount = the foreign amount, Original Currency = the account currency, Paid From = the cash account, Notes
   say which rate was used. When that currency is bought or received, update Last Rate and Last Rate Date.
-  CNY Cash: 7.306889 from 29 Oct 2026 (CNY 70 cash for an AUD 9.58 eSIM), set at the owner's request
-  although the 30 Oct conversion (4.666043) is later.
+  CNY Cash: 4.666043 from 30 Oct 2026. Cash a friend pays back is valued at Last Rate, not at the bill.
 - Finance Transaction **Original Amount** (positive) and **Original Currency**: the foreign amount. Fill them
   for Wise rows too (the CSV / Keep columns Currency and Original Amount). Amount is always AUD and the row
   currency stays AUD.
@@ -175,8 +174,9 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   goes into): my own money moving between accounts. My Cost is 0. A friend paying back their share of a
   bill in foreign cash: the bill keeps only my share (Amount and Original Amount less theirs) and their
   share is a Transfer from the paying account to the cash account; the one bank line is split between the
-  two (Method Manual). When the friend pays back the whole bill, the bill itself becomes the Transfer and
-  the "Cash Received" note is not entered again.
+  two (Method Manual). When the cash (at Last Rate) is worth more than my share, the bill becomes Income
+  of the difference: eSIM AUD 9.58 paid back as CNY 70 = AUD 15.00 gives a Transfer of 15.00 and Income
+  5.42 on the bill; the AMEX line is split -15.00 / +5.42.
 - Trip notes are entered through Claude Code, not the web page (it has no foreign or Transfer support yet).
   Note lines: `Description Amount [A|AA] [Account] [Project]` or `Description|Merchant|AUD|Share|Account|
   Project|Currency|Original Amount`; `CNY100` = a foreign amount; a date line may end with the project
@@ -304,7 +304,9 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
      fits; otherwise Proposed. After confirming, set Needs Details = No (the bank line gives the actual).
 2. **Then AI** for the rest.
 3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
-4. **Never auto-confirm** when more than one candidate shares the same amount, date and account.
+4. **Never auto-confirm** when more than one candidate shares the same amount, date and account, unless
+   the transaction's Payee equals the line's merchant (for example "Qrcode7684 - Alipay") and no other
+   open line with that merchant fits: then it is not ambiguous. `reconcile.py` applies this.
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 

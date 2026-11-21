@@ -11,7 +11,9 @@ Run after every statement inbox import (statement import rule 10). Steps:
 2. Transaction to line, the same candidates as the web page's Reconcile tab: same remaining amount (or the
    same original amount; for an estimated transaction the same account and a shared payee word), the same
    account when the transaction has Paid From, within 7 days, best first, each row used once. A pair is
-   confirmed only when neither side has another candidate of the same kind (rule 4); the others are listed
+   confirmed only when neither side has another candidate of the same kind (rule 4). A transaction whose
+   Payee equals the line's merchant ("Qrcode7684 - Alipay") ranks first, and only another same-merchant
+   pair counts as a rival for it. The others are listed
    for the owner and nothing is written for them. Confirmed: a Reconciliation Match (Method Rule, Confirmed),
    the line Matched or Partly Matched, the transaction Reconciled or Partly Reconciled; an estimated
    transaction that is reconciled gets Amount = the bank figure and Needs Details = No.
@@ -170,8 +172,11 @@ for t in fts:
             reason, score = "estimated, same payee", 0.7
         else:
             continue
-        pc.append(dict(t=t, l=l, reason=reason, days=days,
-                       score=score + (0.1 if t["_lzw_paidfrom_value"] else 0) - days * 0.03))
+        # The note's Payee equal to the line's merchant (for example "Qrcode7684 - Alipay") singles the line out.
+        merchant = bool(t["lzw_payee"]) and t["lzw_payee"].strip().lower() in {
+            (l["lzw_merchant"] or "").strip().lower(), (l["lzw_name"] or "").strip().lower()}
+        pc.append(dict(t=t, l=l, reason=reason, days=days, merchant=merchant,
+                       score=score + (0.1 if t["_lzw_paidfrom_value"] else 0) + (0.2 if merchant else 0) - days * 0.03))
 pc.sort(key=lambda c: c["score"], reverse=True)
 uT, uL, confirm, propose = set(), set(), [], []
 for c in pc:
@@ -180,12 +185,14 @@ for c in pc:
         continue
     uT.add(tid)
     uL.add(lid)
-    c["others"] = sum(1 for o in pc if o is not c and o["reason"] == c["reason"] and (o["t"] is c["t"] or o["l"] is c["l"]))
+    # A same-merchant pair only has a rival in another same-merchant pair.
+    c["others"] = sum(1 for o in pc if o is not c and o["reason"] == c["reason"] and (o["t"] is c["t"] or o["l"] is c["l"])
+                      and (o["merchant"] or not c["merchant"]))
     (propose if c["others"] else confirm).append(c)
 print(f"2. Transaction to line: {len(confirm)} to confirm, {len(propose)} for the owner "
       f"(another candidate), {len(fts) - len(confirm) - len(propose)} transactions with no candidate")
 for c in confirm:
-    print("   confirm:", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}, {c['days']} d]")
+    print("   confirm:", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}{', same merchant' if c['merchant'] else ''}, {c['days']} d]")
 for c in propose:
     print("   owner:  ", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}, {c['days']} d, +{c['others']} other]")
 for t in fts:
@@ -213,7 +220,8 @@ for c in confirm:
             "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({t['lzw_financetransactionid']})",
             "lzw_allocatedamount": l["rem"] / 100, "lzw_matchmethod": RULE, "lzw_matchstatus": CONFIRMED,
             "lzw_confirmedon": now, "lzw_confidence": round(max(0.0, min(1.0, c["score"])), 2),
-            "lzw_aireasoning": f"reconcile.py: {c['reason']}, {c['days']} day(s) apart, no other candidate"}
+            "lzw_aireasoning": f"reconcile.py: {c['reason']}{', same merchant' if c['merchant'] else ''}, "
+                               f"{c['days']} day(s) apart, no other candidate"}
     if l["_transactioncurrencyid_value"]:
         body["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({l['_transactioncurrencyid_value']})"
     dv.post("lzw_reconciliationmatchs", body)

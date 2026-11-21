@@ -126,7 +126,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 | Utility (Electricity/Gas) | 140.55 | Monthly, 24th (from 24 Dec 2026) | Flex | Estimated | Utilities |
 | YouTube Premium | 6.60 | Monthly, 25th | Flex | Auto | Subscriptions |
 | Claude Pro | 34.00 | Monthly, 4th | AMEX | Auto | Subscriptions |
-| Crunchyroll | 3.33 | Monthly, 21st | Flex | Manual | Subscriptions |
+| Crunchyroll | 6.66 | Monthly, 21st | Flex | Manual | Subscriptions |
 | Water Use | 130.00 | Every 3 months, 1st (from 1 Jan 2027) | Flex | Estimated | Utilities |
 | Spotify Premium | 34.23 | Every 6 months, 28th (Jan, Jul) | Flex | Manual | Subscriptions |
 | Mobile | 154.00 | Yearly, 12 Aug | AMEX | Manual | Utilities |

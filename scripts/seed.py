@@ -22,7 +22,9 @@ EXPENSE = ["Groceries", "Dining", "Drinks", "Smoking", "Transport", "Rent and Ho
            "Home and Hardware", "Clothing", "Gifts", "Travel", "Education", "Pets", "Tax", "Fines",
            "Legal and Professional", "Cash Withdrawal", "Fees and Charges", "Support Payments", "Other Expense"]
 INCOME = ["Salary and Contract Income", "Interest", "Refund", "Reimbursement", "Asset Sale", "Other Income"]
-CHILDREN = {"Transport": ["Public Transport", "Rideshare and Taxi", "Fuel", "Tolls", "Parking", "Car Maintenance"]}
+BOTH = ["Gambling"]  # Category Type Both: wins and losses net against each other
+CHILDREN = {"Transport": ["Public Transport", "Rideshare and Taxi", "Fuel", "Tolls", "Parking", "Car Maintenance"],
+            "Travel": ["Accommodation"]}
 
 
 def find(entity_set, id_col, name_col, name):
@@ -64,7 +66,7 @@ def main():
             "lzw_shortname": short, "lzw_accounttype": O + ACCOUNT_TYPES.index(typ),
             "lzw_BankId@odata.bind": f"/accounts({bank_ids[bank]})"})
         print("created" if created else "exists ", "bank account", name)
-    for i, names in enumerate((EXPENSE, INCOME)):
+    for i, names in enumerate((EXPENSE, INCOME, BOTH)):
         for name in names:
             _, created = ensure("lzw_financecategories", "lzw_financecategoryid", "lzw_name", name,
                                 {"lzw_categorytype": O + i})

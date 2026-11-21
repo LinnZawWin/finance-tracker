@@ -212,8 +212,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - At the owner's request every existing Finance Transaction (157, all but the two Transfers) got a Category by
   keyword rules on the description, and Claude now sets one on every transaction it creates (table in
   CLAUDE.md). Drinks covers all beverages, not only alcohol; Dining covers meals and snacks; anything bought
-  "for <someone>" is Gifts. Suggested new categories, not created: Gambling (pokies win and loss, now Other
-  Income / Entertainment) and Accommodation under Travel.
+  "for <someone>" is Gifts. At the owner's request two categories were added (in `seed.py`): Gambling,
+  Category Type Both, so wins and losses net against each other, and Accommodation under Travel.
 
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,

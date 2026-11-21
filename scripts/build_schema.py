@@ -52,6 +52,7 @@ def base(col, typ):
         "SchemaName": spec.schema_name(col["name"], col.get("schema")),
         "DisplayName": label(col["name"]),
         "RequiredLevel": {"Value": "ApplicationRequired" if col.get("required") else "None"},
+        "IsAuditEnabled": {"Value": True, "CanBeChanged": True, "ManagedPropertyLogicalName": "canmodifyauditsettings"},
     }
     if col.get("description"):
         b["Description"] = label(col["description"])
@@ -92,7 +93,7 @@ def column_body(col, share_type_id):
         return {**base(col, "MoneyAttributeMetadata"), "Precision": 2, "PrecisionSource": 0,
                 "MinValue": -spec.BIG if col["signed"] else 0, "MaxValue": spec.BIG}
     if k == "decimal":
-        return {**base(col, "DecimalAttributeMetadata"), "Precision": 2, "MinValue": col["lo"], "MaxValue": col["hi"]}
+        return {**base(col, "DecimalAttributeMetadata"), "Precision": col.get("places", 2), "MinValue": col["lo"], "MaxValue": col["hi"]}
     if k == "int":
         return {**base(col, "IntegerAttributeMetadata"), "Format": "None", "MinValue": -2147483648, "MaxValue": 2147483647}
     if k == "file":
@@ -114,6 +115,19 @@ def existing_attr(tl, cl):
         if e.code == 404:
             return None
         raise
+
+
+def ensure_options(tl, cl, options):
+    """Add the spec options a local choice column is missing. Options not in the spec are left alone."""
+    a = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')/"
+               "Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$expand=OptionSet($select=Options)")
+    have = {o["Value"] for o in a["OptionSet"]["Options"]}
+    for i, o in enumerate(options):
+        if spec.OPT + i in have:
+            continue
+        dv.post("InsertOptionValue", {"EntityLogicalName": tl, "AttributeLogicalName": cl, "Value": spec.OPT + i,
+                                      "Label": label(o), "SolutionUniqueName": dv.SOLUTION})
+        note(f"{tl}.{cl}: added option {o} ({spec.OPT + i})")
 
 
 def ensure_table(t):
@@ -147,6 +161,8 @@ def ensure_column(tl, col, share_type_id):
     if ex:
         if ex["AttributeType"] != EXPECTED_TYPE[col["kind"]]:
             note(f"TYPE MISMATCH {tl}.{cl}: exists as {ex['AttributeType']}, expected {EXPECTED_TYPE[col['kind']]} (left as is)")
+        elif col["kind"] == "choice":
+            ensure_options(tl, cl, col["options"])
         return
     try:
         dv.post(f"EntityDefinitions(LogicalName='{tl}')/Attributes", column_body(col, share_type_id), solution=True,
@@ -178,6 +194,7 @@ def ensure_lookup(t, col):
             "SchemaName": spec.schema_name(col["name"], col.get("schema")),
             "DisplayName": label(col["name"]),
             "RequiredLevel": {"Value": "ApplicationRequired" if col["required"] else "None"},
+            "IsAuditEnabled": {"Value": True, "CanBeChanged": True, "ManagedPropertyLogicalName": "canmodifyauditsettings"},
         },
     }
     try:

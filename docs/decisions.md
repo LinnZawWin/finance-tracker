@@ -11,6 +11,8 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
 | 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
+| 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
+| 8 | China Yunnan Trip, 30 Oct to 1 Nov 2026: 7 Wise pairs left for the owner (same amount on the same day, but the note's merchant equals the line's merchant); one note fragment "ipay 1.29 CNY 6" not entered (fits the Wise line Qrcode3460 on 29 Oct) | Owner | Entered 2026-11-21. "Beer for four" and "Beer cans and snacks" are dated 31 Oct in the notes but 28 Oct on Wise |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -206,6 +208,26 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Rates are not updated automatically. A row keeps the rate it was saved with.
 - The platform added `transactioncurrency` and `account` to the solution as references only.
 - The GitHub secrets and Claude Code GitHub Actions are set up (owner, 2026-11-19).
+
+### Foreign cash (2026-11-21)
+- **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,
+  Account Currency CNY, Statements Imported = No), reused on every trip so the cash left over carries on.
+- **Last Rate on the Bank Account** (owner's choice over a rate history in statement lines): Last Rate
+  (`lzw_lastrate`, 6 places, units of the account currency per 1 AUD, as the platform's currency rates) and
+  Last Rate Date. A cash spend's AUD Amount = foreign amount / Last Rate. Update both whenever that currency
+  is bought or received. The CNY rate 4.666043 (= 249.26 / 53.42) came from the Wise payment "Beer for two"
+  on 30 Oct 2026, because the cash itself came from a friend paying their share of that bill.
+- **Original Amount and Original Currency on Finance Transaction** (positive, as Amount). Amount stays AUD,
+  so totals, shares and reconciliation are unchanged. Wise lines already carry the same pair.
+- **Type = Transfer** (859130002) with **Transfer To** (Bank Account): my own money moving between accounts,
+  out of Paid From and into Transfer To. Used when a friend pays back their share in foreign cash: the
+  shared bill keeps only my share, and the friend's share becomes a Transfer from the paying account to
+  the cash account. One bank line then matches both (split match, Method Manual).
+  Reconciliation Difference treats Transfer like Expense (money out of Paid From); My Cost is 0 for a
+  Transfer. Both formulas were updated in place (`build_formulas.py` now PUTs a changed formula).
+- Cash accounts have no statements, so cash spends stay Unreconciled, like the AUD Cash account.
+- The web page does not know Transfer or foreign amounts yet (the owner enters trip notes through Claude
+  Code for now). Its View list counts a Transfer as money out.
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the

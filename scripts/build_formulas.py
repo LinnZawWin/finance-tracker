@@ -5,7 +5,8 @@ Decimal, precision 2, SourceType 3, with the formula text from spec.py in Formul
 A formula column cannot be Currency, so currency inputs are wrapped in Decimal().
 
 Usage:
-  python build_formulas.py              create every rollup/formula column that is missing; report failures
+  python build_formulas.py              create every rollup/formula column that is missing, update formula
+                                        columns whose formula differs from spec.py; report failures
   python build_formulas.py --fallback   for rollups that still do not exist, create a plain column of the
                                         same type and name. Never applied to formula columns.
   python build_formulas.py --dump NAME  print the generated definition for one column logical name
@@ -149,6 +150,20 @@ def body_for(col, source_type=None, xaml=None):
     return b
 
 
+def update_formula(tl, cl, formula):
+    """Formula columns: replace the formula when it differs from spec.py (PUT of the whole attribute)."""
+    path = f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')"
+    a = dv.get(path + "/Microsoft.Dynamics.CRM.DecimalAttributeMetadata")
+    if a.get("FormulaDefinition") == formula:
+        print(f"exists {tl}.{cl}")
+        return
+    a = {k: v for k, v in a.items() if not k.startswith("@") or k == "@odata.type"}
+    a["@odata.type"] = "Microsoft.Dynamics.CRM.DecimalAttributeMetadata"
+    a["FormulaDefinition"] = formula
+    dv.call("PUT", path, a, solution=True, headers={"MSCRM.MergeLabels": "true"})
+    print(f"updated formula {tl}.{cl}")
+
+
 def main():
     fallback = "--fallback" in sys.argv
     only = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -165,7 +180,10 @@ def main():
             if only and cl not in only and f"{tl}.{cl}" not in only:
                 continue
             if dv.exists(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')?$select=LogicalName"):
-                print(f"exists {tl}.{cl}")
+                if col["kind"] == "calc":
+                    update_formula(tl, cl, col["formula"])
+                else:
+                    print(f"exists {tl}.{cl}")
                 continue
             if fallback and col["kind"] == "calc":
                 print(f"skipped {tl}.{cl}: formula columns have no plain fallback")

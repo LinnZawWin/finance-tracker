@@ -50,7 +50,7 @@ def describe(a, col):
     if k == "money":
         return "Currency, precision 2, " + ("signed" if col["signed"] else "0 or more")
     if k == "decimal":
-        return f"Decimal, 2 places, {col['lo']} to {col['hi']}"
+        return f"Decimal, {col.get('places', 2)} places, {col['lo']} to {col['hi']}"
     if k == "int":
         return "Whole number"
     if k == "file":

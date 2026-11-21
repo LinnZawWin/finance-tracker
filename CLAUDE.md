@@ -249,6 +249,7 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
 | `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
 | `lock.py [--release]` | The reconciliation lock: environment variable `lzw_ReconcileLock` ("<holder> <UTC time>", empty = free), taken with If-Match so only one session reconciles at a time; older than 60 minutes = abandoned. `--release` clears it after a crashed run |
+| `split_match.py <ft id> <line id>[=<amount>] ... [--apply]` | Link one Finance Transaction to several bank lines (split bill or refund, see "Split bills and refunds"): Method Manual, Confirmed; sets line and transaction status; holds the lock (dry run by default) |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
@@ -391,6 +392,22 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 
+### Split bills and refunds
+
+One Finance Transaction per bill, linked to **every** bank line involved: the charge, each friend's repayment
+and any refund. Its **Amount** is my share as the Notes work it out (the bill less what each friend paid, for
+example "419 - <friend> 60 - <friend> 60 - <friend> 60" = 239; "<friend> 26 from 53.80" = 26 of a 53.80
+repayment belongs to this bill). The charge is allocated in full (negative), each repayment or refund with its
+amount (positive), so **Actual Amount** = what I really paid and **Reconciliation Difference** = 0 when
+everyone has paid. Until then the difference shows what is still owed. A repayment covering two bills is
+split between them (`line=amount`). No separate transactions for the friends' shares. `reconcile.py` does not
+find these (no line equals the Amount): after an import, look for open transactions whose Notes subtract
+amounts, find the "PAYMENT FROM" credits (Everyday) and refunds with those amounts within 14 days, check the
+dry run of `split_match.py`, then `--apply`. A friend paying back more than their share: the excess is Income
+(Reimbursement). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
+account). **Bill paid in cash, repaid by bank transfer**: link the repayments; the difference stays at the
+cash paid (it has no bank line), so the transaction stays Partly Reconciled.
+
 Bank Rules are for statement lines that have no Keep note behind them (rent, salary, interest, tolls, card
 fees, supermarkets). When such a line stays unmatched, the first rule whose Match Text fits its description
 supplies the payee, category and share type for a new Finance Transaction. A line that matches a Keep note
@@ -486,6 +503,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
+| 11 | Everyday lines from the 21 Nov export left open: ING Savings Booster +200.36 on 12 Nov against two transactions of 100.36 (11 and 12 Nov); a -150 payment on 17 Nov is on Everyday but the transaction "Transfer for Interlock Device Removal" says Flex; ATM -100 and -50 (16 Nov), three personal credits (17 and 19 Nov, one marked Duolingo) and an expense claim +107.06 (6 Nov) have no notes. Cash bills repaid by transfer: keep Partly Reconciled or mark Reconciled? | Owner |
 | 10 | `reconcile.py`: treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

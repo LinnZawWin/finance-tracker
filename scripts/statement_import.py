@@ -15,7 +15,9 @@ import statement_compare as sc
 
 LINES, APPLY = sys.argv[1], "--apply" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
-            "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise"}
+            "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
+            "NZGo": "ANZ NZ Go"}
+CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
 SRC = {"PDF": 2, "CSV": 1}
 sp = os.path.join(LINES, "_statements.json")
 stmts = json.load(open(sp)) if os.path.exists(sp) else []
@@ -24,11 +26,11 @@ for w in sorted(glob.glob(os.path.join(LINES, "Wise*.json"))):
     stmts.append(dict(file=os.path.basename(w)[:-5], account="Wise", kind="CSV", start=f"{year}-01-01",
                       end=f"{year}-12-31", opening=None, closing=None, wise_year=year))
 acc_id = {a["lzw_name"]: a["lzw_bankaccountid"] for a in dv.get_all("lzw_bankaccounts?$select=lzw_name")}
-aud = sc.currency_id("AUD")
 tot = {"new": 0, "existing": 0, "update": 0, "possible": 0}
 for s in stmts:
     acc = ACCOUNTS[s["account"]]
     aid = acc_id[acc]
+    cur = sc.currency_id(CURRENCY.get(s["account"], "AUD"))
     lines = json.load(open(os.path.join(LINES, s["file"] + ".json"), encoding="utf-8"))
     for l in lines:
         if s["account"] == "AMEX":
@@ -50,7 +52,7 @@ for s in stmts:
     body = {"lzw_name": name, "lzw_periodstart": s["start"], "lzw_periodend": s["end"],
             "lzw_sourcetype": sc.O + SRC[s["kind"]], "lzw_BankAccount@odata.bind": f"/lzw_bankaccounts({aid})",
             "lzw_importedon": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "transactioncurrencyid@odata.bind": f"/transactioncurrencies({aud})"}
+            "transactioncurrencyid@odata.bind": f"/transactioncurrencies({cur})"}
     if s["opening"] is not None:
         body["lzw_openingbalance"], body["lzw_closingbalance"] = s["opening"], s["closing"]
     if s["account"] == "Wise":
@@ -67,7 +69,7 @@ for s in stmts:
         dv.patch(f"lzw_bankstatementlines({row['id']})", {"lzw_name": line["description"][:500], "lzw_source": sc.O + 2})
     src = "PDF" if s["kind"] == "PDF" else "CSV"
     for line in res["new"]:
-        b = sc.line_body(line, aid, sid, src, aud)
+        b = sc.line_body(line, aid, sid, src, cur)
         key = b["lzw_duplicatekey"].replace("'", "''")
         done = lambda: bool(dv.get(f"lzw_bankstatementlines?$select=lzw_bankstatementlineid&$filter="
                                    f"_lzw_bankstatement_value eq {sid} and lzw_duplicatekey eq '{key}'")["value"])

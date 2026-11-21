@@ -337,6 +337,21 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   so the monthly imports repeat the same rules. `statement_compare.py` now fills the new line columns and
   the Original Currency, and uses Bank Reference to keep identical lines apart.
 
+### ANZ New Zealand account (2026-11-21)
+- The owner's ANZ NZ "Go" account was added as Bank Account "ANZ NZ Go" (short name `NZGo`, Account Type
+  Everyday, Account Currency NZD) under a new bank "ANZ New Zealand" (separate from ANZ Australia).
+- Owner's choice: the account is kept in NZD. Its Bank Statements and lines have row currency NZD and
+  Amount, Opening / Closing / Running Balance in NZD exactly as printed, so the balance check holds.
+  Original Amount and Original Currency repeat the NZD amount, so matching on the original amount works.
+  Dataverse converts to AUD through the NZD exchange rate (base columns). The alternative, converting
+  to AUD at one rate, was rejected because the balances would no longer match the statement.
+- The PDF gives no text in pypdf layout mode, so `statement_parse.py` reads it with pdfplumber
+  (the label words come out joined, for example "Statementperiod"). Transaction Date is the "Orig date"
+  under Visa lines; Posted Date is the statement date. Checks: running balance per line, withdrawal and
+  deposit totals, closing balance.
+- First statement: 1 to 30 Oct 2026, 19 lines, NZD 35.36 to 104.28. Those lines (12 to 21 Oct, NZ trip)
+  are mostly before the first Finance Transaction (21 Oct), so they stay unmatched until the notes are entered.
+
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet
   and the hourly flow.

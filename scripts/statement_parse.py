@@ -2,7 +2,7 @@
 
     python scripts/statement_parse.py "<inbox folder>" <out folder>
 
-Handles ANZ Plus PDFs, Kogan Money PDFs and AMEX .xlsx (Wise: scripts/wise_lines.py). For each file it writes
+Handles ANZ Plus PDFs, ANZ New Zealand PDFs ("<account number>_Statement_<date>.pdf", NZD), Kogan Money PDFs and AMEX .xlsx (Wise: scripts/wise_lines.py). For each file it writes
 <out>/<file name>.json (the lines, in the format statement_compare.py reads) and <out>/_statements.json
 (account, period, balances), and prints the checks: ANZ running balance line by line, Kogan and AMEX summary
 totals, filename against the period, gaps or overlaps between consecutive statements, and opening balance
@@ -104,6 +104,61 @@ def anz(path):
     if not lines and abs(opening - closing) > .005:
         issue(f, "no lines but opening != closing")
     return dict(file=f, account="x" + fm[4], kind="PDF", start=ps.isoformat(), end=pe.isoformat(),
+                opening=opening, closing=closing, lines=lines)
+
+
+def anz_nz(path):
+    """ANZ Bank New Zealand statement. Amounts are NZD; Original Amount / Currency repeat them in NZD."""
+    f = os.path.basename(path)
+    t = pdf_text(path)
+    if not re.search(r"Statement ?period", t):  # pypdf layout mode returns nothing for these PDFs
+        import pdfplumber
+        with pdfplumber.open(path) as pdf:
+            t = "\n".join(pg.extract_text(layout=True) or "" for pg in pdf.pages)
+    m = re.search(r"Statement ?period\s*(\d+) (\w{3}) (\d{4}) - (\d+) (\w{3}) (\d{4})", t)
+    ps = dt.date(int(m[3]), MON[m[2]], int(m[1]))
+    pe = dt.date(int(m[6]), MON[m[5]], int(m[4]))
+    acct = re.search(r"Account ?number\s*(\d\d-\d{4}-\d{7}-\d\d)", t)[1]
+    if not f.startswith(acct):
+        issue(f, f"filename != account {acct}")
+    opening = money(re.search(r"Opening ?balance\s+([\d,]+\.\d\d)", t)[1])
+    tm = re.search(r"Totals ?at ?end ?of ?period\s+\$([\d,.]+)\s+\$([\d,.]+)\s+\$([\d,.]+)", t)
+    out_total, in_total, closing = money(tm[1]), money(tm[2]), money(tm[3])
+    lines, cur = [], None
+    for ln in t.splitlines():
+        mm = re.match(r"^\s*(\d\d) (\w{3})\s+(.+?)\s+([\d,]+\.\d\d)\s+([\d,]+\.\d\d)\s*$", ln)
+        if mm and mm[2] in MON:
+            mo = MON[mm[2]]
+            d = dt.date(pe.year if mo <= pe.month else pe.year - 1, mo, int(mm[1]))
+            cur = {"date": d.isoformat(), "description": re.sub(r"\s+", " ", mm[3].strip()),
+                   "amt": money(mm[4]), "balance": money(mm[5])}
+            lines.append(cur)
+            continue
+        om = re.search(r"Orig date (\d\d/\d\d/\d{4})", ln)
+        if om and cur:
+            cur["orig"] = om[1]
+        cur = None if not om else cur
+    prev = opening
+    for i, l in enumerate(lines, 1):
+        l["line_number"] = i
+        l["posted_date"] = l["date"]
+        if l.get("orig"):
+            l["date"] = dt.datetime.strptime(l.pop("orig"), "%d/%m/%Y").date().isoformat()
+        l["description"] = re.sub(r" ?\d{6}\*+ ?\d{4} C$", "", l["description"])  # card number on EFTPOS lines
+        diff = round(l["balance"] - prev, 2)
+        if abs(abs(diff) - l["amt"]) > 0.005:
+            issue(f, f"balance chain break at {l['date']} {l['description'][:40]}")
+            diff = -l["amt"]
+        l["amount"] = diff
+        l["original_amount"], l["original_currency"] = diff, "NZD"
+        prev = l["balance"]
+        l.pop("amt")
+    if round(sum(-l["amount"] for l in lines if l["amount"] < 0), 2) != out_total or \
+            round(sum(l["amount"] for l in lines if l["amount"] > 0), 2) != in_total:
+        issue(f, "withdrawal or deposit total differs from the statement")
+    if lines and abs(lines[-1]["balance"] - closing) > 0.005:
+        issue(f, f"last balance {lines[-1]['balance']} != closing {closing}")
+    return dict(file=f, account="NZGo", kind="PDF", start=ps.isoformat(), end=pe.isoformat(),
                 opening=opening, closing=closing, lines=lines)
 
 
@@ -211,6 +266,8 @@ for p in sorted(glob.glob(INBOX + "*")):
     b = os.path.basename(p)
     if b.startswith("ANZ") and b.endswith(".pdf"):
         stmts.append(anz(p))
+    elif re.match(r"\d\d-\d{4}-\d{7}-\d\d_Statement_.*\.pdf$", b):
+        stmts.append(anz_nz(p))
     elif b.startswith("Kogan") and b.endswith(".pdf"):
         stmts.append(kogan(p))
     elif b.startswith("AMEX") and b.endswith(".xlsx"):

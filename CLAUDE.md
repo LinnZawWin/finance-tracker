@@ -227,7 +227,7 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 ## Sign convention
 
 - Bank Statement Line **Amount** and Reconciliation Match **Allocated Amount** are signed like the bank:
-  negative = money out.
+  negative = money out. They are AUD except on "ANZ NZ Go", which is NZD (row currency NZD).
 - Finance Transaction **Estimated Amount** is positive.
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
@@ -243,7 +243,7 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 | `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` (the retired Keep flow) only provides helpers now |
 | `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
-| `statement_parse.py <inbox> <out>` | Parse and check ANZ, Kogan and AMEX files into lines files (no writes) |
+| `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
 | `statement_import.py <out> [--apply]` | Create the Bank Statements and only the missing lines (dry run by default) |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
@@ -316,6 +316,12 @@ Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Tr
 the AMEX Reference, the Wise ID. **Line Number** is the order in the statement, oldest first.
 AMEX `.xlsx` totals: the "Transaction Summary" sheet (Previous Balance, Payments & Credits, Charges &
 Adjustments, Statement Balance); Opening / Closing Balance are stored signed like the bank (owed = negative).
+
+ANZ New Zealand (2026-11-21): Bank Account "ANZ NZ Go" (`NZGo`, bank "ANZ New Zealand", Account Currency
+NZD). PDF named `<account number>_Statement_<date>.pdf`; pypdf gives no text, so the parser uses pdfplumber.
+The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
+Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
+statement date. `statement_import.py` sets the currency per account (`CURRENCY`). First statement: Oct 2026.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
@@ -448,7 +454,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21) | Owner, then Claude |
+| 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 

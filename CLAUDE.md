@@ -247,7 +247,7 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
 | `statement_import.py <out> [--apply]` | Create the Bank Statements and only the missing lines (dry run by default) |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
-| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival), then a count of lines a Bank Rule fits (dry run by default) |
+| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default) |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
@@ -289,6 +289,13 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
 2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
    AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
    ANZ Plus offers PDF only.
+   **Interim exports** (mid-cycle) are imported as their own Bank Statement, named after the file with its
+   export date, and the next export or the final statement creates only the lines they lack:
+   ANZ Plus "Transaction List" PDF (rename to `ANZ Plus <account> <generated date> - <file name>`; period from
+   "Commencing" to the day before it was generated) and the AMEX current-cycle `.xlsx` (rename to
+   `AMEX <export date>.xlsx`; its summary has "Total Balance" instead of "Statement Balance", the period ends
+   on the export date). `statement_import.py --include-possible` also creates the possible duplicates, after
+   they are checked to be separate charges.
    When one statement is supplied in several formats, import one and move all of them.
 3. **Check the totals** against the statement's opening and closing balance before writing anything.
 4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
@@ -355,7 +362,9 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
      fits; otherwise Proposed. After confirming, set Needs Details = No (the bank line gives the actual).
 2. **Then AI** for the rest.
 3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
-4. **Never auto-confirm** when more than one candidate shares the same amount, date and account, unless
+4. **Never auto-confirm** a pair whose transaction Payee shares no word with the line (spaces in the line
+   ignored, so "Didi" fits "DIDIMOBILITY"): for example "Maru Grill House" against "ZLR*KINN IMM".
+   **Never auto-confirm** when more than one candidate shares the same amount, date and account, unless
    the transaction's Payee equals the line's merchant (for example "Qrcode7684 - Alipay") and no other
    open line with that merchant fits: then it is not ambiguous. `reconcile.py` applies this.
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
@@ -449,13 +458,14 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 |---|---|---|
 | 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
 | 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
-| 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 152 transfer pairs and 3 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (483 lines fit a rule) | Owner |
+| 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 155 transfer pairs and 23 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (478 lines fit a rule) | Owner |
 | 4 | Import the next Wise export (after the Thailand trip) into "Wise 2026". Check that the hand-entered 28 Oct "Money added" +100 (`TRANSFER-2457903123`) is recognised, not duplicated | Claude |
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
+| 11 | Two sessions ran `reconcile.py --apply` at the same time on 2026-11-21 and one wrote a wrong pair (undone). Run reconciliation from one session at a time | Owner |
 | 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

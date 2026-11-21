@@ -2,7 +2,9 @@
 
     python scripts/statement_parse.py "<inbox folder>" <out folder>
 
-Handles ANZ Plus PDFs, ANZ New Zealand PDFs ("<account number>_Statement_<date>.pdf", NZD), Kogan Money PDFs and AMEX .xlsx (Wise: scripts/wise_lines.py). For each file it writes
+Handles ANZ Plus PDFs (statements and "Transaction List" exports), ANZ New Zealand PDFs ("<account number>_Statement_<date>.pdf",
+NZD), Kogan Money PDFs and AMEX .xlsx (statements, or the current cycle's export named "AMEX <export date>.xlsx")
+(Wise: scripts/wise_lines.py). For each file it writes
 <out>/<file name>.json (the lines, in the format statement_compare.py reads) and <out>/_statements.json
 (account, period, balances), and prints the checks: ANZ running balance line by line, Kogan and AMEX summary
 totals, filename against the period, gaps or overlaps between consecutive statements, and opening balance
@@ -43,13 +45,20 @@ def anz(path):
     f = os.path.basename(path)
     t = pdf_text(path)
     m = re.search(r"(\d+) (\w+) (\d{4}) - (\d+) (\w+) (\d{4})", t)
-    ps = dt.date(int(m[3]), MON[m[2][:3]], int(m[1]))
-    pe = dt.date(int(m[6]), MON[m[5][:3]], int(m[4]))
+    if m:
+        ps = dt.date(int(m[3]), MON[m[2][:3]], int(m[1]))
+        pe = fdate = dt.date(int(m[6]), MON[m[5][:3]], int(m[4]))
+    else:  # "Transaction List": from "Commencing <date>" to the day before it was generated
+        cm = re.search(r"Commencing (\d+) (\w+) (\d{4})", t)
+        gm = re.search(r"generated on (\d+) (\w+) (\d{4})", t)
+        ps = dt.date(int(cm[3]), MON[cm[2][:3]], int(cm[1]))
+        fdate = dt.date(int(gm[3]), MON[gm[2][:3]], int(gm[1]))
+        pe = fdate - dt.timedelta(days=1)
     hm = re.search(r"\d{3} \d{3}\s+(\d{3} \d{3} \d{3})\s+(\$[\d,.]+)\s+(\$[\d,.]+)", t)
     acct, opening, closing = hm[1].replace(" ", ""), money(hm[2]), money(hm[3])
     fm = re.search(r"(\d{4})-(\d\d)-(\d\d) - .* x(\d{4})", f)
-    if dt.date(int(fm[1]), int(fm[2]), int(fm[3])) != pe:
-        issue(f, f"filename date != period end {pe}")
+    if dt.date(int(fm[1]), int(fm[2]), int(fm[3])) != fdate:
+        issue(f, f"filename date != period end {fdate}")
     if not acct.endswith(fm[4]):
         issue(f, f"filename x{fm[4]} != account {acct}")
     om = re.search(r"^\s+Opening Balance\s+(\$[\d,.]+)\s*$", t, re.M)
@@ -210,7 +219,10 @@ def amex(path):
     m = re.search(r"/ (\w{3}) (\d+), (\d{4}) to (\w{3}) (\d+), (\d{4})", rows[0][1])
     ps = dt.date(int(m[3]), MON[m[1]], int(m[2]))
     pe = dt.date(int(m[6]), MON[m[4]], int(m[5]))
-    if f[5:15] != pe.isoformat():
+    sm = {r[0]: r[1] for r in list(wb_rows(INBOX + f, "Transaction Summary")) if r and r[0] and r[1] is not None}
+    if "Statement Balance" not in sm:  # export of the current cycle: ends on the date in the file name
+        pe = dt.date.fromisoformat(f[5:15])
+    elif f[5:15] != pe.isoformat():
         issue(f, f"filename date != period end {pe}")
     hi = next(i for i, r in enumerate(rows) if r[0] == "Date")
     H = rows[hi]
@@ -238,8 +250,8 @@ def amex(path):
     refs = [l["bank_reference"] for l in lines if l["bank_reference"]]
     if len(refs) != len(set(refs)):
         issue(f, "duplicate Reference values inside the file")
-    sm = {r[0]: r[1] for r in list(wb_rows(INBOX + f, "Transaction Summary")) if r and r[0] and r[1] is not None}
-    opening, closing = -round(float(sm["Previous Balance"]), 2), -round(float(sm["Statement Balance"]), 2)
+    opening = -round(float(sm["Previous Balance"]), 2)
+    closing = -round(float(sm.get("Statement Balance", sm.get("Total Balance"))), 2)
     pay, chg = float(sm["Payments & Credits"]), float(sm["Charges & Adjustments"])
     scr = round(sum(l["amount"] for l in lines if l["amount"] > 0), 2)
     sdr = round(-sum(l["amount"] for l in lines if l["amount"] < 0), 2)

@@ -2,6 +2,7 @@
 
     python scripts/statement_import.py <lines folder>            # dry run: summary per statement
     python scripts/statement_import.py <lines folder> --apply    # write
+    add --include-possible to also create the lines flagged as possible duplicates (after checking them)
 
 Each statement is compared with the lines already in Dataverse (statement_compare.compare), so a re-run or
 a newer Wise export creates only the shortfall. A statement is matched by name and Bank Account.
@@ -13,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dv
 import statement_compare as sc
 
-LINES, APPLY = sys.argv[1], "--apply" in sys.argv
+LINES, APPLY, POSSIBLE = sys.argv[1], "--apply" in sys.argv, "--include-possible" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
             "NZGo": "ANZ NZ Go"}
@@ -45,6 +46,8 @@ for s in stmts:
           f"update={len(res['update'])} possible={len(res['possible'])}")
     for line, row in res["possible"]:
         print(f"    CHECK {line['date']} {line['amount']:.2f} {line['description']} vs {row['amount']} {row['description']}")
+    if POSSIBLE:
+        res["new"] += [line for line, _ in res["possible"]]
     if not APPLY or not (res["new"] or res["update"]):
         continue
     found = dv.get(f"lzw_bankstatements?$select=lzw_bankstatementid&$filter=lzw_name eq '{name.replace(chr(39), chr(39) * 2)}'"

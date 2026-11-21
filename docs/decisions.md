@@ -367,8 +367,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The load is my own money moving from AMEX to the card, so it is a transfer pair, not a Finance
   Transaction. `reconcile.py` did not pair it (the transfer rule found no counterpart), so it was paired by
   hand under the lock. Card 2486: AMEX -200.00 on 3 Nov with Load +200.00.
-- Open: cards 4481 and 7195 have no screenshots yet; three earlier AMEX SPECIAL.GIFT loads (12 Jun -250,
-  3 Jul -200, 9 Sep -200) are unmatched. They may be earlier cards that are used up.
+- Card 4481 (screenshots 22 Nov): load 200.00 on 9 Sep paired with AMEX -200.00 on 9 Sep; ALDI 24.69 and
+  Coles 16.34 confirmed by `reconcile.py`; the three ALDI lines of Sep and Oct have no notes yet. Balance 0.00.
+- Open: card 7195 has no screenshot yet; AMEX SPECIAL.GIFT loads 12 Jun -250 and 3 Jul -200 are unmatched.
+  They may be card 7195 or earlier cards that are used up.
 
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet

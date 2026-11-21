@@ -410,6 +410,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Trade-off: the confirmed pairs are no longer reviewed in a dry run first; the rules (single candidate,
   payee fits) are what keeps them safe, and the output lists every pair written.
 
+- **Split bills** (owner, 2026-11-21): one transaction per bill linked to the charge and every repayment or
+  refund, so Actual Amount is what was really paid and the matches list shows all the money involved. Chosen
+  over a separate Transfer or "Paid for Others" transaction per friend: fewer rows, and the bill reads as one
+  item. Applied to two shared dinners, two rideshare trips with refunds and one cash bill. `split_match.py`
+  does it; matching the Notes automatically is not built, because the Notes use nicknames and one repayment
+  can cover two bills.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

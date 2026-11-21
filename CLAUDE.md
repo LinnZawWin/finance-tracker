@@ -287,6 +287,10 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
   the rate of an AUD-funded card payment in that currency, then a cross rate through another currency's
   conversion. Notes say which rate was used. This applies to USD, NZD, THB, EUR, JPY, CAD and SGD balances.
 - A payment split across two balances (the CSV repeats its ID) is one line; Notes list the parts.
+- A transaction hidden in the Wise app is missing from the export: enter it by hand with Bank Reference
+  `TRANSFER-<transaction number>` (or the ID the CSV would give), so the next export finds it and does not
+  create it again. 28 Oct 2026 "Money added" +100 (TRANSFER-2457903123) was entered this way; check it
+  matches when the next export arrives.
 
 ## Reconciliation rules
 

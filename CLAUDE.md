@@ -392,6 +392,11 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
    **Never auto-confirm** when more than one candidate shares the same amount, date and account, unless
    the transaction's Payee equals the line's merchant (for example "Qrcode7684 - Alipay") and no other
    open line with that merchant fits: then it is not ambiguous. `reconcile.py` applies this.
+   Not rivals: a candidate whose payee does not fit (the first rule above would never confirm it), and
+   **totally identical rows**: transactions with the same account, amount, day, description and payee, and
+   lines with the same account, amount, day and description, are interchangeable and paired one each
+   (for example two "Beer jug" transactions and two identical karaoke bar lines on the same day).
+   Candidates are within 4 days, so the same weekly payment a week away is never a rival.
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 
@@ -531,7 +536,6 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
-| 10 | `reconcile.py`: treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

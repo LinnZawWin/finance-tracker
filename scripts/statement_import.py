@@ -7,6 +7,9 @@
 Each statement is compared with the lines already in Dataverse (statement_compare.compare), so a re-run or
 a newer Wise export creates only the shortfall. A statement is matched by name and Bank Account.
 Wise: every "Wise*.json" in the folder goes to the Bank Statement "Wise <year>" (1 Jan to 31 Dec).
+Mid-cycle exports (statement_parse.py marks them interim) create a placeholder Bank Statement whose Notes start
+with "Interim". The next export or the final statement whose period overlaps it updates that same record:
+name, period, balances, source type and notes. Its lines stay and only the missing ones are added.
 """
 import glob
 import sys, json, os, datetime as dt
@@ -20,6 +23,8 @@ ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037
             "NZGo": "ANZ NZ Go"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
 SRC = {"PDF": 2, "CSV": 1}
+INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
+           "next export or the statement arrives; balances are those of the export.")
 sp = os.path.join(LINES, "_statements.json")
 stmts = json.load(open(sp)) if os.path.exists(sp) else []
 for w in sorted(glob.glob(os.path.join(LINES, "Wise*.json"))):
@@ -48,16 +53,27 @@ for s in stmts:
         print(f"    CHECK {line['date']} {line['amount']:.2f} {line['description']} vs {row['amount']} {row['description']}")
     if POSSIBLE:
         res["new"] += [line for line, _ in res["possible"]]
-    if not APPLY or not (res["new"] or res["update"]):
-        continue
     found = dv.get(f"lzw_bankstatements?$select=lzw_bankstatementid&$filter=lzw_name eq '{name.replace(chr(39), chr(39) * 2)}'"
                    f" and _lzw_bankaccount_value eq {aid}")["value"]
+    placeholder = False
+    if not found:  # an interim placeholder for an overlapping period becomes this statement
+        found = dv.get(f"lzw_bankstatements?$select=lzw_bankstatementid,lzw_name&$filter=_lzw_bankaccount_value eq {aid}"
+                       f" and startswith(lzw_notes,'Interim') and lzw_periodstart le {s['end']} and lzw_periodend ge {s['start']}")["value"]
+        if len(found) > 1:
+            print(f"    SKIPPED: {len(found)} interim placeholders overlap this period: {[x['lzw_name'] for x in found]}")
+            continue
+        placeholder = bool(found)
+        if found:
+            print(f"    updates the placeholder \"{found[0]['lzw_name']}\"")
+    if not APPLY or not (res["new"] or res["update"] or placeholder):
+        continue
     body = {"lzw_name": name, "lzw_periodstart": s["start"], "lzw_periodend": s["end"],
             "lzw_sourcetype": sc.O + SRC[s["kind"]], "lzw_BankAccount@odata.bind": f"/lzw_bankaccounts({aid})",
             "lzw_importedon": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "transactioncurrencyid@odata.bind": f"/transactioncurrencies({cur})"}
     if s["opening"] is not None:
         body["lzw_openingbalance"], body["lzw_closingbalance"] = s["opening"], s["closing"]
+    body["lzw_notes"] = INTERIM.format(file=s["file"], start=s["start"], end=s["end"]) if s.get("interim") else None
     if s["account"] == "Wise":
         body["lzw_notes"] = ("Wise transaction export (CSV). Refunded rows and conversions between balances are "
                              "not imported. Amounts are AUD; lines paid from a foreign balance have an estimated AUD "
@@ -65,6 +81,8 @@ for s in stmts:
                              "by a newer export each month.")
     if found:
         sid = found[0]["lzw_bankstatementid"]
+        if placeholder or s.get("interim"):
+            dv.patch(f"lzw_bankstatements({sid})", body)
     else:
         _, h = dv.call("POST", "lzw_bankstatements", body)
         sid = h.get("OData-EntityId", h.get("odata-entityid")).rsplit("(", 1)[1].rstrip(")")

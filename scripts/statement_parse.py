@@ -57,8 +57,8 @@ def anz(path):
     hm = re.search(r"\d{3} \d{3}\s+(\d{3} \d{3} \d{3})\s+(\$[\d,.]+)\s+(\$[\d,.]+)", t)
     acct, opening, closing = hm[1].replace(" ", ""), money(hm[2]), money(hm[3])
     fm = re.search(r"(\d{4})-(\d\d)-(\d\d) - .* x(\d{4})", f)
-    if dt.date(int(fm[1]), int(fm[2]), int(fm[3])) != fdate:
-        issue(f, f"filename date != period end {fdate}")
+    if dt.date(int(fm[1]), int(fm[2]), int(fm[3])) not in (fdate, pe):
+        issue(f, f"filename date != period end {pe}")
     if not acct.endswith(fm[4]):
         issue(f, f"filename x{fm[4]} != account {acct}")
     om = re.search(r"^\s+Opening Balance\s+(\$[\d,.]+)\s*$", t, re.M)
@@ -113,7 +113,7 @@ def anz(path):
     if not lines and abs(opening - closing) > .005:
         issue(f, "no lines but opening != closing")
     return dict(file=f, account="x" + fm[4], kind="PDF", start=ps.isoformat(), end=pe.isoformat(),
-                opening=opening, closing=closing, lines=lines)
+                opening=opening, closing=closing, lines=lines, interim=not m)
 
 
 def anz_nz(path):
@@ -128,7 +128,7 @@ def anz_nz(path):
     ps = dt.date(int(m[3]), MON[m[2]], int(m[1]))
     pe = dt.date(int(m[6]), MON[m[5]], int(m[4]))
     acct = re.search(r"Account ?number\s*(\d\d-\d{4}-\d{7}-\d\d)", t)[1]
-    if not f.startswith(acct):
+    if not f.startswith(acct) and not f.startswith("ANZ NZ Go "):
         issue(f, f"filename != account {acct}")
     opening = money(re.search(r"Opening ?balance\s+([\d,]+\.\d\d)", t)[1])
     tm = re.search(r"Totals ?at ?end ?of ?period\s+\$([\d,.]+)\s+\$([\d,.]+)\s+\$([\d,.]+)", t)
@@ -220,8 +220,9 @@ def amex(path):
     ps = dt.date(int(m[3]), MON[m[1]], int(m[2]))
     pe = dt.date(int(m[6]), MON[m[4]], int(m[5]))
     sm = {r[0]: r[1] for r in list(wb_rows(INBOX + f, "Transaction Summary")) if r and r[0] and r[1] is not None}
-    if "Statement Balance" not in sm:  # export of the current cycle: ends on the date in the file name
-        pe = dt.date.fromisoformat(f[5:15])
+    interim = "Statement Balance" not in sm
+    if interim:  # export of the current cycle: ends on the (last) date in the file name
+        pe = dt.date.fromisoformat(re.findall(r"\d{4}-\d\d-\d\d", f)[-1])
     elif f[5:15] != pe.isoformat():
         issue(f, f"filename date != period end {pe}")
     hi = next(i for i, r in enumerate(rows) if r[0] == "Date")
@@ -265,7 +266,7 @@ def amex(path):
     for i, l in enumerate(lines, 1):
         l["line_number"] = i
     return dict(file=f, account="AMEX", kind="CSV", start=ps.isoformat(), end=pe.isoformat(),
-                opening=opening, closing=closing, lines=lines)
+                opening=opening, closing=closing, lines=lines, interim=interim)
 
 
 def wb_rows(path, sheet):
@@ -278,7 +279,7 @@ for p in sorted(glob.glob(INBOX + "*")):
     b = os.path.basename(p)
     if b.startswith("ANZ") and b.endswith(".pdf"):
         stmts.append(anz(p))
-    elif re.match(r"\d\d-\d{4}-\d{7}-\d\d_Statement_.*\.pdf$", b):
+    elif re.match(r"\d\d-\d{4}-\d{7}-\d\d_Statement_.*\.pdf$", b) or (b.startswith("ANZ NZ Go ") and b.endswith(".pdf")):
         stmts.append(anz_nz(p))
     elif b.startswith("Kogan") and b.endswith(".pdf"):
         stmts.append(kogan(p))

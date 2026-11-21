@@ -20,7 +20,10 @@ Run after every statement inbox import (statement import rule 10). Steps:
    transaction that is reconciled gets Amount = the bank figure and Needs Details = No.
 3. Bank Rules (dry run only): how many of the lines left unmatched a rule would turn into new Finance
    Transactions. Creating them needs the owner's go-ahead.
-Then run scripts/recalc.py --days 1.
+With --apply it holds the Dataverse lock lzw_ReconcileLock (scripts/lock.py) from the first read to the last
+write, so two sessions cannot reconcile at the same time; a second run stops with exit code 2. It then
+recalculates the rollups of the rows it matched, so recalc.py is not needed afterwards.
+statement_import.py --apply runs this script with --apply after writing lines.
 """
 import datetime as dt
 import re
@@ -28,8 +31,18 @@ import sys
 from collections import defaultdict
 
 import dv
+import lock
+from recalc import rollup
 
 APPLY = "--apply" in sys.argv
+if APPLY:
+    import atexit
+    try:
+        _lock = lock.acquire("reconcile")
+    except lock.Busy as e:
+        print(f"NOT RUN: {e}. Wait for that run to finish (or run scripts/lock.py --release if it crashed).")
+        sys.exit(2)
+    atexit.register(lock.release, *_lock)
 UNMATCHED, PARTLY, MATCHED, TRANSFER = 859130000, 859130001, 859130002, 859130003
 UNREC, PARTREC, RECONCILED = 859130000, 859130001, 859130002
 RULE, CONFIRMED = 859130000, 859130001
@@ -235,4 +248,7 @@ for c in confirm:
     else:
         fb = {"lzw_reconciliationstatus": RECONCILED}      # as the web page's Confirm: the pair is the whole match
     dv.patch(f"lzw_financetransactions({t['lzw_financetransactionid']})", fb)
-print(f"written: {len(transfers)} transfer pairs, {len(confirm)} matches. Now run: python scripts/recalc.py --days 1")
+for c in confirm:
+    rollup("lzw_bankstatementlines", c["l"]["lzw_bankstatementlineid"], "lzw_allocatedamount")
+    rollup("lzw_financetransactions", c["t"]["lzw_financetransactionid"], "lzw_actualamount")
+print(f"written: {len(transfers)} transfer pairs, {len(confirm)} matches; rollups recalculated on the matched rows")

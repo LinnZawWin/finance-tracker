@@ -228,10 +228,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - **China Yunnan Trip, 28 Oct to 1 Nov 2026** (entered 2026-11-21): 36 transactions, all reconciled except
   the cash Tour Guide Tips. Same-amount ties on one Wise day were confirmed where the note's merchant
   equals the line's merchant and no other open line has that merchant and amount (owner asked to
-  reconcile). `reconcile.py` does not use this tie-break yet. The eSIM paid by AMEX was paid back as
-  CNY 70 cash, so the eSIM row is the Transfer (AMEX to CNY Cash) and the "Cash Received" note was not
-  entered separately. The owner asked for the CNY Last Rate to come from it (7.306889, 29 Oct), although
-  the 30 Oct rate (4.666043) is later and nearer the market rate.
+  reconcile). `reconcile.py` now applies this tie-break (rule 4 in CLAUDE.md); a replay of the trip with
+  every match removed confirmed all 33 pairs with none left for the owner.
+- The eSIM (AUD 9.58 on AMEX) was paid back as CNY 70 cash. Valued at Last Rate 4.666043 that is AUD 15.00,
+  so "Cash Received for eSIM from <friend>" is a Transfer of 15.00 (AMEX to CNY Cash) and the eSIM row is
+  Income 5.42 (owner's decision: the friend paid more than the cost). The AMEX line is split -15.00 / +5.42.
+  The rate was briefly set from the eSIM (70 / 9.58 = 7.306889) and set back at the owner's request.
 - The web page does not know Transfer or foreign amounts yet (the owner enters trip notes through Claude
   Code for now). Its View list counts a Transfer as money out.
 

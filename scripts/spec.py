@@ -39,8 +39,8 @@ def money(name, signed=False, **kw):
     return dict(kind="money", name=name, signed=signed, **kw)
 
 
-def dec(name, lo=-100000000000, hi=100000000000):
-    return dict(kind="decimal", name=name, lo=lo, hi=hi)
+def dec(name, lo=-100000000000, hi=100000000000, places=2, **kw):
+    return dict(kind="decimal", name=name, lo=lo, hi=hi, places=places, **kw)
 
 
 def integer(name):
@@ -70,6 +70,10 @@ TABLES = [
         lookup("Account Currency", "transactioncurrency"),
         s("Account Number", 50, description="As written on statements and in transfer descriptions; cards: last digits only"),
         yn("Statements Imported", True),
+        dec("Last Rate", 0, 1000000000, places=6,
+            description="Foreign cash: units of the account currency per 1 AUD from the last time this currency "
+                        "was bought or received. Converts cash spends to AUD"),
+        date("Last Rate Date", description="Date of the conversion that gave Last Rate"),
     ]),
     dict(schema="lzw_BankStatement", display="Bank Statement", plural="Bank Statements", primary="Name", columns=[
         lookup("Bank Account", "lzw_bankaccount", True),
@@ -112,12 +116,16 @@ TABLES = [
          primary="Description", columns=[
         dt("Transaction Date", required=True,
            description="Date and time. The time orders the transactions within a day"),
-        choice("Type", ["Expense", "Income"], "Expense"),
+        choice("Type", ["Expense", "Income", "Transfer"], "Expense"),
         s("Payee", 200),
         money("Amount", False, description="The real amount, positive for income and expenses. Type sets the "
                                            "direction. Estimates (Payment Type Estimated) are overwritten with the "
                                            "bank figure when reconciled"),
         lookup("Paid From", "lzw_bankaccount"),
+        lookup("Transfer To", "lzw_bankaccount"),
+        dec("Original Amount", 0, 100000000000,
+            description="Amount in the original (foreign) currency, positive. Amount is the AUD value"),
+        lookup("Original Currency", "transactioncurrency"),
         lookup("Category", "lzw_financecategory"),
         lookup("Project", "lzw_financeproject"),
         gchoice("Share Type", "Mine"),
@@ -127,11 +135,13 @@ TABLES = [
         rollup("Actual Amount", "money", "lzw_reconciliationmatch", "lzw_FinanceTransaction", "Sum",
                source="lzw_allocatedamount", flt=("lzw_matchstatus", "Equal", "Confirmed")),
         # Amount minus the bank's confirmed amount with its sign turned into a cost: 0 once fully reconciled.
-        calc("Reconciliation Difference", "Decimal(lzw_amount) - If(Value(lzw_type) = 859130000, "
-                                          "Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))"),
+        # Expense and Transfer take money out of Paid From; Income brings it in.
+        calc("Reconciliation Difference", "Decimal(lzw_amount) - If(Value(lzw_type) = 859130001, "
+                                          "Decimal(lzw_actualamount), Decimal(lzw_actualamount) * -1)"),
         calc("Partner Share", "If(Value(lzw_sharetype) = 859130001, Decimal(lzw_amount) * 0.5, "
                               "Value(lzw_sharetype) = 859130002, Decimal(lzw_amount), 0)"),
-        calc("My Cost", "Decimal(lzw_amount) - lzw_partnershare"),
+        # A transfer moves my own money between accounts: no cost.
+        calc("My Cost", "If(Value(lzw_type) = 859130002, 0, Decimal(lzw_amount) - lzw_partnershare)"),
         choice("Reconciliation Status", ["Unreconciled", "Partly Reconciled", "Reconciled"], "Unreconciled"),
         memo("Notes"),
     ]),

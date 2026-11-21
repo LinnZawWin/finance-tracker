@@ -77,6 +77,7 @@ Unmanaged solution `lzw_FinanceTracker` ("Finance Tracker", publisher prefix `lz
 Plus `account.lzw_isbank` and the Account view "Banks". Global choice `lzw_sharetype`:
 Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 Finance Transaction **Source**: Keep (859130000), Manual, Import, Recurring (859130003).
+Finance Transaction **Type**: Expense (859130000), Income, Transfer (859130002).
 
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
@@ -157,6 +158,29 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.
 
+## Foreign cash
+
+- One cash Bank Account per currency, reused across trips: "CNY Cash" (short name `CNYCash`, Account Type
+  Other, Account Currency CNY, no statements). Add others the same way (`JPYCash`, ...).
+- Bank Account **Last Rate** (`lzw_lastrate`, units of the account currency per 1 AUD, 6 places) and
+  **Last Rate Date**. A cash spend: Amount (AUD) = foreign amount / Last Rate, rounded to cents; Original
+  Amount = the foreign amount, Original Currency = the account currency, Paid From = the cash account, Notes
+  say which rate was used. When that currency is bought or received, update Last Rate and Last Rate Date.
+  CNY Cash: 4.666043 from 30 Oct 2026.
+- Finance Transaction **Original Amount** (positive) and **Original Currency**: the foreign amount. Fill them
+  for Wise rows too (the CSV / Keep columns Currency and Original Amount). Amount is always AUD and the row
+  currency stays AUD.
+- **Transfer** (Type = Transfer, Paid From = the account the money leaves, **Transfer To** = the account it
+  goes into): my own money moving between accounts. My Cost is 0. A friend paying back their share of a
+  bill in foreign cash: the bill keeps only my share (Amount and Original Amount less theirs) and their
+  share is a Transfer from the paying account to the cash account; the one bank line is split between the
+  two (Method Manual).
+- Trip notes are entered through Claude Code, not the web page (it has no foreign or Transfer support yet).
+  Note lines: `Description Amount [A|AA] [Account] [Project]` or `Description|Merchant|AUD|Share|Account|
+  Project|Currency|Original Amount`; `CNY100` = a foreign amount; a date line may end with the project
+  ("Yunnan Trip" = "China Yunnan Trip"). Fill Payee, Paid From and Original Amount from the matching Wise
+  line when the note has none, then run `reconcile.py`.
+
 ## Sign convention
 
 - Bank Statement Line **Amount** and Reconciliation Match **Allocated Amount** are signed like the bank:
@@ -164,6 +188,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - Finance Transaction **Estimated Amount** is positive.
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
+- Finance Transaction Original Amount is positive, like Amount. Transfer: money out of Paid From.
 - Planned and Recurring Transaction **Amount** is the opposite of the bank: positive = expense, negative =
   income. The open series were converted to this on 2026-11-19.
 
@@ -172,7 +197,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 | Script | Purpose |
 |---|---|
 | `dv.py`, `spec.py` | Web API helper and the schema specification |
-| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_flow.py` (the retired Keep flow) only provides helpers now |
+| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` (the retired Keep flow) only provides helpers now |
 | `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, Kogan and AMEX files into lines files (no writes) |
@@ -362,7 +387,7 @@ Columns K and L and the `__PowerAppsId__` column were used only by the deleted f
 
 ## Outstanding work
 
-Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-20:
+Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-21:
 
 | # | Item | Who |
 |---|---|---|
@@ -372,6 +397,8 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 | 4 | Import the next Wise export (owner uploads a full-year file each month) into "Wise 2026" | Claude |
 | 5 | Test `recalc.py` and the formula columns with real rows (statement lines now exist) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 7 | Web page support for foreign cash and Transfer (Dataverse side done 2026-11-21) | Owner to ask |
+| 8 | China Yunnan Trip 30 Oct to 1 Nov (entered 2026-11-21): 7 Wise pairs to confirm, the "ipay 1.29" fragment, two note dates that differ from Wise (decisions item 8) | Owner |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

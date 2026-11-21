@@ -95,7 +95,7 @@ FORMS = {
     "lzw_bankaccount": [("General", [
         ("Account", ["lzw_name", "lzw_shortname", "lzw_bankid", "lzw_accounttype", "lzw_accountcurrency",
                      "lzw_accountnumber"]),
-        ("Settings", ["lzw_statementsimported", "statecode", "ownerid"]),
+        ("Settings", ["lzw_statementsimported", "lzw_lastrate", "lzw_lastratedate", "statecode", "ownerid"]),
     ])],
     "lzw_bankstatement": [("General", [
         ("Statement", ["lzw_name", "lzw_bankaccount", "lzw_periodstart", "lzw_periodend", "lzw_sourcetype"]),
@@ -115,7 +115,7 @@ FORMS = {
     ]), ("Matches", [("subgrid", "Reconciliation Matches", RM, "lzw_reconciliationmatch_BankStatementLine")])],
     FT: [("General", [
         ("Transaction", ["lzw_name", "lzw_transactiondate", "lzw_type", "lzw_payee", "lzw_amount",
-                         "lzw_paidfrom", "lzw_category", "lzw_project", "lzw_sharetype", "lzw_partnershare",
+                         "lzw_originalamount", "lzw_originalcurrency", "lzw_paidfrom", "lzw_transferto", "lzw_category", "lzw_project", "lzw_sharetype", "lzw_partnershare",
                          "lzw_mycost", "lzw_needsdetails"]),
         ("Reconciliation", ["lzw_actualamount", "lzw_reconciliationdifference", "lzw_reconciliationstatus",
                             "lzw_source", "lzw_sourcerowid", "transactioncurrencyid", "ownerid"]),

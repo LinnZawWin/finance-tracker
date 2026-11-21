@@ -25,6 +25,8 @@ Entity set: `lzw_bankaccounts`. Primary column: `lzw_name` (Name, text 200).
 | Account Currency | `lzw_accountcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankaccount_AccountCurrency`, navigation property `lzw_AccountCurrency`) |  |
 | Account Number | `lzw_accountnumber` | Text (50) |  |
 | Statements Imported | `lzw_statementsimported` | Yes/No (default Yes) |  |
+| Last Rate | `lzw_lastrate` | Decimal, 6 places, 0 to 1000000000 |  |
+| Last Rate Date | `lzw_lastratedate` | Date Only |  |
 
 ### Bank Statement (`lzw_bankstatement`)
 
@@ -79,10 +81,13 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 | Display name | Logical name | Type | Required |
 |---|---|---|---|
 | Transaction Date | `lzw_transactiondate` | Date and time (user local) | Yes |
-| Type | `lzw_type` | Choice: Expense (859130000), Income (859130001); default Expense |  |
+| Type | `lzw_type` | Choice: Expense (859130000), Income (859130001), Transfer (859130002); default Expense |  |
 | Payee | `lzw_payee` | Text (200) |  |
 | Amount | `lzw_amount` | Currency, precision 2, 0 or more |  |
 | Paid From | `lzw_paidfrom` | Lookup to lzw_bankaccount, Restrict delete (relationship `lzw_financetransaction_PaidFrom`, navigation property `lzw_PaidFrom`) |  |
+| Transfer To | `lzw_transferto` | Lookup to lzw_bankaccount, Restrict delete (relationship `lzw_financetransaction_TransferTo`, navigation property `lzw_TransferTo`) |  |
+| Original Amount | `lzw_originalamount` | Decimal, 2 places, 0 to 100000000000 |  |
+| Original Currency | `lzw_originalcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_financetransaction_OriginalCurrency`, navigation property `lzw_OriginalCurrency`) |  |
 | Category | `lzw_category` | Lookup to lzw_financecategory, Restrict delete (relationship `lzw_financetransaction_Category`, navigation property `lzw_Category`) |  |
 | Project | `lzw_project` | Lookup to lzw_financeproject, Restrict delete (relationship `lzw_financetransaction_Project`, navigation property `lzw_Project`) |  |
 | Share Type | `lzw_sharetype` | Global choice lzw_sharetype; default Mine |  |
@@ -191,9 +196,9 @@ Power Fx formula columns (Decimal, 2 places), created by `build_formulas.py`. A 
 | Table | Column | Formula |
 |---|---|---|
 | `lzw_bankstatementline` | `lzw_unallocatedamount` | `Decimal(lzw_amount) - Decimal(lzw_allocatedamount)` |
-| `lzw_financetransaction` | `lzw_reconciliationdifference` | `Decimal(lzw_amount) - If(Value(lzw_type) = 859130000, Decimal(lzw_actualamount) * -1, Decimal(lzw_actualamount))` |
+| `lzw_financetransaction` | `lzw_reconciliationdifference` | `Decimal(lzw_amount) - If(Value(lzw_type) = 859130001, Decimal(lzw_actualamount), Decimal(lzw_actualamount) * -1)` |
 | `lzw_financetransaction` | `lzw_partnershare` | `If(Value(lzw_sharetype) = 859130001, Decimal(lzw_amount) * 0.5, Value(lzw_sharetype) = 859130002, Decimal(lzw_amount), 0)` |
-| `lzw_financetransaction` | `lzw_mycost` | `Decimal(lzw_amount) - lzw_partnershare` |
+| `lzw_financetransaction` | `lzw_mycost` | `If(Value(lzw_type) = 859130002, 0, Decimal(lzw_amount) - lzw_partnershare)` |
 | `lzw_financeasset` | `lzw_netcost` | `Decimal(lzw_totalcost) - Decimal(lzw_saleproceeds)` |
 
 ## Rollup notes

@@ -11,7 +11,8 @@ Run after every statement inbox import (statement import rule 10). Steps:
 2. Transaction to line, the same candidates as the web page's Reconcile tab: same remaining amount (or the
    same original amount; for an estimated transaction the same account and a shared payee word), the same
    account when the transaction has Paid From, within 7 days, best first, each row used once. A pair is
-   confirmed only when neither side has another candidate of the same kind (rule 4). A transaction whose
+   confirmed only when neither side has another candidate of the same kind (rule 4) and the transaction's
+   Payee, when it has one, shares a word with the line (spaces in the line ignored). A transaction whose
    Payee equals the line's merchant ("Qrcode7684 - Alipay") ranks first, and only another same-merchant
    pair counts as a rival for it. The others are listed
    for the owner and nothing is written for them. Confirmed: a Reconciliation Match (Method Rule, Confirmed),
@@ -188,13 +189,16 @@ for c in pc:
     # A same-merchant pair only has a rival in another same-merchant pair.
     c["others"] = sum(1 for o in pc if o is not c and o["reason"] == c["reason"] and (o["t"] is c["t"] or o["l"] is c["l"])
                       and (o["merchant"] or not c["merchant"]))
-    (propose if c["others"] else confirm).append(c)
+    # A Payee none of whose words appears in the line (spaces ignored: "Didi" in "DIDIMOBILITY") is a doubt.
+    flat = re.sub(r"[^a-z0-9]+", "", f"{c['l']['lzw_merchant']} {c['l']['lzw_name']}".lower())
+    c["payee_differs"] = bool(words(c["t"]["lzw_payee"])) and not any(w in flat for w in words(c["t"]["lzw_payee"]))
+    (propose if c["others"] or c["payee_differs"] else confirm).append(c)
 print(f"2. Transaction to line: {len(confirm)} to confirm, {len(propose)} for the owner "
       f"(another candidate), {len(fts) - len(confirm) - len(propose)} transactions with no candidate")
 for c in confirm:
     print("   confirm:", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}{', same merchant' if c['merchant'] else ''}, {c['days']} d]")
 for c in propose:
-    print("   owner:  ", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}, {c['days']} d, +{c['others']} other]")
+    print("   owner:  ", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}, {c['days']} d, " + (f"+{c['others']} other" if c["others"] else "payee differs") + "]")
 for t in fts:
     if t["lzw_financetransactionid"] not in uT:
         print("   none:   ", show_t(t))

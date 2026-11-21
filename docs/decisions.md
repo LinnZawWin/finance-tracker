@@ -379,6 +379,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   signed in to Azure, because `CLAUDE.md` then described only the device-code sign-in. `CLAUDE.md` now
   tells Claude to run and verify scripts itself.
 
+### Interim exports and the payee check (2026-11-21)
+- The inbox held two mid-cycle exports, not statements: an ANZ Plus Flex Saver "Transaction List" (31 Oct to
+  20 Nov, opening 1,529.61 = October closing, closing 148.27) and the AMEX current-cycle export (from 14 Nov,
+  Previous Balance 2,219.35 = the 13 Nov statement, Total Balance 3,165.74). Both are imported as their own
+  Bank Statement because the line comparison is per account and date range, so the final statement later
+  creates only what is missing. The cost: those lines stay under the interim statement.
+- One AMEX line (DiDi -15.24, 12 Nov, posted 14 Nov) was flagged as a possible duplicate of DiDi -11.22 in the
+  closed 13 Nov statement. Different amount and its own Reference, so it was created (`--include-possible`).
+- `reconcile.py` confirmed "Dinner Korean BBQ for All (Maru Grill House)" -239 against "ZLR*KINN IMM"
+  (same amount, 2 days, AMEX) although the note names another restaurant. A Payee that shares no word with
+  the line now sends the pair to the owner. The match was deleted and both rows reset.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

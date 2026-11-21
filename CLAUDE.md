@@ -392,6 +392,7 @@ Columns K and L and the `__PowerAppsId__` column were used only by the deleted f
 ## Outstanding work
 
 Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-21:
+Finance Transactions start on 24 Oct 2026 (notes entered back to that day); bank lines go back to March.
 
 | # | Item | Who |
 |---|---|---|

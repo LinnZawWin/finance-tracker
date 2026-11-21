@@ -225,8 +225,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Reconciliation Difference treats Transfer like Expense (money out of Paid From); My Cost is 0 for a
   Transfer. Both formulas were updated in place (`build_formulas.py` now PUTs a changed formula).
 - Cash accounts have no statements, so cash spends stay Unreconciled, like the AUD Cash account.
-- **China Yunnan Trip, 28 Oct to 1 Nov 2026** (entered 2026-11-21): 36 transactions, all reconciled except
-  the cash Tour Guide Tips. Same-amount ties on one Wise day were confirmed where the note's merchant
+- **China Yunnan Trip, 24 Oct to 1 Nov 2026** (entered 2026-11-21), with the owner's other notes of those
+  days: all reconciled except the cash Tour Guide Tips and "Taxi from station to hotel" (no amount, Needs
+  Details). The 2 Nov Health Insurance had been matched to the 26 Oct AHM line; the match was moved to the
+  26 Oct note and the 2 Nov one waits for its own line. `reconcile.py` treats the same weekly payment 7
+  days earlier as a rival (Rent, W Support), so those were confirmed by hand. Same-amount ties on one Wise day were confirmed where the note's merchant
   equals the line's merchant and no other open line has that merchant and amount (owner asked to
   reconcile). `reconcile.py` now applies this tie-break (rule 4 in CLAUDE.md); a replay of the trip with
   every match removed confirmed all 33 pairs with none left for the owner.

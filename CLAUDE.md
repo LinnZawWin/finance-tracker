@@ -367,7 +367,9 @@ the first load to the screenshot date; a newer screenshot updates its period and
 missing lines (no running balance in the duplicate key). Each "Load" line is a transfer from the AMEX
 line: `reconcile.py` does not pair these, so set both lines to Transfer with each other as counterpart.
 Imported: card 2486 to 21 Nov (load 200.00 on 3 Nov from AMEX, ALDI 65.11 on 12 Nov, 134.89 left); card 4481
-to 22 Nov (load 200.00 on 9 Sep from AMEX, five purchases to 5 Nov, 0.00 left, used up).
+to 22 Nov (load 200.00 on 9 Sep from AMEX, five purchases to 5 Nov, 0.00 left, used up); card 7195 to 22 Nov
+(load 70.00 on 28 Jul with no bank line found, four purchases to 13 Oct, 0.00 left, used up). The app lists
+"6 past" cards: three are not Bank Accounts.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
@@ -549,7 +551,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 12 | Special card 7195: screenshot needed. AMEX SPECIAL.GIFT loads 12 Jun -250 and 3 Jul -200 are unmatched (7195 or older cards). Card 4481 ALDI lines 15 Sep -20.39, 29 Sep -96.99, 9 Oct -41.59 wait for the notes before 21 Oct (item 8) | Owner, then Claude |
+| 12 | Special cards: where did card 7195's 70.00 load (28 Jul) come from? No -70.00 bank line 10 Jul to 10 Aug. AMEX SPECIAL.GIFT loads 12 Jun -250 and 3 Jul -200 are unmatched: the app shows 6 past cards, so three are older cards without a Bank Account. Purchase lines before 21 Oct on 4481 and 7195 wait for the notes (item 8) | Owner, then Claude |
 | 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

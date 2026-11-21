@@ -369,8 +369,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   hand under the lock. Card 2486: AMEX -200.00 on 3 Nov with Load +200.00.
 - Card 4481 (screenshots 22 Nov): load 200.00 on 9 Sep paired with AMEX -200.00 on 9 Sep; ALDI 24.69 and
   Coles 16.34 confirmed by `reconcile.py`; the three ALDI lines of Sep and Oct have no notes yet. Balance 0.00.
-- Open: card 7195 has no screenshot yet; AMEX SPECIAL.GIFT loads 12 Jun -250 and 3 Jul -200 are unmatched.
-  They may be card 7195 or earlier cards that are used up.
+- Card 7195 (screenshots 22 Nov): load 70.00 on 28 Jul, ALDI 44.70 / 2.77 / 21.82 and Woolworths 0.71 to
+  13 Oct, balance 0.00. No bank line of -70.00 exists between 10 Jul and 10 Aug, so the load is left Unmatched
+  (possibly a gift or a promotion); none of its purchases has a note yet.
+- Open: where the 70.00 came from; AMEX SPECIAL.GIFT loads 12 Jun -250 and 3 Jul -200 are unmatched. The app
+  lists 6 past cards and 1 active, so those loads are probably older cards that have no Bank Account.
 
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet

@@ -183,6 +183,42 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   ("Yunnan Trip" = "China Yunnan Trip"). Fill Payee, Paid From and Original Amount from the matching Wise
   line when the note has none, then run `reconcile.py`.
 
+## Categories
+
+Every Finance Transaction Claude creates gets a Category from its description (the payee only when the
+description says nothing). Transfers have none. The first rule that fits wins; when none fits, ask.
+
+| Description says | Category |
+|---|---|
+| "for <someone>" (for example "for Mom"), gift, present, souvenir (also snacks or cosmetics bought for someone) | Gifts |
+| Hotel, accommodation; tour guide tips | Travel |
+| W Support (Joint Main) | Support Payments |
+| Rent | Rent and Housing |
+| Insurance | Insurance |
+| Utility, broadband, electricity, water, mobile | Utilities |
+| YouTube, Claude Pro, Prime Video, Crunchyroll, Spotify, Duolingo, DiDi Pass | Subscriptions |
+| Annual fee, bank fees | Fees and Charges |
+| Interlock device | Car Maintenance (Transport) |
+| Fuel | Fuel (Transport) |
+| Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
+| Train, metro, commute, Translink | Public Transport (Transport) |
+| Tickets, club entry, pokies loss, casino | Entertainment |
+| Ice skating, gym | Sport and Fitness |
+| Clinic, vaccination, supplements, chemist | Health |
+| Haircut, laser hair removal, cosmetics (own) | Personal Care |
+| Grocery | Groceries |
+| Dinner, lunch, breakfast, KFC, noodles, sushi (a meal, even with drinks) | Dining |
+| Beer, wine, any drinks, matcha, juice (bottle shop too) | Drinks |
+| Snacks, food, ice cream, yoghurt, coffee and food, restaurant reservation | Dining |
+| Keychain, T-shirt for myself | Shopping |
+| Income: refund | Refund |
+| Income: interest, savings bonus | Interest |
+| Income: a friend paying back more than my cost | Reimbursement |
+| Income: pokies win | Other Income |
+| Income: salary | Salary and Contract Income |
+
+The categories are data in Dataverse (`lzw_financecategory`); add one only with the owner's agreement.
+
 ## Sign convention
 
 - Bank Statement Line **Amount** and Reconciliation Match **Allocated Amount** are signed like the bank:

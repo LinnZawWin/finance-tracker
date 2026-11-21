@@ -297,6 +297,7 @@ parser reads these names, and the Bank Statement is named after the file (withou
 | Kogan | `KoganMoneyBlackCard_<yyyymmdd of period end>.pdf` |
 | ANZ NZ Go | `ANZ NZ Go <period end> - Statement.pdf` |
 | Wise | `Wise <year> (until <Mon>).csv` |
+| Special gift card (app screenshots) | `Special <last 4> <screenshot date> - Activity.png` (and `- Balance.png`) |
 | Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
 
 Dates are `yyyy-mm-dd` and are the period printed on the statement, not the download date.
@@ -354,6 +355,18 @@ NZD). PDF named `<account number>_Statement_<date>.pdf` by the bank (`ANZ NZ Go 
 The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
 Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
 statement date. `statement_import.py` sets the currency per account (`CURRENCY`). First statement: Oct 2026.
+
+Special gift cards (2026-11-21): three "Supermarket Slayer" cards (bank "Special Gift Cards", Account Type Other),
+Bank Accounts "Supermarket Slayer Card 2486 / 4481 / 7195" (short names `Special2486` ...). They are loaded
+from AMEX ("SPECIAL.GIFT LANE COVE"); Special.Gift pays a cashback credit on AMEX (Income, Refund). No
+statements: the owner drops screenshots of the card's activity in the app (the card number is not shown;
+tell the card by its purchases, which the notes already put on one card). Type the lines into
+`<card>.json` plus `_statements.json` (kind `Screenshot`, account `Special<last 4>`, opening 0, closing =
+"remaining") and run `statement_import.py`: one Bank Statement per card named after the account, period from
+the first load to the screenshot date; a newer screenshot updates its period and balances and adds only the
+missing lines (no running balance in the duplicate key). Each "Load" line is a transfer from the AMEX
+line: `reconcile.py` does not pair these, so set both lines to Transfer with each other as counterpart.
+Card 2486 imported to 21 Nov (load 200.00 on 3 Nov, ALDI 65.11 on 12 Nov, 134.89 left).
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
@@ -535,6 +548,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
+| 12 | Special cards 4481 (ALDI 24.69 on 3 Nov, Coles 16.34 on 4 Nov) and 7195: screenshots needed. AMEX SPECIAL.GIFT loads 12 Jun -250, 3 Jul -200, 9 Sep -200 are unmatched (earlier cards, or 4481 / 7195) | Owner, then Claude |
 | 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

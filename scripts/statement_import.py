@@ -21,9 +21,10 @@ import statement_compare as sc
 LINES, APPLY, POSSIBLE = sys.argv[1], "--apply" in sys.argv, "--include-possible" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
-            "NZGo": "ANZ NZ Go"}
+            "NZGo": "ANZ NZ Go", "Special2486": "Supermarket Slayer Card 2486",
+            "Special4481": "Supermarket Slayer Card 4481", "Special7195": "Supermarket Slayer Card 7195"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
-SRC = {"PDF": 2, "CSV": 1}
+SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0}
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
            "next export or the statement arrives; balances are those of the export.")
 sp = os.path.join(LINES, "_statements.json")
@@ -43,7 +44,10 @@ for s in stmts:
     for l in lines:
         if s["account"] == "AMEX":
             l.pop("bank_category", None)
-    name = f"Wise {s['wise_year']}" if s["account"] == "Wise" else os.path.splitext(s["file"])[0]
+    # Gift cards have no statements: one Bank Statement per card, named after the account, kept current by
+    # each new screenshot of the app (period and balances updated, only the missing lines added).
+    name = (f"Wise {s['wise_year']}" if s["account"] == "Wise" else acc if s["kind"] == "Screenshot"
+            else os.path.splitext(s["file"])[0])
     dates = sorted(l["date"] for l in lines)
     existing = sc.load_existing(aid, min(dates[0], s["start"]), max(dates[-1], s["end"])) if lines else []
     res = sc.compare(lines, existing, s["kind"] == "PDF")
@@ -81,16 +85,19 @@ for s in stmts:
                              "not imported. Amounts are AUD; lines paid from a foreign balance have an estimated AUD "
                              "amount, explained in the line Notes. Period set to the full year; the file is replaced "
                              "by a newer export each month.")
+    if s["kind"] == "Screenshot":
+        body["lzw_notes"] = ("Gift card: no statements. Lines are typed from screenshots of the card's activity in "
+                             "the app; each newer screenshot updates the period and balances.")
     if found:
         sid = found[0]["lzw_bankstatementid"]
-        if placeholder or s.get("interim"):
+        if placeholder or s.get("interim") or s["kind"] == "Screenshot":
             dv.patch(f"lzw_bankstatements({sid})", body)
     else:
         _, h = dv.call("POST", "lzw_bankstatements", body)
         sid = h.get("OData-EntityId", h.get("odata-entityid")).rsplit("(", 1)[1].rstrip(")")
     for line, row in res["update"]:
         dv.patch(f"lzw_bankstatementlines({row['id']})", {"lzw_name": line["description"][:500], "lzw_source": sc.O + 2})
-    src = "PDF" if s["kind"] == "PDF" else "CSV"
+    src = s["kind"] if s["kind"] in ("PDF", "Screenshot") else "CSV"
     for line in res["new"]:
         b = sc.line_body(line, aid, sid, src, cur)
         key = b["lzw_duplicatekey"].replace("'", "''")

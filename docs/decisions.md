@@ -356,6 +356,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - First statement: 1 to 30 Oct 2026, 19 lines, NZD 35.36 to 104.28. Those lines (12 to 21 Oct, NZ trip)
   are mostly before the first Finance Transaction (21 Oct), so they stay unmatched until the notes are entered.
 
+### Special gift cards (2026-11-21)
+- The three Supermarket Slayer cards already existed as Bank Accounts (created 2026-11-19, no statements).
+  Special offers no statement or export, only the activity list in its app, so screenshots are the source
+  (Source Type and line Source = Screenshot).
+- One Bank Statement per card, named after the account, rather than one per screenshot: a card lives for a
+  few months and each screenshot shows its whole history, like the Wise full-year export. The statement's
+  period and balances are rewritten by each newer screenshot. The duplicate key has no running balance,
+  because the app shows none and a derived one would change if an earlier line were missed.
+- The load is my own money moving from AMEX to the card, so it is a transfer pair, not a Finance
+  Transaction. `reconcile.py` did not pair it (the transfer rule found no counterpart), so it was paired by
+  hand under the lock. Card 2486: AMEX -200.00 on 3 Nov with Load +200.00.
+- Open: cards 4481 and 7195 have no screenshots yet; three earlier AMEX SPECIAL.GIFT loads (12 Jun -250,
+  3 Jul -200, 9 Sep -200) are unmatched. They may be earlier cards that are used up.
+
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet
   and the hourly flow.

@@ -191,7 +191,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Description says | Category |
 |---|---|
 | "for <someone>" (for example "for Mom"), gift, present, souvenir (also snacks or cosmetics bought for someone) | Gifts |
-| Hotel, accommodation; tour guide tips | Travel |
+| Hotel, accommodation | Accommodation (Travel) |
+| Tour guide tips, other trip costs | Travel |
 | W Support (Joint Main) | Support Payments |
 | Rent | Rent and Housing |
 | Insurance | Insurance |
@@ -202,7 +203,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Fuel | Fuel (Transport) |
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
-| Tickets, club entry, pokies loss, casino | Entertainment |
+| Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
+| Tickets, club entry | Entertainment |
 | Ice skating, gym | Sport and Fitness |
 | Clinic, vaccination, supplements, chemist | Health |
 | Haircut, laser hair removal, cosmetics (own) | Personal Care |
@@ -214,7 +216,6 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Income: refund | Refund |
 | Income: interest, savings bonus | Interest |
 | Income: a friend paying back more than my cost | Reimbursement |
-| Income: pokies win | Other Income |
 | Income: salary | Salary and Contract Income |
 
 The categories are data in Dataverse (`lzw_financecategory`); add one only with the owner's agreement.

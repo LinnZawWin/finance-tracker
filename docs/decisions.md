@@ -398,6 +398,14 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Processed), mid-cycle exports to start and end dates in `Processed/Mid-cycle`. The ANZ NZ statement was
   renamed from the bank's name, which holds the full account number, and its Bank Statement with it.
 
+- **Reconciliation chained into the import, with a lock** (owner, same day). `statement_import.py --apply`
+  runs `reconcile.py --apply` itself, so the step cannot be forgotten. The lock is an environment variable
+  value in Dataverse, not a file, because sessions run in separate containers; it is taken with If-Match
+  (tested: of three runs started at once, one got it). A lock older than 60 minutes counts as abandoned.
+  reconcile.py now recalculates only the rows it matched, because `recalc.py --days 1` took over 10 minutes.
+  Trade-off: the confirmed pairs are no longer reviewed in a dry run first; the rules (single candidate,
+  payee fits) are what keeps them safe, and the output lists every pair written.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

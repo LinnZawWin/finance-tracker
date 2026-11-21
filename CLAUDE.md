@@ -245,9 +245,10 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
-| `statement_import.py <out> [--apply]` | Create the Bank Statements and only the missing lines (dry run by default) |
+| `statement_import.py <out> [--apply] [--include-possible] [--no-reconcile]` | Create the Bank Statements and only the missing lines (dry run by default). `--apply` then runs `reconcile.py --apply --verbose` itself (exit code 2 if another run holds the lock) |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
-| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default) |
+| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
+| `lock.py [--release]` | The reconciliation lock: environment variable `lzw_ReconcileLock` ("<holder> <UTC time>", empty = free), taken with If-Match so only one session reconciles at a time; older than 60 minutes = abandoned. `--release` clears it after a crashed run |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
@@ -330,8 +331,11 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
     every Unmatched or Partly Matched bank line (all accounts, not only the new ones) against the Finance
     Transactions as far as the Reconciliation rules below allow, without being asked. Confirm what the
     rules allow, leave the rest Proposed or unmatched, and report what was matched, proposed and left.
-    Use `python scripts/reconcile.py` (dry run; `--verbose` lists the transfer pairs), check the pairs, then
-    `--apply` and `python scripts/recalc.py --days 1`.
+    `statement_import.py --apply` does this itself: after the lines it runs `reconcile.py --apply --verbose`,
+    which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
+    the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
+    wait and run `python scripts/reconcile.py --apply` once that run has finished. On its own,
+    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs).
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
 "Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX
@@ -482,7 +486,6 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 11 | Two sessions ran `reconcile.py --apply` at the same time on 2026-11-21 and one wrote a wrong pair (undone). Run reconciliation from one session at a time | Owner |
 | 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

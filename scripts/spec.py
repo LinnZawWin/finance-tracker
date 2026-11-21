@@ -96,7 +96,7 @@ TABLES = [
         lookup("Original Currency", "transactioncurrency"),
         money("Running Balance", True),
         s("Merchant", 200),
-        choice("Source", ["Screenshot", "CSV", "PDF"]),
+        choice("Source", ["Screenshot", "CSV", "PDF", "Generated"]),
         yn("Is Pending"),
         choice("Status", ["Unmatched", "Partly Matched", "Matched", "Transfer", "Ignored"], "Unmatched"),
         lookup("Transfer Counterpart", "lzw_bankstatementline"),

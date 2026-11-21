@@ -208,6 +208,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The platform added `transactioncurrency` and `account` to the solution as references only.
 - The GitHub secrets and Claude Code GitHub Actions are set up (owner, 2026-11-19).
 
+### Categories (2026-11-21)
+- At the owner's request every existing Finance Transaction (157, all but the two Transfers) got a Category by
+  keyword rules on the description, and Claude now sets one on every transaction it creates (table in
+  CLAUDE.md). Drinks covers all beverages, not only alcohol; Dining covers meals and snacks; anything bought
+  "for <someone>" is Gifts. Suggested new categories, not created: Gambling (pokies win and loss, now Other
+  Income / Entertainment) and Accommodation under Travel.
+
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,
   Account Currency CNY, Statements Imported = No), reused on every trip so the cash left over carries on.

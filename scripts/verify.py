@@ -206,6 +206,9 @@ def main():
     ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid,defaultvalue&$filter=schemaname eq 'lzw_KeepInboxSheetId'")["value"]
     check(bool(ev) and ev[0]["environmentvariabledefinitionid"].lower() in in_sol and not ev[0].get("defaultvalue"),
           "environment variable lzw_KeepInboxSheetId (empty) in solution")
+    ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid&$filter=schemaname eq 'lzw_ReconcileLock'")["value"]
+    check(bool(ev) and ev[0]["environmentvariabledefinitionid"].lower() in in_sol,
+          "environment variable lzw_ReconcileLock (reconciliation lock) in solution")
     for cr in ("lzw_FinanceTrackerDataverse", "lzw_FinanceTrackerGoogleSheets"):
         r = dv.get(f"connectionreferences?$select=connectionreferenceid&$filter=connectionreferencelogicalname eq '{cr}'")["value"]
         check(bool(r) and r[0]["connectionreferenceid"].lower() in in_sol, f"connection reference {cr} in solution")

@@ -1,7 +1,8 @@
 """Create the Bank Statements and their lines from the files written by statement_parse.py and wise_lines.py.
 
     python scripts/statement_import.py <lines folder>            # dry run: summary per statement
-    python scripts/statement_import.py <lines folder> --apply    # write
+    python scripts/statement_import.py <lines folder> --apply    # write, then reconcile (reconcile.py --apply)
+    add --no-reconcile to write the lines only
     add --include-possible to also create the lines flagged as possible duplicates (after checking them)
 
 Each statement is compared with the lines already in Dataverse (statement_compare.compare), so a re-run or
@@ -33,6 +34,7 @@ for w in sorted(glob.glob(os.path.join(LINES, "Wise*.json"))):
                       end=f"{year}-12-31", opening=None, closing=None, wise_year=year))
 acc_id = {a["lzw_name"]: a["lzw_bankaccountid"] for a in dv.get_all("lzw_bankaccounts?$select=lzw_name")}
 tot = {"new": 0, "existing": 0, "update": 0, "possible": 0}
+written = []
 for s in stmts:
     acc = ACCOUNTS[s["account"]]
     aid = acc_id[acc]
@@ -95,5 +97,16 @@ for s in stmts:
         done = lambda: bool(dv.get(f"lzw_bankstatementlines?$select=lzw_bankstatementlineid&$filter="
                                    f"_lzw_bankstatement_value eq {sid} and lzw_duplicatekey eq '{key}'")["value"])
         dv.post("lzw_bankstatementlines", b, done=done)
+    written.append(sid)
     print(f"    written: statement {sid}, {len(res['new'])} lines")
 print("TOTAL", tot, "(written)" if APPLY else "(dry run)")
+if APPLY:
+    from recalc import rollup
+    for sid in written:
+        rollup("lzw_bankstatements", sid, "lzw_linecount")
+    if "--no-reconcile" not in sys.argv:
+        import subprocess
+        print("Reconciling (reconcile.py --apply):", flush=True)
+        r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "reconcile.py"),
+                            "--apply", "--verbose"])
+        sys.exit(r.returncode)

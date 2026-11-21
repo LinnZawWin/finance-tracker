@@ -167,7 +167,7 @@
       <div class="card">
         <h2>Suggested pairs</h2>
         <p class="muted" style="margin-top:0">Same amount (or the same account and payee for an estimated amount), the same account when the
-          transaction has one, within 7 days. Pairs are ticked unless another row is an equally good candidate (shown in red):
+          transaction has one, within 4 days. Pairs are ticked unless another row is an equally good candidate (shown in red):
           check those yourself. Untick any pair that is wrong, then confirm the ticked ones.</p>
         <div class="row-actions" style="margin:0 0 10px">
           <button id="btnRcConfirmSel" class="primary" disabled>Confirm selected</button>
@@ -695,7 +695,7 @@ function rcSuggest(fts, lines) {
     for (const l of lines) {
       if (t._lzw_paidfrom_value && t._lzw_paidfrom_value !== l._lzw_bankaccount_value) continue;
       const days = daysApart(t.day, l.day);
-      if (days > 7) continue;
+      if (days > 4) continue;
       const have = lnRemaining(l);
       let reason = null, score = 0;
       if (cents(have) === cents(want)) { reason = "same amount"; score = 1; }

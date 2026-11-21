@@ -10,7 +10,7 @@ Run after every statement inbox import (statement import rule 10). Steps:
    counterparts is left and reported. Written as Status = Transfer and Transfer Counterpart on both lines.
 2. Transaction to line, the same candidates as the web page's Reconcile tab: same remaining amount (or the
    same original amount; for an estimated transaction the same account and a shared payee word), the same
-   account when the transaction has Paid From, within 7 days, best first, each row used once. A pair is
+   account when the transaction has Paid From, within 4 days, best first, each row used once. A pair is
    confirmed only when neither side has another candidate of the same kind (rule 4) and the transaction's
    Payee, when it has one, shares a word with the line (spaces in the line ignored). A transaction whose
    Payee equals the line's merchant ("Qrcode7684 - Alipay") ranks first, and only another same-merchant
@@ -162,7 +162,7 @@ for t in fts:
         if t["_lzw_paidfrom_value"] and t["_lzw_paidfrom_value"] != l["_lzw_bankaccount_value"]:
             continue
         days = abs((t["day"] - l["day"]).days)
-        if days > 7:
+        if days > 4:
             continue
         same_sign = (l["rem"] > 0) == (t["want"] > 0)
         if l["rem"] == t["want"]:

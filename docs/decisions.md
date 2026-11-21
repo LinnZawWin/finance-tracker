@@ -14,11 +14,15 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
 | 8 | Notes before 21 Oct 2026 | Owner, then Claude | Finance Transactions start on 21 Oct (21 to 23 Oct entered 2026-11-21) |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
-| 10 | `reconcile.py` refinements | Owner to decide | Weekly payments: the same payment 7 days away counts as a rival, so Rent and W Support were confirmed by hand. Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
+| 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
 verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
+
+2026-11-21: the transaction-to-line window in `reconcile.py` and the web page's Reconcile tab is 4 days (was 7, owner's
+request), so a weekly payment (Rent, W Support) 7 days away is no longer a rival candidate. It applies to estimated
+transactions too.
 
 Done on 2026-11-20: the Planned Transactions flow was tested with a dummy one-off appointment and a dummy
 one-occurrence series, run manually at 00:32 Brisbane. All values came out as specified, including Paid

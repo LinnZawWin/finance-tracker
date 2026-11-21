@@ -166,7 +166,8 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   **Last Rate Date**. A cash spend: Amount (AUD) = foreign amount / Last Rate, rounded to cents; Original
   Amount = the foreign amount, Original Currency = the account currency, Paid From = the cash account, Notes
   say which rate was used. When that currency is bought or received, update Last Rate and Last Rate Date.
-  CNY Cash: 4.666043 from 30 Oct 2026.
+  CNY Cash: 7.306889 from 29 Oct 2026 (CNY 70 cash for an AUD 9.58 eSIM), set at the owner's request
+  although the 30 Oct conversion (4.666043) is later.
 - Finance Transaction **Original Amount** (positive) and **Original Currency**: the foreign amount. Fill them
   for Wise rows too (the CSV / Keep columns Currency and Original Amount). Amount is always AUD and the row
   currency stays AUD.
@@ -174,7 +175,8 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   goes into): my own money moving between accounts. My Cost is 0. A friend paying back their share of a
   bill in foreign cash: the bill keeps only my share (Amount and Original Amount less theirs) and their
   share is a Transfer from the paying account to the cash account; the one bank line is split between the
-  two (Method Manual).
+  two (Method Manual). When the friend pays back the whole bill, the bill itself becomes the Transfer and
+  the "Cash Received" note is not entered again.
 - Trip notes are entered through Claude Code, not the web page (it has no foreign or Transfer support yet).
   Note lines: `Description Amount [A|AA] [Account] [Project]` or `Description|Merchant|AUD|Share|Account|
   Project|Currency|Original Amount`; `CNY100` = a foreign amount; a date line may end with the project
@@ -398,7 +400,6 @@ Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of
 | 5 | Test `recalc.py` and the formula columns with real rows (statement lines now exist) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash and Transfer (Dataverse side done 2026-11-21) | Owner to ask |
-| 8 | China Yunnan Trip 30 Oct to 1 Nov (entered 2026-11-21): 7 Wise pairs to confirm, the "ipay 1.29" fragment, two note dates that differ from Wise (decisions item 8) | Owner |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

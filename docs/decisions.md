@@ -9,9 +9,12 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 |---|---|---|---|
 | 6 | Delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets`? | Owner | Used only by the deleted Keep flow. Kept until the owner decides |
 | 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
-| 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
+| 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
+| 8 | Notes before 24 Oct 2026 | Owner, then Claude | Finance Transactions start on 24 Oct. Unnoted lines on 23 Oct: AMEX TRIP.COM -5.05 (perhaps a fee on the 57.53 hotel), HALF PINT KITCHEN + BAR -118.50, ANZ salary +11,231.34 |
+| 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
+| 10 | `reconcile.py` refinements | Owner to decide | Weekly payments: the same payment 7 days away counts as a rival, so Rent and W Support were confirmed by hand. Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references

@@ -199,7 +199,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Utility, broadband, electricity, water, mobile | Utilities |
 | YouTube, Claude Pro, Prime Video, Crunchyroll, Spotify, Duolingo, DiDi Pass | Subscriptions |
 | Annual fee, bank fees | Fees and Charges |
-| Interlock device | Car Maintenance (Transport) |
+| Interlock device | Fines |
 | Fuel | Fuel (Transport) |
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
@@ -209,14 +209,18 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Clinic, vaccination, supplements, chemist | Health |
 | Haircut, laser hair removal, cosmetics (own) | Personal Care |
 | Grocery | Groceries |
-| Dinner, lunch, breakfast, KFC, noodles, sushi (a meal, even with drinks) | Dining |
-| Beer, wine, any drinks, matcha, juice (bottle shop too) | Drinks |
-| Snacks, food, ice cream, yoghurt, coffee and food, restaurant reservation | Dining |
+| Dinner, lunch, breakfast, takeaway, KFC, noodles, sushi: a meal, even with drinks ("Dinner and drinks") | Food and Soft Drinks |
+| Beer, wine, spirits; "drinks" at a bar, pub or club; bottle shop | Alcohol |
+| Cold, isotonic or sports drinks, juice, matcha, coffee, café or dessert-bar drinks, snacks, ice cream, yoghurt, restaurant reservation | Food and Soft Drinks |
 | Keychain, T-shirt for myself | Shopping |
 | Income: refund | Refund |
 | Income: interest, savings bonus | Interest |
 | Income: a friend paying back more than my cost | Reimbursement |
 | Income: salary | Salary and Contract Income |
+
+The owner writes drinking at a restaurant as its own line (for example "drinking at Korean restaurant") when
+more of the bill went on alcohol than on the meal; that line is Alcohol. A plain "Drink" from a shop is
+Food and Soft Drinks unless it names alcohol.
 
 The categories are data in Dataverse (`lzw_financecategory`); add one only with the owner's agreement.
 

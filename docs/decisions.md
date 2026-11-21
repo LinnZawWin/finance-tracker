@@ -214,6 +214,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   CLAUDE.md). Drinks covers all beverages, not only alcohol; Dining covers meals and snacks; anything bought
   "for <someone>" is Gifts. At the owner's request two categories were added (in `seed.py`): Gambling,
   Category Type Both, so wins and losses net against each other, and Accommodation under Travel.
+- Owner, same day: "Drinks" renamed **Alcohol** and "Dining" renamed **Food and Soft Drinks** (meals,
+  takeaway, snacks, non-alcoholic drinks); 16 non-alcoholic rows moved out of Alcohol. A meal with drinks
+  is Food and Soft Drinks; the owner splits out the alcohol as its own line when it is the bigger part.
+  Interlock device costs are Fines, not Car Maintenance.
 
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,

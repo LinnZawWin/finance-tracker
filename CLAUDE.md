@@ -271,6 +271,8 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
   the public repo `microsoft/power-platform-skills` under `plugins/`.
 - The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
+- `.claude/settings.json` (committed) allows the Google Drive tools used for the statement inbox (search,
+  metadata, download, move/rename, create folder) without a prompt. Other tools follow the session's mode.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.
   It does not yet cover the Planned / Recurring Transaction components.
 - The base currency is AUD (verified 2026-11-15). Scripts and the flow still set AUD on the rows they create.

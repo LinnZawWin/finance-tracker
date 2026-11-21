@@ -12,7 +12,6 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `recalc.py`, `statement_compare.py --apply` and the formula columns with real rows | Claude | All have only run against empty tables |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | China Yunnan Trip, 30 Oct to 1 Nov 2026: 7 Wise pairs left for the owner (same amount on the same day, but the note's merchant equals the line's merchant); one note fragment "ipay 1.29 CNY 6" not entered (fits the Wise line Qrcode3460 on 29 Oct) | Owner | Entered 2026-11-21. "Beer for four" and "Beer cans and snacks" are dated 31 Oct in the notes but 28 Oct on Wise |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -226,6 +225,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Reconciliation Difference treats Transfer like Expense (money out of Paid From); My Cost is 0 for a
   Transfer. Both formulas were updated in place (`build_formulas.py` now PUTs a changed formula).
 - Cash accounts have no statements, so cash spends stay Unreconciled, like the AUD Cash account.
+- **China Yunnan Trip, 28 Oct to 1 Nov 2026** (entered 2026-11-21): 36 transactions, all reconciled except
+  the cash Tour Guide Tips. Same-amount ties on one Wise day were confirmed where the note's merchant
+  equals the line's merchant and no other open line has that merchant and amount (owner asked to
+  reconcile). `reconcile.py` does not use this tie-break yet. The eSIM paid by AMEX was paid back as
+  CNY 70 cash, so the eSIM row is the Transfer (AMEX to CNY Cash) and the "Cash Received" note was not
+  entered separately. The owner asked for the CNY Last Rate to come from it (7.306889, 29 Oct), although
+  the 30 Oct rate (4.666043) is later and nearer the market rate.
 - The web page does not know Transfer or foreign amounts yet (the owner enters trip notes through Claude
   Code for now). Its View list counts a Transfer as money out.
 

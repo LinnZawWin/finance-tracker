@@ -423,6 +423,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   not by a flow (owner: not needed). Lines are in AUD with the foreign amount as Original Amount, like the
   transactions. First run: 25 lines (18 withdrawals since April, 7 transactions), 8 cash transactions Reconciled.
 
+- **Identical rows and payee rivals** (owner, 2026-11-21): totally identical transactions and lines are paired
+  one each, and a candidate whose payee does not fit no longer blocks a pair. With the 4-day window this
+  confirmed 9 November pairs that had been left for the owner (two bars, a vineyard, a karaoke bar, a
+  restaurant booking).
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

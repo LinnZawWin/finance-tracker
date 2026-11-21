@@ -196,7 +196,22 @@ for t in fts:
             (l["lzw_merchant"] or "").strip().lower(), (l["lzw_name"] or "").strip().lower()}
         pc.append(dict(t=t, l=l, reason=reason, days=days, merchant=merchant,
                        score=score + (0.1 if t["_lzw_paidfrom_value"] else 0) + (0.2 if merchant else 0) - days * 0.03))
+# A Payee none of whose words appears in the line (spaces ignored: "Didi" in "DIDIMOBILITY") is a doubt.
+def payee_differs(t, l):
+    flat = re.sub(r"[^a-z0-9]+", "", f"{l['lzw_merchant']} {l['lzw_name']}".lower())
+    return bool(words(t["lzw_payee"])) and not any(w in flat for w in words(t["lzw_payee"]))
+
+
+for c in pc:
+    c["payee_differs"] = payee_differs(c["t"], c["l"])
 pc.sort(key=lambda c: c["score"], reverse=True)
+# Totally identical rows are interchangeable: transactions with the same account, amount, day, description and
+# payee; lines with the same account, amount, day and description. A rival made only of such twins is no rival,
+# so a group of identical transactions and identical lines is paired one each.
+twin_t = lambda a, b: a is b or (a["_lzw_paidfrom_value"], a["want"], a["day"], a["lzw_name"], a["lzw_payee"]) == \
+    (b["_lzw_paidfrom_value"], b["want"], b["day"], b["lzw_name"], b["lzw_payee"])
+twin_l = lambda a, b: a is b or (a["_lzw_bankaccount_value"], a["rem"], a["day"], " ".join((a["lzw_name"] or "").split())) == \
+    (b["_lzw_bankaccount_value"], b["rem"], b["day"], " ".join((b["lzw_name"] or "").split()))
 uT, uL, confirm, propose = set(), set(), [], []
 for c in pc:
     tid, lid = c["t"]["lzw_financetransactionid"], c["l"]["lzw_bankstatementlineid"]
@@ -206,10 +221,9 @@ for c in pc:
     uL.add(lid)
     # A same-merchant pair only has a rival in another same-merchant pair.
     c["others"] = sum(1 for o in pc if o is not c and o["reason"] == c["reason"] and (o["t"] is c["t"] or o["l"] is c["l"])
-                      and (o["merchant"] or not c["merchant"]))
-    # A Payee none of whose words appears in the line (spaces ignored: "Didi" in "DIDIMOBILITY") is a doubt.
-    flat = re.sub(r"[^a-z0-9]+", "", f"{c['l']['lzw_merchant']} {c['l']['lzw_name']}".lower())
-    c["payee_differs"] = bool(words(c["t"]["lzw_payee"])) and not any(w in flat for w in words(c["t"]["lzw_payee"]))
+                      and (o["merchant"] or not c["merchant"])
+                      and not (twin_t(o["t"], c["t"]) and twin_l(o["l"], c["l"]))
+                      and not o["payee_differs"])  # a pair rule 4 would never confirm is no rival
     (propose if c["others"] or c["payee_differs"] else confirm).append(c)
 print(f"2. Transaction to line: {len(confirm)} to confirm, {len(propose)} for the owner "
       f"(another candidate), {len(fts) - len(confirm) - len(propose)} transactions with no candidate")

@@ -278,7 +278,23 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 ## Statement import rules
 
 Files: the owner drops statements in the Google Drive folder `Statements/Inbox`. After a statement is imported
-and its balance check passes, move the file to `Statements/Processed`. A file that fails stays in the inbox.
+and its balance check passes, move the file to `Statements/Processed` (mid-cycle exports to
+`Statements/Processed/Mid-cycle`) and rename it there, so the files are easy to find for manual checks.
+A file that fails stays in the inbox. Save the downloaded copy under the same new name before parsing: the
+parser reads these names, and the Bank Statement is named after the file (without the extension).
+
+| File | Name in Processed |
+|---|---|
+| ANZ Plus Everyday | `ANZ Plus <period end> - Everyday x3029 Statement.pdf` |
+| ANZ Plus Flex Saver | `ANZ Plus Flex Saver <period end> - Flex Saver x5149 Statement.pdf` |
+| ANZ Plus Growth Saver | `ANZ Save <period end> - Growth Saver x3037 Statement.pdf` |
+| AMEX | `AMEX <period end>.xlsx` |
+| Kogan | `KoganMoneyBlackCard_<yyyymmdd of period end>.pdf` |
+| ANZ NZ Go | `ANZ NZ Go <period end> - Statement.pdf` |
+| Wise | `Wise <year> (until <Mon>).csv` |
+| Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
+
+Dates are `yyyy-mm-dd` and are the period printed on the statement, not the download date.
 
 1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
    disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from
@@ -289,13 +305,14 @@ and its balance check passes, move the file to `Statements/Processed`. A file th
 2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
    AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
    ANZ Plus offers PDF only.
-   **Interim exports** (mid-cycle) are imported as their own Bank Statement, named after the file with its
-   export date, and the next export or the final statement creates only the lines they lack:
-   ANZ Plus "Transaction List" PDF (rename to `ANZ Plus <account> <generated date> - <file name>`; period from
-   "Commencing" to the day before it was generated) and the AMEX current-cycle `.xlsx` (rename to
-   `AMEX <export date>.xlsx`; its summary has "Total Balance" instead of "Statement Balance", the period ends
-   on the export date). `statement_import.py --include-possible` also creates the possible duplicates, after
-   they are checked to be separate charges.
+   **Mid-cycle exports** create a **placeholder** Bank Statement (Notes start with "Interim", balances are
+   those of the export). The next export or the final statement whose period overlaps it updates that same
+   record (name, period, balances, source type, notes) and adds only the lines it lacks, so the lines stay in
+   one statement. Two exports are recognised: the ANZ Plus "Transaction List" PDF (period from "Commencing"
+   to the day before "generated on") and the AMEX current-cycle `.xlsx` (its summary has "Total Balance"
+   instead of "Statement Balance"; the period starts on the cycle start and ends on the last date in the
+   file name). `statement_import.py --include-possible` also creates the possible duplicates, after they are
+   checked to be separate charges.
    When one statement is supplied in several formats, import one and move all of them.
 3. **Check the totals** against the statement's opening and closing balance before writing anything.
 4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
@@ -325,7 +342,7 @@ AMEX `.xlsx` totals: the "Transaction Summary" sheet (Previous Balance, Payments
 Adjustments, Statement Balance); Opening / Closing Balance are stored signed like the bank (owed = negative).
 
 ANZ New Zealand (2026-11-21): Bank Account "ANZ NZ Go" (`NZGo`, bank "ANZ New Zealand", Account Currency
-NZD). PDF named `<account number>_Statement_<date>.pdf`; pypdf gives no text, so the parser uses pdfplumber.
+NZD). PDF named `<account number>_Statement_<date>.pdf` by the bank (`ANZ NZ Go <period end> - Statement.pdf` once processed; the parser reads both); pypdf gives no text, so the parser uses pdfplumber.
 The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
 Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
 statement date. `statement_import.py` sets the currency per account (`CURRENCY`). First statement: Oct 2026.

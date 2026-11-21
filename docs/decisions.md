@@ -391,6 +391,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   (same amount, 2 days, AMEX) although the note names another restaurant. A Payee that shares no word with
   the line now sends the pair to the owner. The match was deleted and both rows reset.
 
+- **Placeholder instead of a separate statement** (owner, same day): a mid-cycle export now creates a
+  placeholder Bank Statement that the final statement takes over, so each period has one statement. The
+  two exports above were converted. The marker is the Notes prefix "Interim" rather than a new column.
+- **File names** (owner): processed files are renamed to the period end (the names already used in
+  Processed), mid-cycle exports to start and end dates in `Processed/Mid-cycle`. The ANZ NZ statement was
+  renamed from the bank's name, which holds the full account number, and its Bank Statement with it.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

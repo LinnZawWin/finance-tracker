@@ -444,10 +444,13 @@ Finance Transactions start on 24 Oct 2026 (notes entered back to that day); bank
 | 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
 | 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
 | 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 152 transfer pairs and 3 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (483 lines fit a rule) | Owner |
-| 4 | Import the next Wise export (owner uploads a full-year file each month) into "Wise 2026" | Claude |
-| 5 | Test `recalc.py` and the formula columns with real rows (statement lines now exist) | Claude |
+| 4 | Import the next Wise export (after the Thailand trip) into "Wise 2026". Check that the hand-entered 28 Oct "Money added" +100 (`TRANSFER-2457903123`) is recognised, not duplicated | Claude |
+| 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
-| 7 | Web page support for foreign cash and Transfer (Dataverse side done 2026-11-21) | Owner to ask |
+| 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
+| 8 | Enter the notes before 24 Oct 2026. Lines with no note yet: AMEX 23 Oct TRIP.COM -5.05 and HALF PINT KITCHEN + BAR -118.50, ANZ salary +11,231.34 on 23 Oct | Owner, then Claude |
+| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
+| 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

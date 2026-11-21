@@ -527,7 +527,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 11 | Everyday lines from the 21 Nov export left open: ING Savings Booster +200.36 on 12 Nov against two transactions of 100.36 (11 and 12 Nov); a -150 payment on 17 Nov is on Everyday but the transaction "Transfer for Interlock Device Removal" says Flex; three personal credits (17 and 19 Nov, one marked Duolingo) and an expense claim +107.06 (6 Nov) have no notes. | Owner |
+| 11 | Everyday lines from the 21 Nov export left open: ING Savings Booster +200.36 on 12 Nov against two transactions of 100.36 (11 and 12 Nov); three personal credits (17 and 19 Nov, one marked Duolingo) and an expense claim +107.06 (6 Nov) have no notes. | Owner |
 | 10 | `reconcile.py`: treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 24 Oct 2026 | Owner, then Claude | Finance Transactions start on 24 Oct. Unnoted lines on 23 Oct: AMEX TRIP.COM -5.05 (perhaps a fee on the 57.53 hotel), HALF PINT KITCHEN + BAR -118.50, ANZ salary +11,231.34 |
+| 8 | Notes before 21 Oct 2026 | Owner, then Claude | Finance Transactions start on 21 Oct (21 to 23 Oct entered 2026-11-21) |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Weekly payments: the same payment 7 days away counts as a rival, so Rent and W Support were confirmed by hand. Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -247,6 +247,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   equals the line's merchant and no other open line has that merchant and amount (owner asked to
   reconcile). `reconcile.py` now applies this tie-break (rule 4 in CLAUDE.md); a replay of the trip with
   every match removed confirmed all 33 pairs with none left for the owner.
+- **Notes of 21 to 23 Oct 2026** (entered 2026-11-21, 22 rows, Source Keep, 12:00 Brisbane then 10 minutes
+  apart). Owner's answers: the David Jones belt is 48.96 (the AMEX line; the note said 48.06); the S Money
+  payment (Flex 2032.14 for USD 1400 cash, used for the Yunnan tour x2) is one Travel expense, Share Mine,
+  Original Amount USD 1400, no USD cash account; the Wise Duolingo Family top-up (USD 100) is Subscriptions.
+  The 23 Oct TRIP.COM -5.05 is the China eSIM (Travel). 18 matched by `reconcile.py`, the two Translink
+  commutes (one -1.00 line each day) by hand. The two bank Transfers and the cash casino loss stay
+  Unreconciled (both bank lines already have Status Transfer).
 - The eSIM (AUD 9.58 on AMEX) was paid back as CNY 70 cash. Valued at Last Rate 4.666043 that is AUD 15.00,
   so "Cash Received for eSIM from <friend>" is a Transfer of 15.00 (AMEX to CNY Cash) and the eSIM row is
   Income 5.42 (owner's decision: the friend paid more than the cost). The AMEX line is split -15.00 / +5.42.
@@ -343,7 +350,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   under Visa lines; Posted Date is the statement date. Checks: running balance per line, withdrawal and
   deposit totals, closing balance.
 - First statement: 1 to 30 Oct 2026, 19 lines, NZD 35.36 to 104.28. Those lines (12 to 21 Oct, NZ trip)
-  are before the first Finance Transaction (24 Oct), so they stay unmatched until the notes are entered.
+  are mostly before the first Finance Transaction (21 Oct), so they stay unmatched until the notes are entered.
 
 ### Web page for transactions (2026-11-15)
 - **Why.** The owner wanted to enter and reorder transactions directly instead of through Keep, the sheet

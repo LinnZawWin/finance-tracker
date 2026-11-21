@@ -443,7 +443,7 @@ Columns K and L and the `__PowerAppsId__` column were used only by the deleted f
 ## Outstanding work
 
 Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-21:
-Finance Transactions start on 24 Oct 2026 (notes entered back to that day); bank lines go back to March.
+Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank lines go back to March.
 
 | # | Item | Who |
 |---|---|---|
@@ -454,7 +454,7 @@ Finance Transactions start on 24 Oct 2026 (notes entered back to that day); bank
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 24 Oct 2026. Lines with no note yet: AMEX 23 Oct TRIP.COM -5.05 and HALF PINT KITCHEN + BAR -118.50, ANZ salary +11,231.34 on 23 Oct. All 19 "ANZ NZ Go" lines (12 to 21 Oct, NZD) | Owner, then Claude |
+| 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 

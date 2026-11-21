@@ -379,7 +379,7 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
      share type defaults. The rules are data in Dataverse, not in this repo.
    - **Estimated transactions** (Source = Recurring, Notes contain "Payment Type: Estimated"): they never
      match on amount. Match a bank line with the same payee (directly or through a Bank Rule) on the same
-     account, within 7 days of the Transaction Date, any amount. Auto-confirm only when exactly one line
+     account, within 4 days of the Transaction Date, any amount. Auto-confirm only when exactly one line
      fits; otherwise Proposed. After confirming, set Needs Details = No (the bank line gives the actual).
 2. **Then AI** for the rest.
 3. Auto-confirm at or above a confidence of **0.95**. Otherwise set Match Status = Proposed and ask in the session.
@@ -414,7 +414,7 @@ Finance Transactions. It has no build step and no dependencies.
 - Third tab **Reconcile**: Finance Transactions with Reconciliation Status other than Reconciled, and Bank
   Statement Lines with Status Unmatched or Partly Matched (both active only), filtered by account and search.
   Suggested pairs: same remaining amount (or the same original amount, or for an estimated transaction the
-  same account and a shared payee word), the same account when the transaction has Paid From, within 7 days;
+  same account and a shared payee word), the same account when the transaction has Paid From, within 4 days;
   best first, each row used once; a pair with another equally good candidate is flagged. Each pair has a
   checkbox, ticked by default except flagged pairs (never auto-confirm those). Confirm (one pair) or Confirm
   selected (the ticked pairs, one after another, stopping at the first error) creates a match with Method Rule. Manual: one transaction with several lines (each line gives its remaining amount)
@@ -486,7 +486,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 10 | `reconcile.py`: prefer a same-day line over the same weekly payment 7 days away (Rent, W Support were confirmed by hand), and treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
+| 10 | `reconcile.py`: treat identical same-day lines (same account, merchant, amount) as interchangeable instead of leaving them for the owner (about 40 such groups) | Owner to decide |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

@@ -20,6 +20,7 @@ Run after every statement inbox import (statement import rule 10). Steps:
    transaction that is reconciled gets Amount = the bank figure and Needs Details = No.
 3. Bank Rules (dry run only): how many of the lines left unmatched a rule would turn into new Finance
    Transactions. Creating them needs the owner's go-ahead.
+Step 0 generates the cash lines (scripts/cash_lines.py: cash transactions, withdrawals and deposits).
 With --apply it holds the Dataverse lock lzw_ReconcileLock (scripts/lock.py) from the first read to the last
 write, so two sessions cannot reconcile at the same time; a second run stops with exit code 2. It then
 recalculates the rollups of the rows it matched, so recalc.py is not needed afterwards.
@@ -43,6 +44,10 @@ if APPLY:
         print(f"NOT RUN: {e}. Wait for that run to finish (or run scripts/lock.py --release if it crashed).")
         sys.exit(2)
     atexit.register(lock.release, *_lock)
+
+# 0. Cash has no statement: generate its lines first (cash_lines.py), so they are not left open below
+import cash_lines
+cash_lines.run(APPLY)
 UNMATCHED, PARTLY, MATCHED, TRANSFER = 859130000, 859130001, 859130002, 859130003
 UNREC, PARTREC, RECONCILED = 859130000, 859130001, 859130002
 RULE, CONFIRMED = 859130000, 859130001

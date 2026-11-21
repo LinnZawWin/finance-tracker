@@ -29,7 +29,7 @@ import dv
 import spec
 
 O = spec.OPT
-SOURCES = ["Screenshot", "CSV", "PDF"]
+SOURCES = ["Screenshot", "CSV", "PDF", "Generated"]
 
 
 def norm(text):

@@ -353,7 +353,8 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
     which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
     the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
     wait and run `python scripts/reconcile.py --apply` once that run has finished. On its own,
-    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs).
+    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs). Then suggest Payees for
+    the linked transactions that have none (Reconciliation rule 7).
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
 "Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX

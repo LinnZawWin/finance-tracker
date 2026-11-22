@@ -490,8 +490,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   and the coffee on 5 Oct.
 - 25 transactions. The TK Maxx line (82.96) is split over two transactions (Pants 39.99 Mine, Household items
   42.97 A) instead of one with Notes, so each part has its own category and share.
-- "Hotel Warwick Vines Motel at Expedia" (payee "Travel Reservation") against EXPEDIA -110.93 on AMEX: left
-  for the owner because the payee shares no word with the line.
+- "Hotel Warwick Vines Motel at Expedia" (payee "Travel Reservation") against EXPEDIA -110.93 on AMEX: not
+  auto-confirmed (payee shares no word with the line), linked by hand at the owner's request.
+- "Drinks Iced Chocolate" payee corrected to "Wisteria Heavenly" as on the Kogan line.
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

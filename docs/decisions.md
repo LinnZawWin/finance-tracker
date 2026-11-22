@@ -293,7 +293,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "Square Australia FoodFruitGourmet" round is the Hamilton's Hospitality Strathfield line.
 
 ### Notes of 5 and 18 to 26 Sep 2026 (entered 2026-11-22)
-- 49 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), each linked to its line by hand with `split_match.py`.
+- 49 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), 48 linked and Reconciled (24 by `split_match.py`, 24 by another session's
+  `reconcile.py` run while this one waited for the lock; every difference is 0).
   Paid From from the note, else from the matching bank line. Claude Pro (note 5 Sep) is the AMEX line of 4 Sep, Khao
   Kluk Kapi (note 20 Sep) the AMEX line of 19 Sep.
 - Salary (25 Sep): Amount and Payee from the Everyday line ("SALARY DELTA INSIGHTS P", 5,318.67), Income.

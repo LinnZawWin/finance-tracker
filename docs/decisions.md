@@ -273,10 +273,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - ANZ NZ Go rows: Amount = NZD / 1.2273 (the platform NZD rate), so the rollup of the NZD match gives a
   difference of 0. The alternative, the Wise NZD rate of the same days (about 1.226), would leave a few cents
   of difference on every row.
-- Guesses to confirm: "Breakfast Dumplings NZD12" had no account or merchant; it is the NZ Go line "EP Uncle Eric"
-  (Uncle Eric's Dumplings, Taupo). Swimming Pants = Shopping (as the T-shirt rule), Vapes = Smoking, Waiotapu,
-  Gondola and the Hardstyle tickets = Entertainment. "Taxi from Airport to Home with DiDi" (TO CLAIM) has no
-  project: the note gave none.
+- Owner's answers (2026-11-22): "Breakfast Dumplings NZD12" is the NZ Go line "EP Uncle Eric" (Uncle Eric's
+  Dumplings, Taupo); it and "Breakfast Pumpkin Soup" are AA. "Taxi from Airport to Home with DiDi" (TO CLAIM)
+  stays Mine (the claim pays it back) and belongs to the NZ trip project. The Gondola payee is "Skyline Rotorua".
+  Own-account Transfer notes are never created as Finance Transactions. Still guesses: Swimming Pants =
+  Shopping (as the T-shirt rule), Vapes = Smoking, Waiotapu, Gondola and the Hardstyle tickets = Entertainment.
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the

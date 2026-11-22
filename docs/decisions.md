@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too). 23 Sep NZ Go flight and the 18 Sep DiDi refund +13.48 are open. Fuel 85.73 (22 Nov) waits for its bank line |
+| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too). The 23 Sep NZ Go flight is open. Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -299,15 +299,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Kluk Kapi (note 20 Sep) the AMEX line of 19 Sep.
 - Salary (25 Sep): Amount and Payee from the Everyday line ("SALARY DELTA INSIGHTS P", 5,318.67), Income.
 - "Refund for Taxi from Superordinary to home" (19 Sep note, AMEX +1.22 on 18 Sep) is no transaction of its own:
-  the taxi is 7.16 - 1.22 = 5.94 with both lines linked. "Refund Taxi from Juan to Home" (+13.48, same day) is not
-  linked yet: the only "Taxi from Juan to Home" is 5 Sep (30.92), and an unexplained DiDi charge of 16.92 is on
-  18 Sep. Waiting for the owner.
+  the taxi is 7.16 - 1.22 = 5.94 with both lines linked. "Refund Taxi from Juan to Home" (AMEX +13.48 on 18 Sep) belongs
+  to the 5 Sep "Taxi from Juan to Home" (owner): 30.92 - 13.48 = 17.44, both lines linked, Reconciled.
 - A friend's flights for the Auckland team event (AA, project Delta Insights Team Event Auckland Trip): BNE to AKL on
   Flex (Jetstar 319, booking reference in Notes, linked) and AKL to BNE on ANZ NZ Go (NZD 367 = AUD 299.03 at 1.2273,
   no line yet: the NZ Go statements start in October).
 - Payees as written in the notes (Quitmed for the Kogan line "Quick Rx Pty Ltd", Urban Purveyor Group for
   "WINGHAS"), except "DiDi" for "DiDi Mobility" and "Yuen's Market" for "Yeun's Market" (as on 13 Sep).
-- Guess: Car wash = Car Maintenance.
+- Car wash = Car Maintenance (owner agreed). Khao Kluk Kapi stays on 20 Sep, the note's date (owner); the
+  AMEX line is dated 19 Sep. Claude Pro: the AMEX charge is dated the 4th every month, the notes the 5th.
 
 ### Notes of 31 Aug 2026 (entered 2026-11-22)
 - 4 rows (Source Keep), all linked by hand and Reconciled: W Support (Flex), Taxi from Airport to Home (Uber 32.94 on
@@ -539,9 +539,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   paired with the AMEX SPECIAL.GIFT line). The Karta refund of 20 on AMEX is Income, Refund.
 - Cash pokies rows (Cash account): 17 Sep loss 18.65 Expense; wins on 3, 8, 10 and 16 Sep Income, all Gambling. The
   16 Sep win was written as a positive 14.20 and the 3 Sep one had no account: both taken as Income from Cash.
-- Guesses: the 17 Sep "Yakiniku|l at ..." line read as "Yakiniku at <restaurant>"; Uber One and Club Jetstar
-  memberships = Subscriptions; badminton (and lunch) and futsal = Sport and Fitness; the 7 Sep concert ticket for
-  Partner = Gifts (the "for <someone>" rule); "W Support Ad Hoc for NZ" 1,200 has no project.
+- Owner (2026-11-22): Uber One = Taxi, Club Jetstar membership = Travel (both were Subscriptions); W Support rows
+  never take a project ("W Support Ad Hoc for NZ" 1,200 included).
+- Guesses: the 17 Sep "Yakiniku|l at ..." line read as "Yakiniku at <restaurant>"; badminton (and lunch) and futsal
+  = Sport and Fitness; the 7 Sep concert ticket for Partner = Gifts (the "for <someone>" rule).
 
 ### Notes of 2 to 5 Oct (2026-11-22)
 - New project "SEQ to Northern NSW Loop Road Trip", 2 to 5 Oct (dates from the notes). In it: all of 2 Oct

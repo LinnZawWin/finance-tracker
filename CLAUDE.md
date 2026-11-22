@@ -200,7 +200,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 |---|---|
 | "for <someone>" (for example "for Mom"), gift, present, souvenir (also snacks or cosmetics bought for someone) | Gifts |
 | Hotel, accommodation | Accommodation (Travel) |
-| Tour guide tips, other trip costs | Travel |
+| Tour guide tips, other trip costs, Club Jetstar membership | Travel |
 | W Support (Joint Main) | Support Payments |
 | Rent | Rent and Housing |
 | Insurance | Insurance |
@@ -209,7 +209,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Annual fee, bank fees | Fees and Charges |
 | Interlock device | Fines |
 | Fuel | Fuel (Transport) |
-| Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
+| Taxi, DiDi, Uber (not Uber Eats), Uber One membership | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
 | Tickets, club entry | Entertainment |
@@ -613,8 +613,13 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day); bank 
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
+<<<<<<< HEAD
 | 8 | Enter the notes before 9 Oct 2026 (28 May, 31 Aug to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep, ANZ NZ Go NZD 367) waits for the September NZ Go statement; the 18 Sep DiDi refund +13.48 waits for the owner to say which taxi it belongs to. "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. "Car wash" (25 Sep) set as Car Maintenance | Owner |
+=======
+| 8 | Enter the notes before 9 Oct 2026 (31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep, ANZ NZ Go NZD 367) waits for the September NZ Go statement. "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
+| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. | Owner |
+>>>>>>> origin/main
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are linked to "Send Amazon Gift Card ... for Duolingo Family" (22 Oct, Partly Reconciled); a third friend's 28.54, expected into Flex, is still missing. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

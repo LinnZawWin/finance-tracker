@@ -474,6 +474,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   reconcile.py now recalculates only the rows it matched, because `recalc.py --days 1` took over 10 minutes.
   Trade-off: the confirmed pairs are no longer reviewed in a dry run first; the rules (single candidate,
   payee fits) are what keeps them safe, and the output lists every pair written.
+- **Parallel sessions** (owner, 2026-11-22). Several sessions may create Finance Transactions at once; only
+  reconciliation is serialised by the lock. A session that finds the lock held waits and retries by itself
+  instead of stopping, because the lock only means another run is writing, not that something is wrong.
+  Duplicates and same-day ordering are avoided by giving each session its own notes.
 
 - **Split bills** (owner, 2026-11-21): one transaction per bill linked to the charge and every repayment or
   refund, so Actual Amount is what was really paid and the matches list shows all the money involved. Chosen

@@ -382,7 +382,8 @@ A Finance Transaction paid from ANZ NZ Go stays AUD like every other: Amount = N
 (1.2273), rounded to cents, Original Amount / Currency = the NZD amount, Notes say the rate. The match is written
 in NZD (row currency NZD, Allocated Amount = the line amount) and the rollup converts it back at the same rate,
 so the difference is 0. `reconcile.py` finds no candidate for these (AUD Amount against an NZD line): link them
-by hand (Method Manual) and check the difference after the rollup.
+by hand (Method Manual) and check the difference after the rollup. `split_match.py` compares the NZD line with the AUD
+Amount, so it reports a false difference and sets Partly Reconciled: set Reconciled by hand when the rollup gives 0.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a

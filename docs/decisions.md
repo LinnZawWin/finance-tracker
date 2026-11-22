@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 21 Oct 2026 | Owner, then Claude | Finance Transactions start on 21 Oct (21 to 23 Oct entered 2026-11-21) |
+| 8 | Notes before 18 Oct 2026 | Owner, then Claude | Finance Transactions start on 18 Oct (18 to 20 Oct entered 2026-11-22) |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -264,6 +264,19 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   The rate was briefly set from the eSIM (70 / 9.58 = 7.306889) and set back at the owner's request.
 - The web page does not know Transfer or foreign amounts yet (the owner enters trip notes through Claude
   Code for now). Its View list counts a Transfer as money out.
+
+### Notes of 18 to 20 Oct 2026 (entered 2026-11-22)
+- 17 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), all Reconciled: 10 by `reconcile.py`, 7 by hand
+  (W Support, whose payee never fits "ANZ ACCESS ADVANTAGE", and the 6 ANZ NZ Go rows).
+- Not created: "Weekly Allowance" (Growth Saver to Flex 3,000) and "Wise Top-up for Vapes" (Flex to Wise 50),
+  both own-account transfers whose bank lines were already paired.
+- ANZ NZ Go rows: Amount = NZD / 1.2273 (the platform NZD rate), so the rollup of the NZD match gives a
+  difference of 0. The alternative, the Wise NZD rate of the same days (about 1.226), would leave a few cents
+  of difference on every row.
+- Guesses to confirm: "Breakfast Dumplings NZD12" had no account or merchant; it is the NZ Go line "EP Uncle Eric"
+  (Uncle Eric's Dumplings, Taupo). Swimming Pants = Shopping (as the T-shirt rule), Vapes = Smoking, Waiotapu,
+  Gondola and the Hardstyle tickets = Entertainment. "Taxi from Airport to Home with DiDi" (TO CLAIM) has no
+  project: the note gave none.
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the

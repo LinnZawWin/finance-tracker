@@ -218,8 +218,9 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Income: a friend paying back more than my cost | Reimbursement |
 | Income: salary | Salary and Contract Income |
 
-A "Weekly Allowance" note is my own money moving between my accounts (the bank lines are already paired as a
-transfer): do not create a Finance Transaction for it. The one for 25 Oct (3,000.00 Growth Saver to Flex Saver)
+A "Weekly Allowance" note, or any note marked Transfer between two of my bank accounts (for example a Wise top-up
+from Flex), is my own money moving between my accounts (the bank lines are already paired as a transfer): do not
+create a Finance Transaction for it. The one for 25 Oct (3,000.00 Growth Saver to Flex Saver)
 was deleted on 2026-11-21 at the owner's request.
 
 The owner writes drinking at a restaurant as its own line (for example "drinking at Korean restaurant") when
@@ -369,6 +370,11 @@ NZD). PDF named `<account number>_Statement_<date>.pdf` by the bank (`ANZ NZ Go 
 The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
 Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
 statement date. `statement_import.py` sets the currency per account (`CURRENCY`). First statement: Oct 2026.
+A Finance Transaction paid from ANZ NZ Go stays AUD like every other: Amount = NZD / the platform NZD rate
+(1.2273), rounded to cents, Original Amount / Currency = the NZD amount, Notes say the rate. The match is written
+in NZD (row currency NZD, Allocated Amount = the line amount) and the rollup converts it back at the same rate,
+so the difference is 0. `reconcile.py` finds no candidate for these (AUD Amount against an NZD line): link them
+by hand (Method Manual) and check the difference after the rollup.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
@@ -549,7 +555,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
+| 8 | Enter the notes before 18 Oct 2026 (18 to 20 Oct entered 2026-11-22, 21 to 23 Oct on 2026-11-21). Lines from 12 to 17 Oct and a few on 18 to 19 Oct (Secret Spot Hot Tubs x3, Redwoods Isite, Sobar Surf & Turf on Wise; Incredible India on NZ Go) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 

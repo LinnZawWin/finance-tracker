@@ -301,8 +301,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - First Finance Assets (owner's request): Washing Machine (Mykin MFLW800W, 479) and Compact Freezer (Devanti 31L,
   169.95), each with a Purchase link. Category Home and Hardware is a guess. The last note field "Major" is not a
   project, so it went to Notes.
-- Payees kept as the owner wrote them where they differ from the line: "WinningComAu" (line APPLIANCES ONLINE),
-  "Iron Squad" (line VITAL SQUAD CHATSWOOD), "Bunnings Online".
+- Payees (owner, 2026-11-22): "Appliances Online" (not "WinningComAu") and "Just Vapes" (line VITAL SQUAD
+  CHATSWOOD, not "Iron Squad"). "Bunnings Online" kept.
 
 ### Notes of 13 to 17 Oct and the rest of 18 Oct 2026 (entered 2026-11-22)
 - 24 rows (owner's notes without amounts, matched to the bank lines by Claude and agreed by the owner), all

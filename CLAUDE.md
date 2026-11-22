@@ -448,7 +448,11 @@ and any refund. Its **Amount** is my share as the Notes work it out (the bill le
 example "419 - <friend> 60 - <friend> 60 - <friend> 60" = 239; "<friend> 26 from 53.80" = 26 of a 53.80
 repayment belongs to this bill). The charge is allocated in full (negative), each repayment or refund with its
 amount (positive), so **Actual Amount** = what I really paid and **Reconciliation Difference** = 0 when
-everyone has paid. Until then the difference shows what is still owed. A repayment covering two bills is
+everyone has paid. Until then the difference shows what is still owed: list an expected repayment in the Notes too
+("<friend> 28.54 (expected, transfer to Flex)") and set Amount as if it had arrived, so the difference is the
+amount still owed. The Finance Transaction view **Owed to me** (Partly Reconciled, Reconciliation Difference
+below 0, oldest first, with Notes) lists every bill still waiting for a repayment (owner's choice 2026-11-22: a
+view, no notification). A repayment covering two bills is
 split between them (`line=amount`). No separate transactions for the friends' shares. A partial refund (for example Translink +2.50 on a 3.50 fare) is linked to the purchase the same way:
 Amount = the cost less the refund, no separate Income transaction. `reconcile.py` does not
 find these (no line equals the Amount): after an import, look for open transactions whose Notes subtract
@@ -460,6 +464,10 @@ cash paid (it has no bank line), so the transaction stays Partly Reconciled unti
 **Work expense claims**: a purchase noted "TO CLAIM" is paid by me and repaid by the employer
 ("ANZ INTERNET BANKING TRANSFER EXPENSE CLAIMS ..." on Everyday). Link the claim credit to those transactions
 the same way, split between them by their amounts (`line=amount`), so each one's Actual Amount is 0.
+
+A Finance Transaction Claude creates from a bank line at the owner's request has Source = Import, Notes
+"Created from the bank line: <line description>", Paid From = the line's account, Share Type Mine, the
+Transaction Date at 12:00 Brisbane, and is linked with `split_match.py`.
 
 Bank Rules are for statement lines that have no Keep note behind them (rent, salary, interest, tolls, card
 fees, supermarkets). When such a line stays unmatched, the first rule whose Match Text fits its description
@@ -557,7 +565,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. | Owner, then Claude |
+| 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the Duolingo family bill "Send Amazon Gift Card to MTA for Duolingo Family" (22 Oct, 142.68) has its two repayments linked (+28.54, +57.08 on 19 Nov) and Amount 28.52; a third repayment of 28.54 to Flex is expected (shows in "Owed to me"): link it when it arrives. | Owner, then Claude |
 | 13 | ING (imported 2026-11-22; the 4 transfers are paired). "ING Savings Booster Opening Bonus and Interest" (2 Nov, 100.00, Paid From Booster) is linked to the Booster line "SB Reward". Open: the Booster interest +0.16 and +0.20 (31 Oct) have no transaction. Savings Maximiser statements after 30 Jun 2026 are not uploaded | Owner |
 | 12 | The AMEX export of 22 Nov (14 to 21 Nov) has a payment of 1,217.53 in its summary but not in its lines (imported anyway, owner's choice). Check the payment line arrives with the next AMEX export or the 13 Dec statement, and that the balance check then passes | Claude |
 

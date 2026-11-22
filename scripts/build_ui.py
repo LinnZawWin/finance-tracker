@@ -57,6 +57,11 @@ VIEWS = {
         ("Needs Details", ACTIVE + cond("lzw_needsdetails", "eq", 1), None, None),
         ("Unreconciled", ACTIVE + cond("lzw_reconciliationstatus", "eq", O), None, None),
         ("Last 30 Days", ACTIVE + cond("lzw_transactiondate", "last-x-days", 30), None, None),
+        # Split bills still waiting for someone's repayment: Partly Reconciled and paid more than my share
+        # (Reconciliation Difference below 0 = still owed to me). Notes say who owes what.
+        ("Owed to me", ACTIVE + cond("lzw_reconciliationstatus", "eq", O + 1) + cond("lzw_reconciliationdifference", "lt", 0),
+         [("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 140), ("lzw_amount", 110),
+          ("lzw_actualamount", 110), ("lzw_reconciliationdifference", 130), ("lzw_notes", 320)], ("lzw_transactiondate", False)),
         ("By Project", ACTIVE + cond("lzw_project", "not-null"),
          [("lzw_project", 170), ("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 150),
           ("lzw_amount", 120), ("lzw_mycost", 110), ("lzw_category", 150), ("lzw_sharetype", 150)], ("lzw_project", False)),

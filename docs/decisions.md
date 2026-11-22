@@ -453,6 +453,16 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   income is 100.36 (reward 100.00, interest 0.16 and 0.20); the owner reduced the two 100.36 transactions to one
   of 100.00 before the import.
 
+- **Repayments still owed** (owner, 2026-11-22): tracked with the split-bill rule rather than a new table:
+  the expected repayment is written in the bill's Notes and already taken off its Amount, so the
+  Reconciliation Difference (negative) is what is still owed and the transaction stays Partly Reconciled.
+  The view "Owed to me" lists them. The owner chose a view only, no scheduled email (offered: weekly flow for
+  ones older than 14 days; a separate Expected Repayment table). First case: the Duolingo family bill, 142.68
+  less 28.54, 57.08 and an expected 28.54 = 28.52.
+
+- **Transactions from bank lines** (owner, 2026-11-22): Rent (2 Nov), W Support (2 and 16 Nov), GST Payment
+  (3 Nov, 7,500, category Tax) and Health Insurance (16 Nov) were created from their Flex lines and linked.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

@@ -495,6 +495,9 @@ Amount / Currency, no cash account (USD 1400 for Yunnan, JPY 40,000 for Tokyo on
 
 Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 4481, 7195, 7850), Account Type Other.
 Add a card the same way when a note names a new one.
+Each card has one Bank Statement named after it (no statements from the issuer: lines typed from screenshots of the
+card's activity in the app, opening and closing balance 0, period from the first Load to the screenshot date).
+The Load is a Transfer paired with the "SPECIAL.GIFT ..." charge on the card that bought it (7850: AMEX, 3 Jul).
 
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".

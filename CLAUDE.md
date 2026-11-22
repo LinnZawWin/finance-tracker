@@ -228,6 +228,12 @@ Food and Soft Drinks unless it names alcohol.
 
 The categories are data in Dataverse (`lzw_financecategory`); add one only with the owner's agreement.
 
+**Payee** is the real business name, not the bank descriptor ("WW METRO 2885 FORTITUDE VLY" = Woolworths
+Metro, "DIDIMOBILITY AUSTRALIA" = DiDi). For a booking or ticket platform the owner decides: EatClub lines
+take the venue, Fever lines stay "Fever". When the descriptor names no business (an LS / Pty Ltd name,
+an Alipay QR code), ask. A friend's cash repayment takes the friend as Payee; a cash tip, the person's role
+("Chinese Tour Guide"). As of 2026-11-22 every Finance Transaction linked to a bank line has a Payee.
+
 ## Sign convention
 
 - Bank Statement Line **Amount** and Reconciliation Match **Allocated Amount** are signed like the bank:

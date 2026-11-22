@@ -442,6 +442,17 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Amount set to 1.00 (Notes "3.50 - Translink refund 2.50 (19 Nov)") and the refund line linked to it with
   `split_match.py`, so both lines are on one transaction and the difference is 0.
 
+- **ING accounts** (owner, 2026-11-22): three Bank Accounts under the bank "ING" (Orange Everyday, Savings
+  Maximiser, Savings Booster), named "ING <product>" like the ANZ Plus ones, short names Orange, Maximiser and
+  Booster ("Savings" was taken by Growth Saver). The first upload had three empty Orange Everyday quarterly
+  statements (Jan to Sep), one empty Savings Maximiser half-year (Jan to Jun) and two interim statements. Empty
+  statements are recorded as Bank Statements with no lines (`statement_import.py` now creates a statement that
+  has no lines and does not exist yet), so the covered periods show in Dataverse. The money path, checked on the
+  lines: Everyday -100 (9 Oct) to Booster, Flex -1,000 (5 Nov) to Orange Everyday, Booster -200.36 (12 Nov) to
+  Orange Everyday, Orange Everyday -200.36 (12 Nov) to Everyday; paired by hand as transfers. The Booster's
+  income is 100.36 (reward 100.00, interest 0.16 and 0.20); the owner reduced the two 100.36 transactions to one
+  of 100.00 before the import.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

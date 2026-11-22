@@ -247,7 +247,7 @@ The categories are data in Dataverse (`lzw_financecategory`); add one only with 
 | `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` (the retired Keep flow) only provides helpers now |
 | `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
-| `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
+| `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, ING, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
 | `statement_import.py <out> [--apply] [--include-possible] [--no-reconcile]` | Create the Bank Statements and only the missing lines (dry run by default). `--apply` then runs `reconcile.py --apply --verbose` itself (exit code 2 if another run holds the lock) |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
@@ -300,6 +300,8 @@ parser reads these names, and the Bank Statement is named after the file (withou
 | AMEX | `AMEX <period end>.xlsx` |
 | Kogan | `KoganMoneyBlackCard_<yyyymmdd of period end>.pdf` |
 | ANZ NZ Go | `ANZ NZ Go <period end> - Statement.pdf` |
+| ING Orange Everyday / Savings Maximiser / Savings Booster | `ING <account> <period end> - Statement.pdf` (quarterly or half-yearly statements) |
+| ING interim statement (`Mid-cycle` folder) | `ING <account> <start> to <end> - Interim Statement.pdf` |
 | Wise | `Wise <year> (until <Mon>).csv` |
 | Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
 
@@ -358,6 +360,20 @@ NZD). PDF named `<account number>_Statement_<date>.pdf` by the bank (`ANZ NZ Go 
 The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
 Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
 statement date. `statement_import.py` sets the currency per account (`CURRENCY`). First statement: Oct 2026.
+
+ING (2026-11-22): bank "ING" (Account with Is Bank), Bank Accounts "ING Orange Everyday" (`Orange`, Everyday),
+"ING Savings Maximiser" (`Maximiser`, Savings) and "ING Savings Booster" (`Booster`, Savings), all AUD, with the
+Account Number as BSB-number. The bank names PDFs by a GUID or "Orange Everyday (1).pdf": rename them by the
+table above. `statement_parse.py` reads ING PDFs with pdfplumber: regular statements ("Statement from:
+dd/mm/yyyy to dd/mm/yyyy", checked against the opening, money in / out and closing balances) and interim
+statements made in online banking ("Statement Start Date", treated like mid-cycle exports: placeholder
+statement). Signs come from the balance change; "Receipt <n>" is the Bank Reference. A statement with no
+transactions is still recorded (Bank Statement with 0 lines). The transaction row layout of a regular
+statement has not been seen yet (every regular statement so far was empty): check the first one.
+ING lines do not show the other account's number, so `reconcile.py` does not pair their transfers: pair them by
+hand (opposite amount, same day, own name or "Internal Transfer"). Imported: Orange Everyday 1 Jan to 30 Sep
+(empty) and interim 1 Oct to 21 Nov; Savings Maximiser 1 Jan to 30 Jun (empty); Savings Booster interim
+1 Jul to 21 Nov.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
@@ -540,7 +556,8 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
+| 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. | Owner, then Claude |
+| 13 | ING (imported 2026-11-22; the 4 transfers are paired). Open: the transaction "ING Savings Booster Opening Bonus and Interest" (12 Nov, 100.00, no Paid From) against the Booster line "SB Reward" +100.00 (2 Nov), not linked (no shared payee word, 10 days apart); the Booster interest +0.16 and +0.20 (31 Oct) have no transaction. Savings Maximiser statements after 30 Jun 2026 are not uploaded | Owner |
 | 12 | The AMEX export of 22 Nov (14 to 21 Nov) has a payment of 1,217.53 in its summary but not in its lines (imported anyway, owner's choice). Check the payment line arrives with the next AMEX export or the 13 Dec statement, and that the balance check then passes | Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

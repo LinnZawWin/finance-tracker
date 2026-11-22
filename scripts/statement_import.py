@@ -21,7 +21,8 @@ import statement_compare as sc
 LINES, APPLY, POSSIBLE = sys.argv[1], "--apply" in sys.argv, "--include-possible" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
-            "NZGo": "ANZ NZ Go"}
+            "NZGo": "ANZ NZ Go", "INGOrange": "ING Orange Everyday", "INGMaximiser": "ING Savings Maximiser",
+            "INGBooster": "ING Savings Booster"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
 SRC = {"PDF": 2, "CSV": 1}
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
@@ -67,7 +68,7 @@ for s in stmts:
         placeholder = bool(found)
         if found:
             print(f"    updates the placeholder \"{found[0]['lzw_name']}\"")
-    if not APPLY or not (res["new"] or res["update"] or placeholder):
+    if not APPLY or not (res["new"] or res["update"] or placeholder or (not lines and not found)):  # empty: record it
         continue
     body = {"lzw_name": name, "lzw_periodstart": s["start"], "lzw_periodend": s["end"],
             "lzw_sourcetype": sc.O + SRC[s["kind"]], "lzw_BankAccount@odata.bind": f"/lzw_bankaccounts({aid})",

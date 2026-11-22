@@ -3,7 +3,8 @@
     python scripts/statement_parse.py "<inbox folder>" <out folder>
 
 Handles ANZ Plus PDFs (statements and "Transaction List" exports), ANZ New Zealand PDFs ("<account number>_Statement_<date>.pdf",
-NZD), Kogan Money PDFs and AMEX .xlsx (statements, or the current cycle's export named "AMEX <export date>.xlsx")
+NZD), ING PDFs ("ING <account> <period end> - Statement.pdf", interim "ING <account> <start> to <end> - Interim
+Statement.pdf"; read with pdfplumber), Kogan Money PDFs and AMEX .xlsx (statements, or the current cycle's export named "AMEX <export date>.xlsx")
 (Wise: scripts/wise_lines.py). For each file it writes
 <out>/<file name>.json (the lines, in the format statement_compare.py reads) and <out>/_statements.json
 (account, period, balances), and prints the checks: ANZ running balance line by line, Kogan and AMEX summary
@@ -269,6 +270,67 @@ def amex(path):
                 opening=opening, closing=closing, lines=lines, interim=interim)
 
 
+ING_ACCOUNTS = {"Orange Everyday": "INGOrange", "Savings Maximiser": "INGMaximiser", "Savings Booster": "INGBooster"}
+
+
+def ing(path):
+    """ING Australia: quarterly statements ("Statement from: dd/mm/yyyy to dd/mm/yyyy") and interim statements
+    ("Statement Start Date" / "Statement End Date", made in online banking). Signs come from the balance change."""
+    import pdfplumber
+    f = os.path.basename(path)
+    with pdfplumber.open(path) as pdf:
+        t = "\n".join(pg.extract_text() or "" for pg in pdf.pages)
+    interim = t.lstrip().startswith("Interim statement")
+    if interim:
+        ps = dt.datetime.strptime(re.search(r"Statement Start Date (\d\d \w{3} \d{4})", t)[1], "%d %b %Y").date()
+        pe = dt.datetime.strptime(re.search(r"Statement End Date (\d\d \w{3} \d{4})", t)[1], "%d %b %Y").date()
+        name = re.search(r"Account Type (.+)", t)[1].strip()
+        number = re.search(r"ACC: (\d+)", t)[1]
+        opening = money(re.search(r"Brought Forward (-?\$[\d,.]+)", t)[1])
+        closing = money(re.search(r"Closing Balance (-?\$[\d,.]+)", t)[1])
+        row = re.compile(r"^(\d\d \w{3} \d{4}) (.+?) (-?\$[\d,.]+) (-?\$[\d,.]+)$")
+        fmt, totals = "%d %b %Y", None
+    else:
+        m = re.search(r"Statement from: (\d\d/\d\d/\d{4}) to (\d\d/\d\d/\d{4})", t)
+        ps, pe = (dt.datetime.strptime(x, "%d/%m/%Y").date() for x in (m[1], m[2]))
+        nm = re.search(r"(Orange Everyday|Savings Maximiser|Savings Booster) number: (\d+)", t)
+        name, number = nm[1], nm[2]
+        bm = re.search(r"Opening balance Total money in Total money out Closing balance\s+"
+                       r"(-?\$[\d,.]+) (-?\$[\d,.]+) (-?\$[\d,.]+) (-?\$[\d,.]+)", t)
+        opening, closing = money(bm[1]), money(bm[4])
+        totals = (money(bm[2]), money(bm[3]))
+        row = re.compile(r"^(\d\d/\d\d/\d{4}) (.+?) (-?\$?[\d,]+\.\d\d) (-?\$?[\d,]+\.\d\d)$")
+        fmt = "%d/%m/%Y"
+    if name not in ING_ACCOUNTS:
+        issue(f, f"unknown ING account {name}")
+    lines, prev = [], opening
+    for ln in t.splitlines():
+        mm = row.match(ln.strip())
+        if not mm:
+            continue
+        bal = money(mm[4])
+        diff = round(bal - prev, 2)
+        if abs(abs(diff) - abs(money(mm[3]))) > 0.005:
+            issue(f, f"balance chain break at {mm[1]} {mm[2][:40]}")
+        d = dt.datetime.strptime(mm[1], fmt).date().isoformat()
+        l = {"date": d, "posted_date": d, "description": re.sub(r"\s+", " ", mm[2]).strip(), "amount": diff,
+             "balance": bal, "line_number": len(lines) + 1}
+        rm = re.search(r"Receipt (\d+)", l["description"])
+        if rm:
+            l["bank_reference"] = rm[1]
+        lines.append(l)
+        prev = bal
+    if abs(prev - closing) > 0.005:
+        issue(f, f"opening {opening} + lines != closing {closing}")
+    if totals and (round(sum(l["amount"] for l in lines if l["amount"] > 0), 2) != totals[0]
+                   or round(-sum(l["amount"] for l in lines if l["amount"] < 0), 2) != totals[1]):
+        issue(f, f"money in/out {totals} differs from the lines")
+    if not re.search(rf"{ps.isoformat()} to {pe.isoformat()}" if interim else pe.isoformat(), f):
+        issue(f, f"filename does not show the period {ps} to {pe}")
+    return dict(file=f, account=ING_ACCOUNTS.get(name, name), kind="PDF", start=ps.isoformat(), end=pe.isoformat(),
+                opening=opening, closing=closing, lines=lines, interim=interim, number=number)
+
+
 def wb_rows(path, sheet):
     import openpyxl
     return openpyxl.load_workbook(path, data_only=True)[sheet].iter_rows(values_only=True)
@@ -285,6 +347,8 @@ for p in sorted(glob.glob(INBOX + "*")):
         stmts.append(kogan(p))
     elif b.startswith("AMEX") and b.endswith(".xlsx"):
         stmts.append(amex(p))
+    elif b.startswith("ING ") and b.endswith(".pdf"):
+        stmts.append(ing(p))
 for acc, grp in groupby(sorted(stmts, key=lambda s: (s["account"], s["start"])), key=lambda s: s["account"]):
     g = list(grp)
     for a, b in zip(g, g[1:]):

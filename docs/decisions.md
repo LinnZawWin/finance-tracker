@@ -480,6 +480,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - JPY 40,000 cash for the Tokyo trip (22 to 30 Aug), paid back to a friend on 1 Sep: Travel expense like the
   USD cash for Yunnan, Original Amount JPY 40,000, no JPY cash account (the trip was over).
 - Pokies Win 15.65 in cash: Income, Gambling; its cash line was generated and matched.
+- Card 7850 lines from the owner's screenshot: Load 200.00 (3 Jul, paired with the AMEX SPECIAL.GIFT line),
+  ALDI 84.80 (14 Jul), ALDI 111.07 (3 Sep, linked to the 1 Sep grocery, now Reconciled), Woolworths 4.13 (7 Sep).
+  The 14 Jul and 7 Sep purchases have no transaction yet (no notes for them).
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

@@ -485,6 +485,12 @@ fees, supermarkets). When such a line stays unmatched, the first rule whose Matc
 supplies the payee, category and share type for a new Finance Transaction. A line that matches a Keep note
 never needs a rule: the note's own category wins.
 
+**Asset purchases** (for example "Washing Machine from Appliances Online Mykin 8kg ..."): the Finance Transaction
+Description is the item name only ("Washing Machine") and the rest of the note goes to its Notes. Create a
+Finance Asset with the same name (Asset Type, Brand, Model, Notes with the full item text and where it was
+bought) and a Finance Asset Link (Role Purchase, Allocated Amount = the transaction Amount), then recalculate the
+asset's Total Cost. Assets so far: Washing Machine, Compact Freezer (1 Oct 2026, AMEX).
+
 Projects: Start Date and End Date are the travel dates from the owner's Google Calendar "Travel" calendar.
 They are a guide only. Flights, hotels and tickets are often bought earlier, and the Keep note says which
 project they belong to.
@@ -588,8 +594,8 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day); bank 
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 9 Oct 2026 (1 Sep and 2 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
-| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
+| 8 | Enter the notes before 9 Oct 2026 (1 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
+| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

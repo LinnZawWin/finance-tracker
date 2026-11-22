@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 18 Oct 2026 | Owner, then Claude | Finance Transactions start on 18 Oct (18 to 20 Oct entered 2026-11-22) |
+| 8 | Notes before 13 Oct 2026 | Owner, then Claude | Finance Transactions start on 13 Oct (13 to 20 Oct entered 2026-11-22) |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -278,6 +278,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   stays Mine (the claim pays it back) and belongs to the NZ trip project. The Gondola payee is "Skyline Rotorua".
   Own-account Transfer notes are never created as Finance Transactions. Still guesses: Swimming Pants =
   Shopping (as the T-shirt rule), Vapes = Smoking, Waiotapu, Gondola and the Hardstyle tickets = Entertainment.
+
+### Notes of 13 to 17 Oct and the rest of 18 Oct 2026 (entered 2026-11-22)
+- 24 rows (owner's notes without amounts, matched to the bank lines by Claude and agreed by the owner), all
+  linked one to one by hand (Method Manual) and Reconciled. NZ Go rows at 1.2273 as above; Wise rows take the
+  Wise AUD and original amount (Vio.com in EUR). "Lunch Indian" is dated 17 Oct, its NZ Go line 19 Oct.
+- An NZD 100 transfer to a friend for personal use in NZ is an expense, Gifts, AA (owner's decision).
+- "Hotel Deposit" (15 Oct) has no bank line (probably a released hold) and was not created.
+- The 6 Nov expense claim +107.06 is split across the five TO CLAIM rows: 27.66, 18.36 and 20.71 in full, and
+  the remaining 40.33 over the two NZD meals in proportion (Lunch Sushi 16.14 of 16.30, Dinner Chicken Burger
+  24.19 of 24.44). The 0.41 left is the gap between the employer's NZD rate and 1.2273. The five are set to
+  Reconciled by hand (every line linked).
+- Guesses: Driver licence renew and Car rental = Transport, Hot Tub Spa = Entertainment, payee "AA New Zealand"
+  for "EP AA Palmerston North", "Bicorre" for "ZLR*BICORRE BICORRE EAGLE FARM". "Major" in the concert ticket
+  note went to Notes (no such project).
 
 ### Automation identity
 - App registration **Finance Tracker Automation** (single tenant) with a service principal, added to the

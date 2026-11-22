@@ -529,6 +529,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   ALDI 84.80 (14 Jul), ALDI 111.07 (3 Sep, linked to the 1 Sep grocery, now Reconciled), Woolworths 4.13 (7 Sep).
   The 14 Jul and 7 Sep purchases have no transaction yet (no notes for them).
 
+### Notes of 2 to 4, 6 to 11 and 14 to 17 Sep, and 28 May 2026 (entered 2026-11-22)
+- 63 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), Paid From from the matching bank line, all Reconciled:
+  51 by `reconcile.py`, 12 by hand with `split_match.py` (W Support x4, commutes x5, two payments to friends whose
+  line names differ from the note's payee, and the concert tickets).
+- Concert Tickets x2 (28 May, AMEX 263.97, fully refunded 4 Sep): Amount 0, both lines linked, like the Halloween
+  tickets. The refund note is not a transaction. "Major" went to Notes.
+- Not created: the gift card "0000" bought for 250 and refunded (no bank lines) and the card 4481 Load of 200 (already
+  paired with the AMEX SPECIAL.GIFT line). The Karta refund of 20 on AMEX is Income, Refund.
+- Cash pokies rows (Cash account): 17 Sep loss 18.65 Expense; wins on 3, 8, 10 and 16 Sep Income, all Gambling. The
+  16 Sep win was written as a positive 14.20 and the 3 Sep one had no account: both taken as Income from Cash.
+- Guesses: the 17 Sep "Yakiniku|l at ..." line read as "Yakiniku at <restaurant>"; Uber One and Club Jetstar
+  memberships = Subscriptions; badminton (and lunch) and futsal = Sport and Fitness; the 7 Sep concert ticket for
+  Partner = Gifts (the "for <someone>" rule); "W Support Ad Hoc for NZ" 1,200 has no project.
+
 ### Notes of 2 to 5 Oct (2026-11-22)
 - New project "SEQ to Northern NSW Loop Road Trip", 2 to 5 Oct (dates from the notes). In it: all of 2 Oct
   except the 7-Eleven fuel, all of 3 Oct except the commute, all of 4 Oct except rent, and only the KFC lunch

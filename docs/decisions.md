@@ -292,6 +292,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Payee "Hamilton's Hospility" in the notes was written as "Hamilton's Hospitality" (the bank line). The 28.00
   "Square Australia FoodFruitGourmet" round is the Hamilton's Hospitality Strathfield line.
 
+### Notes of 31 Aug 2026 (entered 2026-11-22)
+- 4 rows (Source Keep), all linked by hand and Reconciled: W Support (Flex), Taxi from Airport to Home (Uber 32.94 on
+  AMEX, no amount in the note; project Japan Tokyo Trip, as the NZ airport taxi), Vape x3 (108.85, line OZ SHOPS
+  AUBURN; Payee "Just Vapes" as the 30 Sep vapes, the note's merchant is in Notes) and Halloween Tickets x2 (Everyday
+  -160, fully refunded by the 4 Oct PAYMENT FROM +160: Amount 0, both lines linked, Entertainment, A).
+
 ### October bank lines without notes (entered 2026-11-22, owner's request)
 - 8 rows (Source Manual), each linked to its line and Reconciled: W Support (5 Oct, Flex 1,000), Commute (13 Oct),
   Crunchyroll (21 Oct, ANZ NZ Go NZD 6.66 = AUD 5.43, Subscriptions, Mine, as the Recurring rows) and five interest

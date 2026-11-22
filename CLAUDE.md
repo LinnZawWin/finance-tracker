@@ -463,6 +463,9 @@ cash paid (it has no bank line), so the transaction stays Partly Reconciled unti
 **Work expense claims**: a purchase noted "TO CLAIM" is paid by me and repaid by the employer
 ("ANZ INTERNET BANKING TRANSFER EXPENSE CLAIMS ..." on Everyday). Link the claim credit to those transactions
 the same way, split between them by their amounts (`line=amount`), so each one's Actual Amount is 0.
+The Reconciliation Difference then equals the Amount, so `split_match.py` sets Partly Reconciled: once every
+line of a claimed transaction is linked, set it to Reconciled by hand. A claim paid at another rate than the
+platform's leaves a few cents of Actual Amount on the foreign rows (6 Nov claim: 0.41 on the two NZD meals).
 
 Bank Rules are for statement lines that have no Keep note behind them (rent, salary, interest, tolls, card
 fees, supermarkets). When such a line stays unmatched, the first rule whose Match Text fits its description
@@ -558,9 +561,9 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 18 Oct 2026 (18 to 20 Oct entered 2026-11-22, 21 to 23 Oct on 2026-11-21). Lines from 12 to 17 Oct and a few on 18 to 19 Oct (Secret Spot Hot Tubs x3, Redwoods Isite, Sobar Surf & Turf on Wise; Incredible India on NZ Go) have no notes yet | Owner, then Claude |
+| 8 | Enter the notes before 13 Oct 2026 (13 to 20 Oct entered 2026-11-22, 21 to 23 Oct on 2026-11-21). The NZ Go credit +1,002.31 (12 Oct) and the 12 Oct lines have no notes yet. "Hotel Deposit" (15 Oct note) has no bank line and was not created | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
-| 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
+| 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

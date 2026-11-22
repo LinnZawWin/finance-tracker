@@ -304,7 +304,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - A friend's flights for the Auckland team event (AA, project Delta Insights Team Event Auckland Trip): BNE to AKL on
   Flex (Jetstar 319, booking reference in Notes, linked) and AKL to BNE on ANZ NZ Go (NZD 367 = AUD 299.03 at 1.2273,
   linked 2026-11-22 to the Air New Zealand line -367.00 NZD on 24 Sep, Manual, Reconciled, difference 0).
-  Its Payee is "Jetstar" but the line is Air New Zealand: suggested Air New Zealand, waiting for the owner.
+  Payee changed from "Jetstar" to Air New Zealand (owner agreed, 2026-11-22), as on the line.
 - ANZ NZ Go statements May to Sep 2026 imported 2026-11-22 (13 lines, balances chain 53.28 to 35.36 into
   October's opening). The lines before September (a Crunchyroll share, insurance, KiwiSaver, a ticket sale
   transfer, two repayments from a friend) have no Finance Transactions (those start in Sep).

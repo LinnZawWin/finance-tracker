@@ -277,10 +277,10 @@ def wb_rows(path, sheet):
 stmts = []
 for p in sorted(glob.glob(INBOX + "*")):
     b = os.path.basename(p)
-    if b.startswith("ANZ") and b.endswith(".pdf"):
-        stmts.append(anz(p))
-    elif re.match(r"\d\d-\d{4}-\d{7}-\d\d_Statement_.*\.pdf$", b) or (b.startswith("ANZ NZ Go ") and b.endswith(".pdf")):
+    if re.match(r"\d\d-\d{4}-\d{7}-\d\d_Statement_.*\.pdf$", b) or (b.startswith("ANZ NZ Go ") and b.endswith(".pdf")):
         stmts.append(anz_nz(p))
+    elif b.startswith("ANZ") and b.endswith(".pdf"):
+        stmts.append(anz(p))
     elif b.startswith("Kogan") and b.endswith(".pdf"):
         stmts.append(kogan(p))
     elif b.startswith("AMEX") and b.endswith(".xlsx"):

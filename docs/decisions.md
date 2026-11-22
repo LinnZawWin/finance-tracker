@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too). The 23 Sep NZ Go flight is open. Fuel 85.73 (22 Nov) waits for its bank line |
+| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -303,7 +303,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   to the 5 Sep "Taxi from Juan to Home" (owner): 30.92 - 13.48 = 17.44, both lines linked, Reconciled.
 - A friend's flights for the Auckland team event (AA, project Delta Insights Team Event Auckland Trip): BNE to AKL on
   Flex (Jetstar 319, booking reference in Notes, linked) and AKL to BNE on ANZ NZ Go (NZD 367 = AUD 299.03 at 1.2273,
-  no line yet: the NZ Go statements start in October).
+  linked 2026-11-22 to the Air New Zealand line -367.00 NZD on 24 Sep, Manual, Reconciled, difference 0).
+  Its Payee is "Jetstar" but the line is Air New Zealand: suggested Air New Zealand, waiting for the owner.
+- ANZ NZ Go statements May to Sep 2026 imported 2026-11-22 (13 lines, balances chain 53.28 to 35.36 into
+  October's opening). The lines before September (a Crunchyroll share, insurance, KiwiSaver, a ticket sale
+  transfer, two repayments from a friend) have no Finance Transactions (those start in Sep).
 - Payees as written in the notes (Quitmed for the Kogan line "Quick Rx Pty Ltd", Urban Purveyor Group for
   "WINGHAS"), except "DiDi" for "DiDi Mobility" and "Yuen's Market" for "Yeun's Market" (as on 13 Sep).
 - Car wash = Car Maintenance (owner agreed). Khao Kluk Kapi stays on 20 Sep, the note's date (owner); the

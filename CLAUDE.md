@@ -303,6 +303,24 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
   Other currencies: CAD, CNY, EUR, GBP, IDR, JPY, NZD, SGD, THB, USD. Exchange rates are units per 1 AUD and are only changed
   when the owner asks. The Planned Transactions flow uses the appointment's currency.
 
+## Parallel sessions
+
+Several sessions may create Finance Transactions at the same time. Creating them does not take the lock.
+- Give each session its own notes (a date range or a trip), so no transaction is created twice and the times
+  that order a day's rows do not interleave. Before creating, check for an existing row with the same date,
+  description and amount.
+- Only `reconcile.py --apply` (with `cash_lines.py`) and `split_match.py --apply` take `lzw_ReconcileLock`.
+  When another session holds it, the run writes nothing: `reconcile.py` prints NOT RUN and exits with code 2,
+  `split_match.py` stops with a `Busy` error. That is not a failure.
+- **When the lock is held, wait and retry without asking.** Check it with `python scripts/lock.py` every few
+  minutes (in a cloud session use Monitor with an until-loop, not a foreground `sleep`) and rerun the step as
+  soon as it shows "(free)". Do not run `lock.py --release` while the holder is under 60 minutes old: only a
+  lock older than that is abandoned (the next run takes it over by itself). Report how long you waited.
+- A reconcile run while another session is still creating transactions can leave lines unmatched or
+  Proposed. Run `reconcile.py --apply` again once all sessions have finished creating.
+- Each session updates this file and `docs/decisions.md`. Before pushing, merge the latest `main` and keep
+  both sessions' changes.
+
 ## Statement import rules
 
 Files: the owner drops statements in the Google Drive folder `Statements/Inbox`. After a statement is imported
@@ -361,7 +379,7 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
     `statement_import.py --apply` does this itself: after the lines it runs `reconcile.py --apply --verbose`,
     which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
     the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
-    wait and run `python scripts/reconcile.py --apply` once that run has finished. On its own,
+    wait and retry as under "Parallel sessions". On its own,
     `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs). Then suggest Payees for
     the linked transactions that have none (Reconciliation rule 7).
 

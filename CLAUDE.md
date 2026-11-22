@@ -233,6 +233,10 @@ Metro, "DIDIMOBILITY AUSTRALIA" = DiDi). For a booking or ticket platform the ow
 take the venue, Fever lines stay "Fever". When the descriptor names no business (an LS / Pty Ltd name,
 an Alipay QR code), ask. A friend's cash repayment takes the friend as Payee; a cash tip, the person's role
 ("Chinese Tour Guide"). As of 2026-11-22 every Finance Transaction linked to a bank line has a Payee.
+**Whenever a bank line is linked to a Finance Transaction that has no Payee** (by `reconcile.py`, `split_match.py`,
+the web page or by hand), suggest a Payee from the line by this rule in the session, as a table (transaction,
+bank line, suggested Payee, basis), and write it once the owner agrees. Check unclear descriptors online and
+give the source. Do this after every reconciliation run, including the one at the end of an inbox run.
 
 ## Sign convention
 
@@ -349,7 +353,8 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
     which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
     the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
     wait and run `python scripts/reconcile.py --apply` once that run has finished. On its own,
-    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs).
+    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs). Then suggest Payees for
+    the linked transactions that have none (Reconciliation rule 7).
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
 "Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX
@@ -409,6 +414,7 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
    Candidates are within 4 days, so the same weekly payment a week away is never a rival.
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
+7. Then suggest a Payee for every linked Finance Transaction that has none (see "Payee" under Categories).
 
 ### Cash lines
 

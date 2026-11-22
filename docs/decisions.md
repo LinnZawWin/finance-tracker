@@ -484,6 +484,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   ALDI 84.80 (14 Jul), ALDI 111.07 (3 Sep, linked to the 1 Sep grocery, now Reconciled), Woolworths 4.13 (7 Sep).
   The 14 Jul and 7 Sep purchases have no transaction yet (no notes for them).
 
+### Notes of 2 to 5 Oct (2026-11-22)
+- New project "SEQ to Northern NSW Loop Road Trip", 2 to 5 Oct (dates from the notes). In it: all of 2 Oct
+  except the 7-Eleven fuel, all of 3 Oct except the commute, all of 4 Oct except rent, and only the KFC lunch
+  and the coffee on 5 Oct.
+- 25 transactions. The TK Maxx line (82.96) is split over two transactions (Pants 39.99 Mine, Household items
+  42.97 A) instead of one with Notes, so each part has its own category and share.
+- "Hotel Warwick Vines Motel at Expedia" (payee "Travel Reservation") against EXPEDIA -110.93 on AMEX: left
+  for the owner because the payee shares no word with the line.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

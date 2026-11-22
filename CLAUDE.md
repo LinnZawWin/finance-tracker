@@ -465,6 +465,10 @@ dry run of `split_match.py`, then `--apply`. A friend paying back more than thei
 (Reimbursement). A note "Repayment for <bill> ..." is not a Finance Transaction: it names the friend's
 "PAYMENT FROM" line, which is linked to the bill. A note "Refund for <item> ..." works the same way: no transaction of its own; the bill's Amount is
 the charge less the refund (Notes "89.48 - 12.35 refund ...") and the refund line is linked to the bill.
+**One purchase, two kinds of item** (a note like "Pants 39.99, the rest shared with A"): one Finance Transaction
+per part, each with its own Category and Share Type, and the one bank line split between them
+(`split_match.py <ft> <line>=<-part>` once per part): 5 Oct TK Maxx 82.96 = Pants 39.99 (Clothing, Mine) +
+Household items 42.97 (Home and Hardware, A).
 A refund on another account than the charge is linked too (7 Oct ALDI container refund on Everyday against a
 1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
 account). **Bill paid in cash, repaid by bank transfer**: link the repayments; the difference stays at the
@@ -584,7 +588,7 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day); bank 
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 9 Oct 2026 (1 Sep and 6 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
+| 8 | Enter the notes before 9 Oct 2026 (1 Sep and 2 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 

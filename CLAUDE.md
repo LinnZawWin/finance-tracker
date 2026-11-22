@@ -220,7 +220,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 
 A "Weekly Allowance" note is my own money moving between my accounts (the bank lines are already paired as a
 transfer): do not create a Finance Transaction for it. The one for 25 Oct (3,000.00 Growth Saver to Flex Saver)
-was deleted on 2026-11-21 at the owner's request.
+was deleted on 2026-11-21 at the owner's request. The same goes for any note of a transfer between my own accounts ("Transfer from Flex to
+Everyday", 22 Oct, deleted 2026-11-22).
 
 The owner writes drinking at a restaurant as its own line (for example "drinking at Korean restaurant") when
 more of the bill went on alcohol than on the meal; that line is Alcohol. A plain "Drink" from a shop is

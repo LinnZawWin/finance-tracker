@@ -167,6 +167,9 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   Amount = the foreign amount, Original Currency = the account currency, Paid From = the cash account, Notes
   say which rate was used. When that currency is bought or received, update Last Rate and Last Rate Date.
   CNY Cash: 4.666043 from 30 Oct 2026. Cash a friend pays back is valued at Last Rate, not at the bill.
+  Cash left over from an earlier trip: a Transfer To the cash account with no Paid From, valued at Last Rate
+  (23 Oct 2026 "Leftover CNY from Previous China Trip", CNY 200 = AUD 42.86, project China Yunnan Trip). Its
+  cash line is Status Transfer with no counterpart, and the transaction stays Unreconciled (no bank side).
 - Finance Transaction **Original Amount** (positive) and **Original Currency**: the foreign amount. Fill them
   for Wise rows too (the CSV / Keep columns Currency and Original Amount). Amount is always AUD and the row
   currency stays AUD.

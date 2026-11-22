@@ -463,7 +463,10 @@ find these (no line equals the Amount): after an import, look for open transacti
 amounts, find the "PAYMENT FROM" credits (Everyday) and refunds with those amounts within 14 days, check the
 dry run of `split_match.py`, then `--apply`. A friend paying back more than their share: the excess is Income
 (Reimbursement). A note "Repayment for <bill> ..." is not a Finance Transaction: it names the friend's
-"PAYMENT FROM" line, which is linked to the bill. Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
+"PAYMENT FROM" line, which is linked to the bill. A note "Refund for <item> ..." works the same way: no transaction of its own; the bill's Amount is
+the charge less the refund (Notes "89.48 - 12.35 refund ...") and the refund line is linked to the bill.
+A refund on another account than the charge is linked too (7 Oct ALDI container refund on Everyday against a
+1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
 account). **Bill paid in cash, repaid by bank transfer**: link the repayments; the difference stays at the
 cash paid (it has no bank line), so the transaction stays Partly Reconciled until its cash line is generated (see "Cash lines"), then it is 0.
 **Work expense claims**: a purchase noted "TO CLAIM" is paid by me and repaid by the employer
@@ -486,6 +489,12 @@ project they belong to.
 for a friend, paid back in NZD into ANZ NZ Go): one Transfer per charge (Paid From the charged account,
 Transfer To the receiving account, no Category), each matched to its charge line. The receiving line gets
 Status Transfer with the largest charge line as Transfer Counterpart; Notes give the rate.
+
+Foreign cash bought from a friend for a trip that is over, and spent on it, is one Travel expense with Original
+Amount / Currency, no cash account (USD 1400 for Yunnan, JPY 40,000 for Tokyo on 1 Sep 2026).
+
+Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 4481, 7195, 7850), Account Type Other.
+Add a card the same way when a note names a new one.
 
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".
@@ -572,7 +581,7 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day); bank 
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 9 Oct 2026 (9 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
+| 8 | Enter the notes before 9 Oct 2026 (1 Sep and 6 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 

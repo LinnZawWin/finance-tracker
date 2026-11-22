@@ -469,6 +469,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   confirmed 9 November pairs that had been left for the owner (two bars, a vineyard, a karaoke bar, a
   restaurant booking).
 
+### Notes of 1 Sep and 6 to 8 Oct (2026-11-22)
+- 12 transactions. Refunds are linked to their bill, not separate transactions (split bill rule): Household
+  Items 89.48 less the 12.35 hose refund = 77.13 (AMEX lines -89.48 and +12.35, difference 0); the 1 Sep
+  grocery 111.07 less the 14.99 container refund = 96.08 (Everyday refund line linked; the card charge has no
+  bank line, so it stays Partly Reconciled with a difference of 111.07). The earlier separate refund
+  transactions (for example "Refund for Taxi from Airport to Home") were left as they are.
+- The note named a card "Special7850" that did not exist: Bank Account "Supermarket Slayer Card 7850" was added
+  like the other three.
+- JPY 40,000 cash for the Tokyo trip (22 to 30 Aug), paid back to a friend on 1 Sep: Travel expense like the
+  USD cash for Yunnan, Original Amount JPY 40,000, no JPY cash account (the trip was over).
+- Pokies Win 15.65 in cash: Income, Gambling; its cash line was generated and matched.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

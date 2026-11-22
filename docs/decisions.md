@@ -292,6 +292,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Payee "Hamilton's Hospility" in the notes was written as "Hamilton's Hospitality" (the bank line). The 28.00
   "Square Australia FoodFruitGourmet" round is the Hamilton's Hospitality Strathfield line.
 
+### Notes of 12 Sep to 1 Oct 2026 (entered 2026-11-22)
+- 18 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), all linked by hand with `split_match.py` and Reconciled.
+- Late Lunch Banquet x5 (Longwang Chopstick 412.70, A) = 165.20 after two friends' PAYMENT FROM lines (165 and
+  82.50), both linked to it. The "Transfer back" notes were not created (split bill rule).
+- Yunnan Trip Tour x2 (Flex 2,092.05 to a person, currency exchange USD 1500): one Travel expense, project China
+  Yunnan Trip, Original Amount USD 1500, like the USD 1400 one.
+- First Finance Assets (owner's request): Washing Machine (Mykin MFLW800W, 479) and Compact Freezer (Devanti 31L,
+  169.95), each with a Purchase link. Category Home and Hardware is a guess. The last note field "Major" is not a
+  project, so it went to Notes.
+- Payees kept as the owner wrote them where they differ from the line: "WinningComAu" (line APPLIANCES ONLINE),
+  "Iron Squad" (line VITAL SQUAD CHATSWOOD), "Bunnings Online".
+
 ### Notes of 13 to 17 Oct and the rest of 18 Oct 2026 (entered 2026-11-22)
 - 24 rows (owner's notes without amounts, matched to the bank lines by Claude and agreed by the owner), all
   linked one to one by hand (Method Manual) and Reconciled. NZ Go rows at 1.2273 as above; Wise rows take the

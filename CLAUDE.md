@@ -16,6 +16,11 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
 - Use the Dataverse Python SDK, PAC CLI, Azure CLI and Web API. Do not use or register the Dataverse MCP
   server (it is billed). If a skill says to register it, skip that step.
 - If something blocks an item, skip it, continue, and report it.
+- **Suggest a new session when it is cheaper.** Every turn re-sends the whole conversation, so a long session
+  costs more per turn. When the context has grown long (many batches, large script or query output) and the next
+  request does not depend on what is only in this session (scratchpad files, IDs looked up, a running task), say
+  so at the end of the reply and suggest starting a new session. Make sure this file and `docs/decisions.md` are
+  current first, so the new session loses nothing. Do not suggest it in the middle of a task.
 - Active or inactive is the built-in **Status** on every table. Do not add "Is Active" columns.
 - If a host is blocked ("Host not in allowlist"), stop that step, report the host and wait. Do not work around it.
 - Match tables and columns by logical name. Add only what is missing. If a column exists with a different

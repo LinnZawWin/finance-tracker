@@ -292,6 +292,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Payee "Hamilton's Hospility" in the notes was written as "Hamilton's Hospitality" (the bank line). The 28.00
   "Square Australia FoodFruitGourmet" round is the Hamilton's Hospitality Strathfield line.
 
+### October bank lines without notes (entered 2026-11-22, owner's request)
+- 8 rows (Source Manual), each linked to its line and Reconciled: W Support (5 Oct, Flex 1,000), Commute (13 Oct),
+  Crunchyroll (21 Oct, ANZ NZ Go NZD 6.66 = AUD 5.43, Subscriptions, Mine, as the Recurring rows) and five interest
+  credits as Income, Interest (ANZ: Flex 6.29, Growth Saver 7.87 and 408.08 on 30 Oct; ING Savings Booster 0.16 and
+  0.20 on 31 Oct). Left in October: the 4 Oct Everyday credit +160 (no note yet) and the two items in "Notes of 12 Sep".
+
 ### Notes of 12 Sep to 1 Oct 2026 (entered 2026-11-22)
 - 18 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), all linked by hand with `split_match.py` and Reconciled.
 - Late Lunch Banquet x5 (Longwang Chopstick 412.70, A) = 165.20 after two friends' PAYMENT FROM lines (165 and

@@ -432,7 +432,8 @@ example "419 - <friend> 60 - <friend> 60 - <friend> 60" = 239; "<friend> 26 from
 repayment belongs to this bill). The charge is allocated in full (negative), each repayment or refund with its
 amount (positive), so **Actual Amount** = what I really paid and **Reconciliation Difference** = 0 when
 everyone has paid. Until then the difference shows what is still owed. A repayment covering two bills is
-split between them (`line=amount`). No separate transactions for the friends' shares. `reconcile.py` does not
+split between them (`line=amount`). No separate transactions for the friends' shares. A partial refund (for example Translink +2.50 on a 3.50 fare) is linked to the purchase the same way:
+Amount = the cost less the refund, no separate Income transaction. `reconcile.py` does not
 find these (no line equals the Amount): after an import, look for open transactions whose Notes subtract
 amounts, find the "PAYMENT FROM" credits (Everyday) and refunds with those amounts within 14 days, check the
 dry run of `split_match.py`, then `--apply`. A friend paying back more than their share: the excess is Income
@@ -525,7 +526,7 @@ Columns K and L and the `__PowerAppsId__` column were used only by the deleted f
 
 ## Outstanding work
 
-Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-21:
+Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-22:
 Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank lines go back to March.
 
 | # | Item | Who |
@@ -540,6 +541,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 8 | Enter the notes before 21 Oct 2026 (21 to 23 Oct entered 2026-11-21). "ANZ NZ Go" lines 12 to 20 Oct (NZD) have no notes yet | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the expense claim +107.06 (6 Nov) goes to the October "TO CLAIM" transactions; the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
+| 12 | The AMEX export of 22 Nov (14 to 21 Nov) has a payment of 1,217.53 in its summary but not in its lines (imported anyway, owner's choice). Check the payment line arrives with the next AMEX export or the 13 Dec statement, and that the balance check then passes | Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
 the Keep Inbox sheet and the Keep flow was deleted.

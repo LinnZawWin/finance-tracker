@@ -428,6 +428,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   confirmed 9 November pairs that had been left for the owner (two bars, a vineyard, a karaoke bar, a
   restaurant booking).
 
+- **AMEX export without the payment line** (owner, 2026-11-22): the second AMEX current-cycle export
+  (14 to 21 Nov) failed the balance check. Its summary has Payments & Credits -1,219.35, but its lines hold
+  only the DiDi credit -1.82, so a payment of 1,217.53 is missing from the lines (the charges, 1,413.90,
+  agree). The owner chose to import the 7 new lines anyway; the placeholder took the export's balances
+  (-2,219.35 to -2,413.90). The payment line should arrive with the next export or the final statement.
+  Drive now has two files named `AMEX 2026-11-14 to 2026-11-21.xlsx` in Mid-cycle (the 21 Nov and the
+  22 Nov exports).
+
+- **Partial refund on the bill** (owner, 2026-11-22): the Translink refund +2.50 (19 Nov, Everyday) was
+  matched to its own Income transaction "Translink refund". The owner asked for it to be the partial refund
+  of the 14 Nov Commute (3.50) instead, as with split bills: the refund transaction was deleted, Commute's
+  Amount set to 1.00 (Notes "3.50 - Translink refund 2.50 (19 Nov)") and the refund line linked to it with
+  `split_match.py`, so both lines are on one transaction and the difference is 0.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

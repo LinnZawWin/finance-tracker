@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 13 Oct 2026 | Owner, then Claude | Finance Transactions start on 13 Oct (13 to 20 Oct entered 2026-11-22) |
+| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -278,6 +278,19 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   stays Mine (the claim pays it back) and belongs to the NZ trip project. The Gondola payee is "Skyline Rotorua".
   Own-account Transfer notes are never created as Finance Transactions. Still guesses: Swimming Pants =
   Shopping (as the T-shirt rule), Vapes = Smoking, Waiotapu, Gondola and the Hardstyle tickets = Entertainment.
+
+### Notes of 9 to 12 Oct and 22 Nov 2026 (entered 2026-11-22)
+- 29 rows (Source Keep, 12:00 Brisbane then 10 minutes apart), Paid From taken from the matching bank line. 28 are
+  Reconciled: 17 by `reconcile.py`, 11 by hand with `split_match.py` (same-amount Oktoberfest rounds paired by
+  merchant, the 12 Oct commute, W Support, the envelope, and the two split dinners). Fuel (22 Nov) was not reconciled
+  at the owner's request.
+- Split dinners (owner): the "Repayment for Dinner ..." notes are the friends' PAYMENT FROM lines, not transactions.
+  Dinner Korean (Gamdang 163.30) = 81.30 after 40 + 42; Dinner Vietnamese (LS Rung 392) = 196 after 98 + 98.
+- Money order 794 (Everyday) and envelope 8.15 (AMEX) for a friend, paid back as NZD 1,002.31 into ANZ NZ Go
+  (owner: Transfers). Two Transfers to ANZ NZ Go; the NZ Go line is Status Transfer, counterpart the 794 line.
+  AUD 802.15 = NZD 1,002.31 (1.249530) is in the Notes. The NZ Go side is not a match, so no rate difference shows.
+- Payee "Hamilton's Hospility" in the notes was written as "Hamilton's Hospitality" (the bank line). The 28.00
+  "Square Australia FoodFruitGourmet" round is the Hamilton's Hospitality Strathfield line.
 
 ### Notes of 13 to 17 Oct and the rest of 18 Oct 2026 (entered 2026-11-22)
 - 24 rows (owner's notes without amounts, matched to the bank lines by Claude and agreed by the owner), all

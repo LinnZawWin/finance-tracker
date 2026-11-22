@@ -457,7 +457,8 @@ split between them (`line=amount`). No separate transactions for the friends' sh
 find these (no line equals the Amount): after an import, look for open transactions whose Notes subtract
 amounts, find the "PAYMENT FROM" credits (Everyday) and refunds with those amounts within 14 days, check the
 dry run of `split_match.py`, then `--apply`. A friend paying back more than their share: the excess is Income
-(Reimbursement). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
+(Reimbursement). A note "Repayment for <bill> ..." is not a Finance Transaction: it names the friend's
+"PAYMENT FROM" line, which is linked to the bill. Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
 account). **Bill paid in cash, repaid by bank transfer**: link the repayments; the difference stays at the
 cash paid (it has no bank line), so the transaction stays Partly Reconciled until its cash line is generated (see "Cash lines"), then it is 0.
 **Work expense claims**: a purchase noted "TO CLAIM" is paid by me and repaid by the employer
@@ -475,6 +476,11 @@ never needs a rule: the note's own category wins.
 Projects: Start Date and End Date are the travel dates from the owner's Google Calendar "Travel" calendar.
 They are a guide only. Flights, hotels and tickets are often bought earlier, and the Keep note says which
 project they belong to.
+
+**Paying for someone who pays back into another of my accounts** (12 Oct: a money order and its envelope
+for a friend, paid back in NZD into ANZ NZ Go): one Transfer per charge (Paid From the charged account,
+Transfer To the receiving account, no Category), each matched to its charge line. The receiving line gets
+Status Transfer with the largest charge line as Transfer Counterpart; Notes give the rate.
 
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".
@@ -550,7 +556,7 @@ Columns K and L and the `__PowerAppsId__` column were used only by the deleted f
 ## Outstanding work
 
 Details and reasoning are in [docs/decisions.md](docs/decisions.md). State as of 2026-11-21:
-Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank lines go back to March.
+Finance Transactions start on 9 Oct 2026 (notes entered back to that day); bank lines go back to March.
 
 | # | Item | Who |
 |---|---|---|
@@ -561,7 +567,7 @@ Finance Transactions start on 21 Oct 2026 (notes entered back to that day); bank
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 13 Oct 2026 (13 to 20 Oct entered 2026-11-22, 21 to 23 Oct on 2026-11-21). The NZ Go credit +1,002.31 (12 Oct) and the 12 Oct lines have no notes yet. "Hotel Deposit" (15 Oct note) has no bank line and was not created | Owner, then Claude |
+| 8 | Enter the notes before 9 Oct 2026 (9 to 12 Oct entered 2026-11-22). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov, no account) waits for its bank line | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now) | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are a split bill of the October Super Duolingo payment. Link both with `split_match.py` once those transactions exist. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 

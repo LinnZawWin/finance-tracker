@@ -12,7 +12,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
 | 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too). Fuel 85.73 (22 Nov) waits for its bank line |
+| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too; 14 to 19 Aug on 2026-11-23). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 
@@ -415,6 +415,24 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - W Support (Joint Main 1,000, Flex, Support Payments) and Health Insurance (AHM 163.05, Everyday, Insurance): Mine,
   no project (owner), 11:40 and 11:50 Brisbane (before the trip rows, as in the note), linked and Reconciled.
 - Wise 24 Aug lines Fua-Sutoshiyotsupuguran 8.01 and 8.02 are in the 25 Aug notes (Beer at Combini).
+
+### Notes of 14 to 19 Aug 2026 (entered 2026-11-23)
+- 32 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), each linked to its bank
+  line (`split_match.py`, or another session's `reconcile.py` run that picked some up first). Paid From from the note,
+  else from the line. No project except Hotel Ginza Daiei (Agoda 73.66, AMEX, A, Japan Tokyo Trip).
+- Two items paid for friends and paid back into another of my accounts are Transfers (the "Paying for someone"
+  rule), no Category, each matched to its charge line; the receiving line is Status Transfer with the charge line
+  as Transfer Counterpart. The "Return" / "Transfer back" notes are not transactions of their own:
+  - 19 Aug money transfer at Australia Post (Everyday 148.40) for a friend's sister's passport tax, paid back as
+    NZD 179.00 into ANZ NZ Go the same day (1.206199 NZD per AUD, in the Notes): Transfer Everyday to ANZ NZ Go.
+  - 17 Aug Kogan Mobile voucher (Kogan card 154.00) for a friend, paid back 154.00 into Everyday (PAYMENT FROM):
+    Transfer Kogan to Everyday. The note's last field "Help" is not a project, so it is in the Notes.
+- "Taxi from Juan House Party to Home" (16 Aug note, no amount): the DiDi AMEX line of 15 Aug, 18.50.
+- Payees: "Just Vapes" for OZ SHOPS AUBURN as on 31 Aug (the note's merchant is in Notes); "Artie and Mai" for the
+  EatClub line (venue rule); "Calida" for the note's "Califa" (the line). The two Vape Pod rows keep the notes'
+  payees: "Quitmed" (17 Aug, Kogan) and "Quit Rx" (18 Aug, AMEX); both lines read "Quick Rx Pty Ltd".
+- Categories: Parking for the airport parking (AA), Pets for the dog hotel, Smoking for vapes, Gifts for the
+  chocolate present, Food and Soft Drinks for the Chocolate Macadamia and the show food.
 
 ### Notes of 22 Aug 2026 (entered 2026-11-22)
 - 3 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart), each linked to its line with

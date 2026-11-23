@@ -25,6 +25,10 @@ replace the Debian `argcomplete`, and PAC CLI 2.x needs .NET 10, not 8. The scri
 `--ignore-installed argcomplete` and `dotnet-sdk-10.0` and also installs the script dependencies. Its commands were
 run in that session (`az` 2.93.0, PAC CLI 2.16.1); the script itself is proven only once a new session starts.
 
+2026-11-23: `dv.py` signs the Azure CLI in as the service principal (AZURE_CLIENT_* variables) when it is not
+signed in, because each cloud session starts in a new container without the previous sign-in. Tested from a
+signed-out container: WhoAmI succeeded.
+
 2026-11-21: the transaction-to-line window in `reconcile.py` and the web page's Reconcile tab is 4 days (was 7, owner's
 request), so a weekly payment (Rent, W Support) 7 days away is no longer a rival candidate. It applies to estimated
 transactions too.

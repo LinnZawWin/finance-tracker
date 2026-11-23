@@ -511,6 +511,8 @@ Household items 42.97 (Home and Hardware, A).
 badminton they paid, so they sent 3.52): the badminton is its own transaction, and the 3.52 line gets two matches
 by hand, +24.40 on the bill and -20.88 on the badminton (`split_match.py` cannot: it allows only the line's sign).
 **Poker** with friends: one Gambling transaction per settlement line, Payee the friend, Income when they paid me.
+**A charge on my card spent by Partner and paid back in full** (PayID credit on AMEX): one transaction, Amount 0,
+Share AA, linked to the charge and the credit (9 and 11 Jul 2026).
 An AMEX Travel Credit is a refund of the booking it paid for (12 Aug Finnair flight: +450 linked, Amount 1,608.60 - 450).
 A refund on another account than the charge is linked too (7 Oct ALDI container refund on Everyday against a
 1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash

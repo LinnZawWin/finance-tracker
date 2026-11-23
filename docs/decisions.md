@@ -359,8 +359,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   the 10,000 that morning and the 30 Aug cash spends. The 23 Aug cash spends (JPY 1,500) came from cash left over from
   an earlier trip: "Leftover JPY from Previous Japan Trip", Income from JPY Cash, 22 Aug (first day), JPY 1,500 =
   13.56, Other Income (guessed), Mine. The other 30,000 is "Cash Trip Expenses", 22 Aug, JPY 30,000 = 271.20, A,
-  Travel. Both cash lines generated and Reconciled. JPY Cash now ends at JPY 2,200 (AUD 19.89); its running balance
-  dips below 0 between 22 Aug and 1 Sep because the 30,000 Transfer is dated on the payment day.
+  Travel. Both cash lines generated and Reconciled. JPY Cash now ends at JPY 2,200 (AUD 19.89). The 30,000 Transfer
+  was redated from 1 Sep to 22 Aug 11:50 Brisbane (owner), so the running balance never goes below 0; its Everyday
+  line stays on 1 Sep, still matched.
 
 ### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
 - 17 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes

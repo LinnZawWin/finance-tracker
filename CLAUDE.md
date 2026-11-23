@@ -529,7 +529,7 @@ Status Transfer with the largest charge line as Transfer Counterpart; Notes give
 Foreign cash bought from a friend for a trip that is over, and spent on it, is one Travel expense with Original
 Amount / Currency, no cash account (USD 1400 for Yunnan). Exception: when the notes list the cash spends, the cash is
 a Transfer into the currency's cash account and each spend is entered from it (JPY 40,000 for Tokyo, paid back on
-1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 on 1 Sep and the 10,000 "Cash from <friend>" on 30 Aug, sharing
+1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 dated 22 Aug (the line is 1 Sep) and the 10,000 "Cash from <friend>" on 30 Aug, sharing
 the one Everyday line; Last Rate 110.619469). Leftover JPY 1,500 from an earlier Japan trip is Income
 (Other Income, 22 Aug, owner's choice; the CNY leftover above is a Transfer), the 30,000 spent without notes is one
 "Cash Trip Expenses" (Travel, A, 22 Aug), and JPY Cash ends at JPY 2,200 as in the notes.

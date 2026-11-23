@@ -525,7 +525,8 @@ never needs a rule: the note's own category wins.
 Description is the item name only ("Washing Machine") and the rest of the note goes to its Notes. Create a
 Finance Asset with the same name (Asset Type, Brand, Model, Notes with the full item text and where it was
 bought) and a Finance Asset Link (Role Purchase, Allocated Amount = the transaction Amount), then recalculate the
-asset's Total Cost. Assets so far: Washing Machine, Compact Freezer (1 Oct 2026, AMEX).
+asset's Total Cost. Assets so far: Washing Machine, Compact Freezer (1 Oct 2026, AMEX), Outdoor sleeping bags x2 (3 Aug, Cash, A),
+Switch Joy-con x3 (6 Aug, Cash).
 
 Projects: Start Date and End Date are the travel dates from the owner's Google Calendar "Travel" calendar.
 They are a guide only. Flights, hotels and tickets are often bought earlier, and the Keep note says which
@@ -535,6 +536,9 @@ project they belong to.
 for a friend, paid back in NZD into ANZ NZ Go): one Transfer per charge (Paid From the charged account,
 Transfer To the receiving account, no Category), each matched to its charge line. The receiving line gets
 Status Transfer with the largest charge line as Transfer Counterpart; Notes give the rate.
+Paid in cash instead (6 Aug: NZD 160 money order for a friend's passport, AUD 133.40 out of a 173.40 Australia Post
+withdrawal): the Transfer is Paid From Cash, so its generated Cash line and the NZ Go repayment line are each other's
+Transfer Counterpart (set by hand), and the transaction is set Reconciled by hand (it has no match).
 
 Foreign cash bought from a friend for a trip that is over, and spent on it, is one Travel expense with Original
 Amount / Currency, no cash account (USD 1400 for Yunnan). Exception: when the notes list the cash spends, the cash is
@@ -638,8 +642,8 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day, plus o
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 9 Oct 2026 (7 to 19 Aug entered 2026-11-23; 20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines | Owner, then Claude |
-| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. | Owner |
+| 8 | Enter the notes before 9 Oct 2026 (3 to 19 Aug entered 2026-11-23; 20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines | Owner, then Claude |
+| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. 6 Aug "Dog Hotel Booking Deposit" as Pets; "Switch Joy-con x3" (6 Aug) and "Outdoor sleeping bags x2" (3 Aug) as Shopping. | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are linked to "Send Amazon Gift Card ... for Duolingo Family" (22 Oct, Partly Reconciled); a third friend's 28.54, expected into Flex, is still missing. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

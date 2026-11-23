@@ -626,6 +626,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   reconciliation is serialised by the lock. A session that finds the lock held waits and retries by itself
   instead of stopping, because the lock only means another run is writing, not that something is wrong.
   Duplicates and same-day ordering are avoided by giving each session its own notes.
+- **Reconcile once, at the end** (owner, 2026-11-23). Parallel sessions spent their time queued behind each
+  other's lock. Now they only create transactions and import lines (`--no-reconcile`), run their own
+  `split_match.py` links together at the end, and one session runs `reconcile.py --apply` after all have
+  finished. A reconcile run during creation left rows open anyway, so the final run was needed regardless.
+  A lock per account was rejected: transfers and split matches span two accounts.
 
 - **Split bills** (owner, 2026-11-21): one transaction per bill linked to the charge and every repayment or
   refund, so Actual Amount is what was really paid and the matches list shows all the money involved. Chosen

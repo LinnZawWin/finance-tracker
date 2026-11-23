@@ -791,9 +791,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - 36 rows (Source Keep), all Reconciled: 34 linked with one `split_match.py --batch` run (36 matches); the two Cash
   rows (Pokies at Casino 50.00, Vape x2 85.00) by their lines from `cash_lines.py` in the following `reconcile.py --apply`.
 - Combined at the owner's request: the 7 Jul dinner at The Lex (Amount 171.38) is linked to the AMEX W Brisbane line
-  (-161.38) and the 6 Jul First Table reservation (-10.00). The 4 Jul lunch at Chu The Phat (EatClub, Payee the venue)
-  includes the badminton 17 a friend paid: Amount 69.26 = 77.63 less the friend's +8.37 (5 Jul, linked). The note
-  works it out as 25.87 - 17 = 8.37, which is 8.87: to confirm with the owner.
+  (-161.38) and the 6 Jul First Table reservation (-10.00).
+- The 4 Jul lunch at Chu The Phat (EatClub, Payee the venue) and the badminton a friend paid are separate (owner, after
+  first combining them): lunch Amount 51.76 = 77.63 less the friend's 25.87 share; "Badminton" 17.50 (Sport and Fitness,
+  Everyday, A, Payee the friend). The friend's +8.37 (5 Jul) has two matches by hand, +25.87 on the lunch and -17.50
+  on Badminton, as on 1 Aug. The note's "badminton 17" is 17.50 (owner).
 - "Tokyo DisneySea x2" (Wise, 167.48): Original Amount JPY 18,800 (Wise split it 18,798 JPY + 0.02 AUD; the note says 0.03).
 - The cash withdrawal note (ANZ Queen Street 90, 4 Jul) was already a Cash transfer pair (5 Jul lines): no transaction.
 - "Rent" note had the account in the share field ("ANZ"): Everyday, Mine. "Returnt" saved as "Return"; "Major" went to Notes.

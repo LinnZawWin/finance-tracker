@@ -279,7 +279,7 @@ give the source. Do this after every reconciliation run, including the one at th
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
 | `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
 | `lock.py [--release]` | The reconciliation lock: environment variable `lzw_ReconcileLock` ("<holder> <UTC time>", empty = free), taken with If-Match so only one session reconciles at a time; older than 60 minutes = abandoned. `--release` clears it after a crashed run |
-| `split_match.py <ft id> <line id>[=<amount>] ... [--apply]` | Link one Finance Transaction to several bank lines (split bill or refund, see "Split bills and refunds"): Method Manual, Confirmed; sets line and transaction status; holds the lock (dry run by default) |
+| `split_match.py <ft id> <line id>[=<amount>] ... [--apply]`, `split_match.py --batch <file> [--apply]` | Link one Finance Transaction to several bank lines (split bill or refund, see "Split bills and refunds"): Method Manual, Confirmed; sets line and transaction status; holds the lock (dry run by default). `--batch`: one `<ft id> <line id>[=<amount>] ...` per line (`#` starts a comment), checked as a whole (nothing written if any part does not fit), written under one lock. **Use `--batch` whenever there is more than one transaction**: about 5 calls per transaction instead of 15 (27 rows: about 2.5 minutes instead of 13) |
 | `cash_lines.py [--apply]` | Generate the cash lines (see "Cash lines"); `reconcile.py` runs it first, under the lock (dry run by default) |
 | `recalc.py` | Recalculate the rollup columns on demand |
 
@@ -325,7 +325,7 @@ Several sessions may create Finance Transactions at the same time. Creating them
 - **Reconcile once, at the end** (owner, 2026-11-23). When the owner says other sessions are running, a session
   only creates transactions and imports lines, with `statement_import.py --apply --no-reconcile`. It does not
   run `reconcile.py --apply`. Links that `reconcile.py` cannot find (split bills, refunds, one line split over
-  several parts, ANZ NZ Go, claims) are run with `split_match.py --apply` together at the end of the session,
+  several parts, ANZ NZ Go, claims) are run with one `split_match.py --batch <file> --apply` at the end of the session,
   not one by one. Report the lines and transactions left open.
 - Once every session has finished creating, one session (the last one, or a new one the owner starts) runs
   `reconcile.py --apply --verbose`, then suggests Payees (Reconciliation rule 7). A single session on its own

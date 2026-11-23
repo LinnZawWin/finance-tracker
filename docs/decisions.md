@@ -877,5 +877,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   is 15 reads, 17 seconds. One `split_match.py --apply` makes about 12 to 15 calls (lock, match, line status, two
   rollups, transaction status, release), about 25 to 30 seconds, so 27 transactions took 13 minutes.
 - Time grows with the number of writes in a run, not with the size of the tables: reads are paged 5,000 rows at a
-  time and the matching is in memory. Possible speed-up (not done): link several transactions in one
-  `split_match.py` run, under one lock.
+  time and the matching is in memory.
+- Removing the lock would save only its 6 calls per run and lose the protection for parallel sessions, so it stays.
+- `split_match.py --batch` (owner's request): all transactions in one run. It reads the transactions and lines with a
+  few `In()` filters, checks the whole batch before writing anything, takes the lock once, and recalculates and sets
+  each line once after its matches (a line shared by two transactions in the batch is shared out in order). The line
+  step is in a `finally`, so after a failed write the lines still show what was written and a rerun cannot allocate
+  them twice; the line status comes from the recalculated Allocated Amount. A transaction that already has matches
+  gets its rollup recalculated first (one rollup each), as before.
+- Tested 2026-11-23 on four temporary transactions against three open 8 Jul lines (one line shared -20 / -10, so
+  Partly Matched), then removed: all four Reconciled, lines correct. 28 calls, about 26 seconds plus one proxy drop
+  (a dropped call costs about 25 seconds: the proxy cuts it after 10 silent seconds and `dv.py` waits 15 before the
+  retry). The old way made about 15 calls per transaction.

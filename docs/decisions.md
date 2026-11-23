@@ -696,6 +696,23 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - No "SPECIAL.GIFT" charge for the Load: no -200 bank line near 11 Mar exists on any account, so the
   Load stays Unmatched (like card 7195's). The purchases have no notes or transactions yet.
 
+### Open lines from 14 Aug closed by hand (2026-11-23)
+- Owner's instructions, for lines with no note behind them. All Source Manual, linked with `split_match.py`
+  (Method Manual), all Reconciled:
+  - Crunchyroll 21 Aug and 21 Sep (ANZ NZ Go, NZD 6.66 = AUD 5.43 at 1.2273, Subscriptions, Payee Crunchyroll),
+    as the 21 Oct one. Set Reconciled by hand (the rollup difference is 0).
+  - Credit Interest and Bonus Credit Interest of 31 Aug and 30 Sep on Flex and Growth Saver (Interest, Payee ANZ).
+  - Commute 14 Sep (Translink); Parking 26 Sep (Payee CellOPark, from the Bank Rule); two DiDi taxis 18 and
+    26 Sep (Taxi, A); Grocery 29 Sep on card 4481 (ALDI, Groceries, A).
+- "Leftover CNY from Previous China Trip" is now Other Income from CNY Cash, like the leftover JPY. That showed
+  `cash_lines.py` did not update a line whose Type changed while amount, date and name stayed the same: it now
+  also compares Transfer or not.
+- Still open from 14 Aug: the 14 Aug Woolworths remnants on cards 9873 (-0.05) and 3054 (-0.75), the Flex
+  transfers from Growth Saver in November (Growth Saver lines end on 30 Oct) and the transactions waiting for
+  newer statements.
+- Two `split_match.py` runs in a row stopped with `Busy` naming another split_match run less than a minute
+  old, although nothing else was running here. They wrote nothing and worked on retry.
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

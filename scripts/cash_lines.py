@@ -121,8 +121,8 @@ def run(apply, verbose=False):
     for ref, w in sorted(wanted.items(), key=lambda kv: kv[1]["line"]["date"]):
         l, old = w["line"], existing.get(ref)
         same = old and cents(old["lzw_amount"]) == cents(l["amount"]) and old["lzw_transactiondate"] == l["date"] \
-            and old["lzw_name"] == l["description"][:500]
-        if same:
+            and old["lzw_name"] == l["description"][:500] and (old["lzw_status"] == TRANSFER) == w["transfer"]
+        if same:  # a change of Type (Transfer to Income or Expense, or back) also needs an update
             continue
         sid = statement(w["acc"], w["project"])
         verb = "update" if old else "create"

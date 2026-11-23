@@ -174,9 +174,10 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   Amount = the foreign amount, Original Currency = the account currency, Paid From = the cash account, Notes
   say which rate was used. When that currency is bought or received, update Last Rate and Last Rate Date.
   CNY Cash: 4.666043 from 30 Oct 2026. Cash a friend pays back is valued at Last Rate, not at the bill.
-  Cash left over from an earlier trip: a Transfer To the cash account with no Paid From, valued at Last Rate
-  (23 Oct 2026 "Leftover CNY from Previous China Trip", CNY 200 = AUD 42.86, project China Yunnan Trip). Its
-  cash line is Status Transfer with no counterpart, and the transaction stays Unreconciled (no bank side).
+  Cash left over from an earlier trip: Income (Other Income) Paid From the cash account, valued at Last Rate
+  (23 Oct 2026 "Leftover CNY from Previous China Trip", CNY 200 = AUD 42.86, project China Yunnan Trip, changed
+  from a Transfer on 2026-11-23; 22 Aug "Leftover JPY from Previous Japan Trip"). Its cash line is matched and
+  the transaction is Reconciled.
 - Finance Transaction **Original Amount** (positive) and **Original Currency**: the foreign amount. Fill them
   for Wise rows too (the CSV / Keep columns Currency and Original Amount). Amount is always AUD and the row
   currency stays AUD.
@@ -480,7 +481,7 @@ time `reconcile.py` runs (with each import). Cash accounts are those named "Cash
 - **Withdrawals and deposits** on bank lines ("ANZ ATM", "NON-ANZ ATM", "... WITHDRAWAL", "CASH DEPOSIT"):
   a Cash line with the opposite amount, Bank Reference `BL-<bank line id>`, both lines Status Transfer and
   each other's counterpart. "VISA DEBIT DEPOSIT" is a card refund, not cash.
-- Editing a cash transaction updates its line and match on the next run; deleting or deactivating it removes
+- Editing a cash transaction (including its Type) updates its line and match on the next run; deleting or deactivating it removes
   the line. Never edit generated lines by hand.
 
 ### Split bills and refunds
@@ -538,7 +539,7 @@ Amount / Currency, no cash account (USD 1400 for Yunnan). Exception: when the no
 a Transfer into the currency's cash account and each spend is entered from it (JPY 40,000 for Tokyo, paid back on
 1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 dated 22 Aug (the line is 1 Sep) and the 10,000 "Cash from <friend>" on 30 Aug, sharing
 the one Everyday line; Last Rate 110.619469). Leftover JPY 1,500 from an earlier Japan trip is Income
-(Other Income, 22 Aug, owner's choice; the CNY leftover above is a Transfer), the 30,000 spent without notes is one
+(Other Income, 22 Aug, owner's choice, as the CNY leftover above), the 30,000 spent without notes is one
 "Cash Trip Expenses" (Travel, A, 22 Aug), and JPY Cash ends at JPY 2,200 as in the notes.
 
 Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 3054, 4481, 7195, 7850, 8979, 9873), Account Type Other.

@@ -212,7 +212,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
-| Tickets, club entry | Entertainment |
+| Tickets, club entry, cover charge, cat cafe entry, shisha bar | Entertainment |
 | Ice skating, gym | Sport and Fitness |
 | Clinic, vaccination, supplements, chemist | Health |
 | Haircut, laser hair removal, cosmetics (own) | Personal Care |

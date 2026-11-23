@@ -343,6 +343,21 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Wise 23 Aug lines Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148) are in the 24 Aug notes
   (created on the note's date, lines left on 23 Aug).
 
+### Notes of 30 Aug 2026 (entered 2026-11-23)
+- 12 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order). Rent (Madison Heights 560,
+  Everyday, Rent, Mine, no project), linked and Reconciled. The rest project Japan Tokyo Trip.
+- "Cash from <friend> JPY10000": Transfer Everyday to JPY Cash, AUD 90.40 at 110.619469, Payee the friend. The JPY
+  40,000 paid back on 1 Sep (PAYMENT TO <friend> -361.60) included it, so "Japanese Cash in Tokyo Trip 40k"
+  became JPY 30,000 / 271.20 (name kept, Notes say so) and the line is split -271.20 / -90.40 (Method Manual).
+- Cash spends at JPY Cash Last Rate: Takoyaki (JPY 700 = 6.33, A), Shaved Ice (500 = 4.52, AA), Bomber Jacket Ueno
+  (6,600 = 59.66, Mine, Clothing). No Payee (the note names none). Food and Soft Drinks for the first two.
+- Wise rows, linked with `split_match.py` by amount and note order: Lunch Oyakodon (Payee Azuma, from the line
+  "あづま", 33.68, A), Bedsheet (Nitori 55.93, A, Home and Hardware), Coffee (Cafe Veloce 8.83, A), Alcoholic Drinks
+  (Lawson 4.19 / JPY 479, Alcohol), Dinner Tonkatsu (Narita Airport 62.47), Cosmetics for mom (Narita Airport 58.85,
+  Gifts), Snacks flight (Lawson 5.61 / JPY 641). Empty share flag = Mine.
+- JPY Cash tally: in JPY 40,000; cash spends entered so far JPY 9,300 (23 Aug 1,500, 30 Aug 7,800), so the account
+  shows JPY 30,700 against the 2,200 in the owner's notes: JPY 28,500 of cash spending is not in the notes entered.
+
 ### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
 - 17 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes
   apart in the note's order per day), each linked to its line with `split_match.py`. 28 Aug: Beer (Lawson 25.64,

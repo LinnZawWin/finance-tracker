@@ -252,6 +252,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - "Park Use Fee Perisher Kosciuszko National Park" (26 Jul) moved from Travel to Parking (Transport).
 - Ice Skate stays in Sport and Fitness. Club entry, karaoke and shisha bar stay in Entertainment.
 
+### Flights category and trip reporting (2026-11-23)
+- Trip reports use the Finance Project (Project Type Trip), not travel copies of each category: one trip is its
+  project grouped by Category; the overall report counts every transaction of a Trip project as Travel Expenses.
+- New category **Flights** (Expense, Parent Category Travel). The 7 flight rows moved there from Travel, plus
+  "Club Jetstar membership" (6 Sep), which also got the project Thailand EDC Trip.
+- Projects for trip-like rows (owner): China Yunnan Trip on "Taxi from Home to Airport" (24 Oct) and "Taxi from
+  airport to home" (2 Nov). No project, as the owner decided: 2 Oct fuel (before the road trip), the 24 Oct airport
+  coffee and taxi home (seeing a friend off), 2 Nov Lotte Duty Free cosmetics (a gift, bought after the trip; its
+  Category changed from Personal Care to Gifts).
+- 24 Oct "Taxi from Airport to Home" and its refund combined into one transaction: Amount 24.12, Notes "31.37 - 7.25
+  refund", the refund line's match moved to it, the refund transaction deleted. Reconciled, difference 0.
+- New project **Ultra Beach Gold Coast 2027** (Project Type Event, 18 Apr 2027 from the owner's calendar event
+  "Ultra Beach 2027"): "Ultra Tickets x2" and "Gold Coast Hotel at Surfers Chateau for Ultra x2 nights" (5 Nov).
+
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,
   Account Currency CNY, Statements Imported = No), reused on every trip so the cash left over carries on.

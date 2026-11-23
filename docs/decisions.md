@@ -235,6 +235,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   is Food and Soft Drinks; the owner splits out the alcohol as its own line when it is the bigger part.
   Interlock device costs are Fines, not Car Maintenance.
 
+### Events category (2026-11-23)
+- Owner added the category **Events** (Expense, Parent Category Entertainment) for concert, festival, show and
+  event tickets, and relinked 10 transactions to it: Post Malone, Together For Tomorrow (both, including the ticket
+  bought for a friend, which was Gifts), ULTRA PRE-PARTY, Shokk Halloween, Guns N' Roses, Hardstyle Carnival,
+  Ultra, YOASOBI, Blanc de Blanc.
+- Kept in Entertainment by the owner's choice: sports tickets (Baseball Tickets x2, Tokyo), club entry fees,
+  karaoke, attractions (Disney Premier Access, maze, gondola, glowworms, hot tubs, thermal park).
+- An event ticket bought for someone is Events, not Gifts, so the Events rule comes before the Gifts rule.
+
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,
   Account Currency CNY, Statements Imported = No), reused on every trip so the cash left over carries on.

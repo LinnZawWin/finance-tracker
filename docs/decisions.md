@@ -796,17 +796,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - 25 rows (Source Keep), 24 linked to their lines with `split_match.py` and Reconciled. Project Canberra Ski Trip on
   all except the owner's marked rows: YouTube Premium (Everyday), the TMR seatbelt fine (Flex, Fines, AA), Utility
   Bill (Altogether, Everyday, A), Commute 23 Jul and 22 Jul (Everyday), Prescriptions and shoe insoles (Chemist
-  Warehouse, AMEX, Health). The owner's rule put the 20 Jul Commute, 20 Jul Broadband and 21 Jul movie ticket in the
-  project too (to confirm).
+  Warehouse, AMEX, Health), and (owner, later) the 20 Jul Commute, 20 Jul Broadband and 21 Jul movie ticket.
 - "ANZ" in a note is Everyday. Notes without an account took it from the line (AMEX; Flex for the fine).
 - "Korean Dinner" (24 Jul, A) has Amount 0 and no line: a friend paid (Notes). Set Reconciled by hand.
-- "Min Maw Kun Movie Ticket" (21 Jul, Everyday 50.00, comment "Donation"): no Donation category, so no Category yet
-  (owner to choose). "Major" on the Kookaburra Lodge note is not a project, so it went to Notes.
+- "Min Maw Kun Movie Ticket" (21 Jul, Everyday 50.00, comment "Donation"): Gifts (owner). "Major" on the Kookaburra Lodge note is not a project, so it went to Notes.
 - Guessed categories (to confirm): Skitube add-ons as Public Transport (a train), "Ski gear upgrade" as Travel.
 - The three Brumby beers are paid to "LS S AND D WILLIAMS NO" (the note's merchant): Payee "Brumby Bar & Grill"
   from the description, the note's merchant in Notes.
 - The two 1 Day Skitube Add On rows (Mine and AA, Kogan 63.00) are on the 24 Jul lines (note 25 Jul).
-- Left open: the AMEX DiDi credit +1.25 of 23 Jul (no note, like the +7.27 of 27 Jul).
+- Left open: the AMEX DiDi credit +1.25 of 23 Jul (no note).
 
 ## 2026-11-23: notes for 26 and 27 Jul 2026
 
@@ -816,7 +814,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - "Coffee at Perisher Base" (26 Jul note) is the AMEX FARWILL line of 25 Jul. "Park Use Fee" is the Service NSW line
   of 27 Jul, set as Travel (to confirm). The note's "Tax from Airport to Home" was saved as "Taxi from Airport to Home".
 - Payees from the lines: "Cafe Arboretum" (note "Arobretum"), "Kinn Thai" (note "Kinn Canberra"), "Metro Petroleum".
-- Left open: the AMEX DiDi credit +7.27 of 27 Jul (no note; probably a fare adjustment).
+- The AMEX DiDi credit +7.27 of 27 Jul is a refund on "Taxi from Airport to Home" (owner): Amount 44.62 - 7.27 = 37.35, both lines linked, Reconciled.
 
 ## 2026-11-23: notes for 16 to 19 Jul 2026
 

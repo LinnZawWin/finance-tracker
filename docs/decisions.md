@@ -343,6 +343,16 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Wise 23 Aug lines Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148) are in the 24 Aug notes
   (created on the note's date, lines left on 23 Aug).
 
+### Notes of 25 Aug 2026 (entered 2026-11-23)
+- 13 rows (Source Keep, 11:40 Brisbane then 10 minutes apart in the note's order), each linked to its line with
+  `split_match.py` and Reconciled. Utility Bill (Altogether 145.77, Utilities) and YouTube Premium (6.60, Payee a
+  family member as in Sep and Oct, Subscriptions): Everyday, Mine, no project (owner: the lines between the
+  separators). The 11 Wise rows: project Japan Tokyo Trip, A, Paid From Wise, Original Amount JPY: two Beer at
+  Combini (Fua-Sutoshiyotsupuguran 8.01 and 8.02, lines dated 24 Aug; the note says JPY 510 each, the lines JPY 910,
+  so 910 was used), Beer, three Alcoholic Drinks rows (Don Quijote, Jms Furinkazan, 7-Eleven "and snacks") as
+  Alcohol; Coffee and breakfast, Bento Boxes, Dinner (Kuranomukou) as Food and Soft Drinks; Train Tickets from Tokyo
+  to Matsumoto (JR Central 126.29) as Public Transport; Karaoke (Joyjoy Matsumoto Stn) as Entertainment.
+
 ### Notes of 24 Aug 2026 (entered 2026-11-23)
 - 15 Wise rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart, Paid From Wise,
   Original Amount JPY), each linked to its line with `split_match.py`. Karaoke (Big Echo 40.04, Entertainment),
@@ -351,7 +361,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Disneyland (Grandnikko Tokyobay Mai 183.89, Accommodation), all A; Keychain and Balloon Disney (AA, Gifts, owner).
 - W Support (Joint Main 1,000, Flex, Support Payments) and Health Insurance (AHM 163.05, Everyday, Insurance): Mine,
   no project (owner), 11:40 and 11:50 Brisbane (before the trip rows, as in the note), linked and Reconciled.
-- Wise 24 Aug lines with no note: Fua-Sutoshiyotsupuguran 8.01 and 8.02 (JPY 910 each).
+- Wise 24 Aug lines Fua-Sutoshiyotsupuguran 8.01 and 8.02 are in the 25 Aug notes (Beer at Combini).
 
 ### Notes of 22 Aug 2026 (entered 2026-11-22)
 - 3 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart), each linked to its line with

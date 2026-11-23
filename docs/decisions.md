@@ -764,6 +764,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - No "SPECIAL.GIFT" charge for the Load: no -200 bank line near 11 Mar exists on any account, so the
   Load stays Unmatched (like card 7195's). The purchases have no notes or transactions yet.
 
+### Open lines from April to August closed by hand (2026-11-23)
+- Owner's instructions, for lines with no note behind them. 29 rows, Source Manual, linked with one
+  `split_match.py --batch` (31 matches), all Reconciled:
+  - W Support 5 and 12 Jul (Flex 1,000, Payee Joint Main); Salary 7 Jul (Everyday 30,250, Delta Insights).
+  - Two AMEX charges spent by W and paid back by PayID on 13 Jul: "Flight (spent by W)" (Air New Zealand 353.40,
+    Flights) and "Malee Mad (spent by W)" (206.86, no category: the business could not be identified online).
+    Each is Amount 0, Share AA, linked to its charge and its PayID credit (split bill rule: my share is 0).
+  - Crunchyroll 21 May, 22 Jun and 21 Jul (ANZ NZ Go NZD 6.66 = AUD 5.43), set Reconciled by hand (rollup difference 0).
+  - Parking 27 Jul (EasyPark, AMEX 11.82, project Canberra Ski Trip, owner's choice).
+  - All open Credit Interest and Bonus Credit Interest lines (30 Apr, 29 May, 30 Jun, 31 Jul; Flex and Growth Saver;
+    Interest, Payee ANZ).
+  - Taxi from Badminton to Burmese Restaurant 1 Aug (DiDi, AMEX 11.32, A); Commute 5 Aug (Translink, Everyday 1.00).
+  - All open AHM lines as Health Insurance (7 Apr, 20 Apr, 4 May, 18 May, 1 Jun, 15 Jun, 10 Aug; Everyday 163.05).
+
 ### Open lines from 14 Aug closed by hand (2026-11-23)
 - Owner's instructions, for lines with no note behind them. All Source Manual, linked with `split_match.py`
   (Method Manual), all Reconciled:

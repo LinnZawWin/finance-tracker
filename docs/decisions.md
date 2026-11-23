@@ -840,9 +840,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 
 ## 2026-11-23: notes for 11 to 15 Jul 2026
 
-- 27 rows (Source Keep), each linked with `split_match.py` and Reconciled, except the cash "Dinner and Drinks Korean"
-  (14 Jul, Sul.Zip, A): Amount 134.10 = 254.10 less two friends' repayments (+45 and +75, Everyday 15 Jul, linked);
-  its cash line comes from `cash_lines.py`. "Return for ..." and "... Return" / "Badminton Share" notes are repayments,
+- 27 rows (Source Keep), all Reconciled: each linked with `split_match.py`; the cash "Dinner and Drinks Korean"
+  (14 Jul, Sul.Zip, A) has Amount 134.10 = 254.10 less two friends' repayments (+45 and +75, Everyday 15 Jul, linked)
+  and its cash line (-254.10) from `cash_lines.py`. That `reconcile.py --apply` run also created the cash lines of the
+  16 to 19 Jul Vape and Pokies rows. "Return for ..." and "... Return" / "Badminton Share" notes are repayments,
   not transactions. The ATM withdrawal note (300, Transfer) was already a Cash transfer pair: no transaction.
 - "Badminton Court Hire" (11 Jul, AMEX, A): Amount 20.02 = 36.16 less two friends' repayments (+5.14 on 14 Jul and
   +11 on 12 Jul, Everyday), all three lines linked.

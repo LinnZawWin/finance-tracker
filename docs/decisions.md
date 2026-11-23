@@ -317,7 +317,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - 3 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart), each linked to its line with
   `split_match.py` and Reconciled: Taxi from Home to Airport (Uber 18.14, AMEX, Taxi), Medicine (Welcia, Wise JPY 1,188
   = AUD 10.46: the note's 10.44 is the AUD-funded part with its fee, plus JPY 2 from the JPY balance = 0.02; Health)
-  and Shisha bar (Suutopia, Wise JPY 8,107 = AUD 71.34, A, Smoking as the vapes). Amount = the Wise line's AUD.
+  and Shisha bar (Suutopia, Wise JPY 8,107 = AUD 71.34, A, Entertainment like club entry fees, owner's choice). Amount = the Wise line's AUD.
 
 ### Notes of 31 Aug 2026 (entered 2026-11-22)
 - 4 rows (Source Keep), all linked by hand and Reconciled: W Support (Flex), Taxi from Airport to Home (Uber 32.94 on

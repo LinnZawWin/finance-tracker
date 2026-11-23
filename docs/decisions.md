@@ -428,8 +428,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Payees: "Osso" for the EatClub line (venue rule), "Satay Boss" for PAYO PAYMENTS (note merchant PAYO in Notes),
   "ATO" for the GST BPAY as on the earlier GST row, "Joint Main" for W Support (ANZ Access Advantage line, 10 Aug),
   "CSIS Espresso Bowen Hills" (the note's "Expresso" in Notes).
-- Guesses: Camping Expenses (paid to a friend) = Travel; Concert Ticket = Entertainment.
-- Left without a note: AMEX MCDONALDS BEAUDESERT 18.95 (8 Aug).
+- Camping Expenses (paid to a friend) = Food and Soft Drinks (owner; there is no activity category). Concert Ticket =
+  Entertainment (guessed).
+- AMEX MCDONALDS BEAUDESERT 18.95 (8 Aug, no note): "Lunch Fast Food", Payee McDonald's, A, Food and Soft Drinks,
+  Source Manual (owner), 12:50 Brisbane after the day's notes, linked and Reconciled.
 
 ### Notes of 14 to 19 Aug 2026 (entered 2026-11-23)
 - 32 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), each linked to its bank

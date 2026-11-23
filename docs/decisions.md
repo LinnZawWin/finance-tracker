@@ -806,7 +806,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The three Brumby beers are paid to "LS S AND D WILLIAMS NO" (the note's merchant): Payee "Brumby Bar & Grill"
   from the description, the note's merchant in Notes.
 - The two 1 Day Skitube Add On rows (Mine and AA, Kogan 63.00) are on the 24 Jul lines (note 25 Jul).
-- Left open: the AMEX DiDi credit +1.25 of 23 Jul (no note, like the +7.27 of 27 Jul).
+- Left open: the AMEX DiDi credit +1.25 of 23 Jul (no note).
 
 ## 2026-11-23: notes for 26 and 27 Jul 2026
 
@@ -816,4 +816,4 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - "Coffee at Perisher Base" (26 Jul note) is the AMEX FARWILL line of 25 Jul. "Park Use Fee" is the Service NSW line
   of 27 Jul, set as Travel (to confirm). The note's "Tax from Airport to Home" was saved as "Taxi from Airport to Home".
 - Payees from the lines: "Cafe Arboretum" (note "Arobretum"), "Kinn Thai" (note "Kinn Canberra"), "Metro Petroleum".
-- Left open: the AMEX DiDi credit +7.27 of 27 Jul (no note; probably a fare adjustment).
+- The AMEX DiDi credit +7.27 of 27 Jul is a refund on "Taxi from Airport to Home" (owner): Amount 44.62 - 7.27 = 37.35, both lines linked, Reconciled.

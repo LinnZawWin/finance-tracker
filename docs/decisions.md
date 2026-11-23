@@ -20,6 +20,11 @@ Done on 2026-11-15: the five formula columns were created and put on forms and v
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
 verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
 
+2026-11-23: the cloud environment's setup script never installed its tools (`|| true` hid the errors): pip could not
+replace the Debian `argcomplete`, and PAC CLI 2.x needs .NET 10, not 8. The script now uses
+`--ignore-installed argcomplete` and `dotnet-sdk-10.0` and also installs the script dependencies. Its commands were
+run in that session (`az` 2.93.0, PAC CLI 2.16.1); the script itself is proven only once a new session starts.
+
 2026-11-21: the transaction-to-line window in `reconcile.py` and the web page's Reconcile tab is 4 days (was 7, owner's
 request), so a weekly payment (Rent, W Support) 7 days away is no longer a rival candidate. It applies to estimated
 transactions too.

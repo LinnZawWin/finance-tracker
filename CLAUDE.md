@@ -287,9 +287,12 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
 
 ## Starting a new session
 
-- Tools: `pac` (PAC CLI 2.x needs the .NET 10 SDK: `apt-get install -y dotnet-sdk-10.0`, then
-  `dotnet tool install --global Microsoft.PowerApps.CLI.Tool`), `az` and the script dependencies
-  (`pip install azure-cli azure-identity pdfplumber openpyxl` in a virtual environment). Sign-ins do not carry over: sign in
+- Tools: in a cloud session the Finance Tracker environment's setup script installs them when the container
+  starts: the .NET 10 SDK and `pac` (PAC CLI 2.x needs .NET 10; `/opt/pac`, linked to `/usr/local/bin/pac`), and
+  `pip install --break-system-packages --ignore-installed argcomplete azure-cli azure-identity pdfplumber openpyxl`
+  (`--ignore-installed argcomplete` because pip cannot replace the Debian copy). Check with `which az pac`;
+  if one is missing, run that command by hand. Elsewhere install them yourself (the Azure CLI and script
+  dependencies in a virtual environment). Sign-ins do not carry over: sign in
   again as described under "Environment and sign-in".
 - Skills: the dataverse skills (dv-*) come from the plugin. The model-apps and power-automate skills are in
   the public repo `microsoft/power-platform-skills` under `plugins/`.

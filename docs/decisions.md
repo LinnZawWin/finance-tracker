@@ -429,8 +429,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
     Transfer Kogan to Everyday. The note's last field "Help" is not a project, so it is in the Notes.
 - "Taxi from Juan House Party to Home" (16 Aug note, no amount): the DiDi AMEX line of 15 Aug, 18.50.
 - Payees: "Just Vapes" for OZ SHOPS AUBURN as on 31 Aug (the note's merchant is in Notes); "Artie and Mai" for the
-  EatClub line (venue rule); "Calida" for the note's "Califa" (the line). The two Vape Pod rows keep the notes'
-  payees: "Quitmed" (17 Aug, Kogan) and "Quit Rx" (18 Aug, AMEX); both lines read "Quick Rx Pty Ltd".
+  EatClub line (venue rule); "Calida" for the note's "Califa" (the line). Both Vape Pod rows (17 Aug Kogan, 18 Aug
+  AMEX) have Payee "Quit Hero" (owner, 2026-11-23); the notes said "Quitmed" and "Quit Rx", both lines read "Quick Rx Pty Ltd".
 - Categories: Parking for the airport parking (AA), Pets for the dog hotel, Smoking for vapes, Gifts for the
   chocolate present, Food and Soft Drinks for the Chocolate Macadamia and the show food.
 

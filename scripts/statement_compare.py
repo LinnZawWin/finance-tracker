@@ -92,6 +92,11 @@ def compare(incoming, existing, is_pdf):
         return (a is None or b is None or a == b) and (not r1 or not r2 or r1 == r2)
 
     rest = []
+    for line in incoming:  # 0. same bank reference and amount: the same line, even if its date was corrected by hand
+        ref = line.get("bank_reference")
+        row = ref and take(lambda r: r.get("ref") == ref and cents(r["amount"]) == cents(line["amount"]))
+        (out["existing"] if row else rest).append(line)
+    incoming, rest = rest, []
     for line in incoming:  # 1. exact matches, counted one for one
         row = take(lambda r: r["date"] == line["date"] and cents(r["amount"]) == cents(line["amount"])
                    and norm(r["description"]) == norm(line["description"]) and same_balance(line, r))

@@ -786,6 +786,24 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
 
+## 2026-11-23: notes for 27 Jun to 3 Jul 2026
+
+- 37 rows (Source Keep), linked with one `split_match.py --batch` run. Account taken from the bank line where the note
+  had none (AMEX for most; Everyday for "ANZ").
+- Split bills (repayment notes are not transactions): "Dinner Skewer with friends" (3 Jul, Soul Memory Restaurant,
+  Everyday, A) Amount 70.22 = 184.22 less three friends' 45, 35 and 34 (Everyday 3 and 4 Jul, linked); the 2 Jul
+  Death and Taxes drinks (AMEX, Mine) Amount 40.58 = 100.58 less a friend's 60 (Everyday 2 Jul, linked).
+- "Special Grocery Gift Card 7850" (Karta 200, Transfer) was already the AMEX SPECIAL.GIFT / card 7850 Load pair:
+  no transaction.
+- Parking fines: the 30 Jun note (Flex 137.50) is the 1 Jul Flex BPAY line. The 3 Jul note (Flex 137.50, another
+  fine number) has no bank line: created Unreconciled. Payee "Brisbane City Council", the fine number in Notes.
+  "Major" went to Notes on these, the lawyer and the tow.
+- Guessed (to confirm): "Car Tow Collect" as Car Maintenance; "Hyokatsu for JC" as Gifts (rule "for <someone>"),
+  the other Hyokatsu rows as Alcohol; Ekka tickets as Events; the Kmart / Target household rows as Home and Hardware;
+  the Health Insurance note's share flag "W" as Mine (as before).
+- Left open: the AMEX "KARTA PD STRIPE" +20.00 of 3 Jul (no note; the 9 Sep one is "Refund AMEX Special Grocery
+  Gift Card") and the Everyday "BPAY TO BCC PARKING FINE" -333.00 of 3 Jul (no note).
+
 ## 2026-11-23: notes for 4 to 10 Jul 2026
 
 - 36 rows (Source Keep), all Reconciled: 34 linked with one `split_match.py --batch` run (36 matches); the two Cash

@@ -1,15 +1,19 @@
 """Shared Dataverse Web API helper for the Finance Tracker scripts.
 
 Reads DATAVERSE_URL from the environment and takes a token from the Azure CLI
-sign-in (az login --use-device-code). Nothing secret is stored in this repo.
+sign-in. When the Azure CLI is not signed in and AZURE_CLIENT_ID, AZURE_TENANT_ID and
+AZURE_CLIENT_SECRET are set (Claude Code cloud sessions), it signs in as that service
+principal first. Nothing secret is stored in this repo.
 """
 import json
 import os
+import subprocess
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
+from azure.core.exceptions import ClientAuthenticationError
 from azure.identity import AzureCliCredential
 
 SOLUTION = "lzw_FinanceTracker"
@@ -22,9 +26,30 @@ _cred = AzureCliCredential()
 _tok = {"v": None, "exp": 0}
 
 
+def _sp_login():
+    """Sign the Azure CLI in as the service principal from the environment, if one is set."""
+    ids = [os.environ.get(k) for k in ("AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", "AZURE_TENANT_ID")]
+    if not all(ids):
+        return False
+    r = subprocess.run(["az", "login", "--service-principal", "-u", ids[0], "-p", ids[1], "--tenant", ids[2],
+                        "--allow-no-subscriptions", "--output", "none"], capture_output=True, text=True)
+    if r.returncode:
+        # stderr from az does not contain the secret; keep only the last line.
+        raise RuntimeError("Azure CLI service principal sign-in failed: "
+                           + (r.stderr.strip().splitlines() or ["exit %d" % r.returncode])[-1])
+    print("Signed the Azure CLI in as the service principal from the environment.")
+    return True
+
+
 def token():
     if _tok["exp"] - time.time() < 300:
-        t = _cred.get_token(BASE + "/.default")
+        try:
+            t = _cred.get_token(BASE + "/.default")
+        except ClientAuthenticationError:
+            # CredentialUnavailableError (not signed in) is a subclass.
+            if not _sp_login():
+                raise
+            t = _cred.get_token(BASE + "/.default")
         _tok["v"], _tok["exp"] = t.token, t.expires_on
     return _tok["v"]
 

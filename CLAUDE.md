@@ -45,6 +45,8 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
     the environment. Sign in with
     `az login --service-principal -u "$AZURE_CLIENT_ID" -p "$AZURE_CLIENT_SECRET" --tenant "$AZURE_TENANT_ID" --allow-no-subscriptions`.
     Never print or commit these values.
+    `scripts/dv.py` does this itself when the Azure CLI is not signed in and the three variables are set, so
+    any script signs in on its first call; run the command by hand only for `az` calls before any script.
   - **Claude Code on the owner's Windows machine**: the git-ignored `.claude/settings.local.json` sets
     `DATAVERSE_URL`, `DATAVERSE_USER` and `AZURE_CONFIG_DIR` (`~/.azure-personal`, the owner's own sign-in,
     kept apart from other Azure CLI sign-ins on that machine). The refresh token there renews itself;

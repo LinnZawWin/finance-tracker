@@ -216,6 +216,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
+| Ski lift pass (owner, 2026-11-23) | Activities & Attractions (under Entertainment) |
 | Sports tickets, attractions, club entry, cover charge, cat cafe entry, shisha bar | Entertainment |
 | Ice skating, gym | Sport and Fitness |
 | Clinic, vaccination, supplements, chemist | Health |

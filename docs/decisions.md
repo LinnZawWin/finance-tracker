@@ -824,7 +824,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "Alcoholic Drinks for two with HKM", Amount 18.42) and 71.58 to "Seafood share plates" (Amount 52.91). The 17 Jul +80
   covers both Carindale drinks bills (57.99 and 21.25, both Amount 0); the extra 0.76 is an Income row "Drink for HKM
   Return" (Reimbursement).
-- Guessed categories (to confirm): Ski Lift Pass as Sport and Fitness; "Drink for HKM" as Alcohol (repaid, so not Gifts);
+- Ski Lift Pass: new category "Activities & Attractions" under Entertainment (Expense), created at the owner's request.
+- Guessed categories (to confirm): "Drink for HKM" as Alcohol (repaid, so not Gifts);
   "Badminton and Mexican Lunch" as Sport and Fitness (as the 14 Sep "Badminton and Lunch").
 - Payees: "The Criterion Tavern" (note "Criterion"), "BWS" (note "BWS Albion Hotel"), "IGA", "The Boundary Hotel".
 - Left open: the 15 Jul Kogan Perisher lines (-228.00 x2) and other lines before 16 Jul have no notes yet.

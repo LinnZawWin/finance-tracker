@@ -541,8 +541,9 @@ withdrawal): the Transfer is Paid From Cash, so its generated Cash line and the 
 Transfer Counterpart (set by hand), and the transaction is set Reconciled by hand (it has no match).
 
 Foreign cash bought from a friend for a trip that is over, and spent on it, is one Travel expense with Original
-Amount / Currency, no cash account (USD 2,900 for Yunnan: one "Yunnan Trip Tour for Mom and me" dated 31 Oct (the day the cash was paid to Mom), AUD 4,124.19, linked to
-both exchange lines, 13 Sep USD 1,500 and 22 Oct USD 1,400; the notes list both; merged 2026-11-23). Exception: when the notes list the cash spends, the cash is
+Amount / Currency, no cash account (USD 2,900 bought for Yunnan, 13 Sep USD 1,500 and 22 Oct USD 1,400: "Yunnan Trip Tour for Mom and me",
+31 Oct (paid to Mom that night), USD 2,850 = AUD 4,053.08 at the blended rate 1.422134, linked to both exchange lines;
+the other USD 50 = AUD 71.11 is "Gift for <brother>" (Gifts, 31 Oct), split off the 22 Oct line). Exception: when the notes list the cash spends, the cash is
 a Transfer into the currency's cash account and each spend is entered from it (JPY 40,000 for Tokyo, paid back on
 1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 dated 22 Aug (the line is 1 Sep) and the 10,000 "Cash from <friend>" on 30 Aug, sharing
 the one Everyday line; Last Rate 110.619469). Leftover JPY 1,500 from an earlier Japan trip is Income

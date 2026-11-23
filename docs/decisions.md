@@ -500,7 +500,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   USD 1,400 = AUD 2,032.14) were merged into one dated 22 Oct, "Yunnan Trip Tour for Mom and me", Amount 4,124.19,
   Original Amount USD 2,900, Notes listing both exchanges. Both bank lines are linked to it (difference 0); the
   13 Sep transaction was deleted. Then dated 31 Oct (owner: the cash was paid to Mom that night), last row of
-  that day.
+  that day. The tour is USD 1,650 each less USD 450 for the owner (no flight and visa) = USD 2,850; the other
+  USD 50 was a gift to the owner's brother (no small notes). AUD at the blended rate of both exchanges
+  (4,124.19 / 2,900 = 1.422134): tour 4,053.08, gift 71.11 (Gifts, Mine, 31 Oct), the gift split off the 22 Oct
+  line (its match there is -71.11, the tour's -1,961.03).
 - First Finance Assets (owner's request): Washing Machine (Mykin MFLW800W, 479) and Compact Freezer (Devanti 31L,
   169.95), each with a Purchase link. Category Home and Hardware is a guess. The last note field "Major" is not a
   project, so it went to Notes.

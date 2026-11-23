@@ -350,7 +350,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Snacks and Cold Drinks, Gyoza Dog and Beer, Popcorn, Dinner Monjayaki (Moheji) (Food and Soft Drinks), Hotel near
   Disneyland (Grandnikko Tokyobay Mai 183.89, Accommodation), all A; Keychain and Balloon Disney (AA, Shopping,
   guessed, owner to confirm).
-- Not entered (owner): W Support 1,000 (Flex) and Health Insurance 163.05 (AHM, Everyday) from the 24 Aug note.
+- W Support (Joint Main 1,000, Flex, Support Payments) and Health Insurance (AHM 163.05, Everyday, Insurance): Mine,
+  no project (owner), 11:40 and 11:50 Brisbane (before the trip rows, as in the note), linked and Reconciled.
 - Wise 24 Aug lines with no note: Fua-Sutoshiyotsupuguran 8.01 and 8.02 (JPY 910 each).
 
 ### Notes of 22 Aug 2026 (entered 2026-11-22)

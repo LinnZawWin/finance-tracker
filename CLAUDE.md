@@ -201,6 +201,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 
 | Description says | Category |
 |---|---|
+| Concert, festival, gig, show or event tickets (also clubbing event tickets such as "ULTRA PRE-PARTY"; also a ticket bought for someone). Not sports tickets, club entry or attractions | Events (under Entertainment) |
 | "for <someone>" (for example "for Mom"), gift, present, souvenir (also snacks or cosmetics bought for someone, and AA trip items such as a keychain or balloon) | Gifts |
 | Hotel, accommodation | Accommodation (Travel) |
 | Tour guide tips, other trip costs | Travel |
@@ -215,7 +216,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
-| Tickets, club entry, cover charge, cat cafe entry, shisha bar | Entertainment |
+| Sports tickets, attractions, club entry, cover charge, cat cafe entry, shisha bar | Entertainment |
 | Ice skating, gym | Sport and Fitness |
 | Clinic, vaccination, supplements, chemist | Health |
 | Haircut, laser hair removal, cosmetics (own) | Personal Care |

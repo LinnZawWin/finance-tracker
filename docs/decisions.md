@@ -257,9 +257,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   project grouped by Category; the overall report counts every transaction of a Trip project as Travel Expenses.
 - New category **Flights** (Expense, Parent Category Travel). The 7 flight rows moved there from Travel, plus
   "Club Jetstar membership" (6 Sep), which also got the project Thailand EDC Trip.
-- Pending: the owner to decide the project for trip-like rows that have none (taxis to and from the airport on
-  24 Oct and 2 Nov, the 24 Oct airport coffee, 2 Nov Lotte Duty Free cosmetics, 5 Nov Gold Coast hotel for Ultra,
-  27 Jul Canberra vape, 2 Oct fuel).
+- Projects for trip-like rows (owner): China Yunnan Trip on "Taxi from Home to Airport" (24 Oct) and "Taxi from
+  airport to home" (2 Nov). No project, as the owner decided: 2 Oct fuel (before the road trip), the 24 Oct airport
+  coffee and taxi home (seeing a friend off), 2 Nov Lotte Duty Free cosmetics (a gift, bought after the trip).
+- 24 Oct "Taxi from Airport to Home" and its refund combined into one transaction: Amount 24.12, Notes "31.37 - 7.25
+  refund", the refund line's match moved to it, the refund transaction deleted. Reconciled, difference 0.
+- New project **Ultra Beach Gold Coast 2027** (Project Type Event, 18 Apr 2027 from the owner's calendar event
+  "Ultra Beach 2027"): "Ultra Tickets x2" and "Gold Coast Hotel at Surfers Chateau for Ultra x2 nights" (5 Nov).
 
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,

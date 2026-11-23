@@ -259,7 +259,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "Club Jetstar membership" (6 Sep), which also got the project Thailand EDC Trip.
 - Projects for trip-like rows (owner): China Yunnan Trip on "Taxi from Home to Airport" (24 Oct) and "Taxi from
   airport to home" (2 Nov). No project, as the owner decided: 2 Oct fuel (before the road trip), the 24 Oct airport
-  coffee and taxi home (seeing a friend off), 2 Nov Lotte Duty Free cosmetics (a gift, bought after the trip).
+  coffee and taxi home (seeing a friend off), 2 Nov Lotte Duty Free cosmetics (a gift, bought after the trip; its
+  Category changed from Personal Care to Gifts).
 - 24 Oct "Taxi from Airport to Home" and its refund combined into one transaction: Amount 24.12, Notes "31.37 - 7.25
   refund", the refund line's match moved to it, the refund transaction deleted. Reconciled, difference 0.
 - New project **Ultra Beach Gold Coast 2027** (Project Type Event, 18 Apr 2027 from the owner's calendar event

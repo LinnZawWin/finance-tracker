@@ -496,6 +496,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   82.50), both linked to it. The "Transfer back" notes were not created (split bill rule).
 - Yunnan Trip Tour x2 (Flex 2,092.05 to a person, currency exchange USD 1500): one Travel expense, project China
   Yunnan Trip, Original Amount USD 1500, like the USD 1400 one.
+- 2026-11-23 (owner): the two "Yunnan Trip Tour x2" transactions (13 Sep USD 1,500 = AUD 2,092.05, 22 Oct
+  USD 1,400 = AUD 2,032.14) were merged into one dated 22 Oct, "Yunnan Trip Tour for Mom and me", Amount 4,124.19,
+  Original Amount USD 2,900, Notes listing both exchanges. Both bank lines are linked to it (difference 0); the
+  13 Sep transaction was deleted.
 - First Finance Assets (owner's request): Washing Machine (Mykin MFLW800W, 479) and Compact Freezer (Devanti 31L,
   169.95), each with a Purchase link. Category Home and Hardware is a guess. The last note field "Major" is not a
   project, so it went to Notes.

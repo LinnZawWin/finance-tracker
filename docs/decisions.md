@@ -820,8 +820,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 
 ## 2026-11-23: notes for 16 to 19 Jul 2026
 
-- 23 rows (Source Keep), each linked with `split_match.py`, except the two Cash rows (Vape, Pokies), whose lines come
-  from `cash_lines.py`. Project Canberra Ski Trip only on the two Perisher lift passes (Kogan, 16 Jul).
+- 23 rows (Source Keep); 21 linked with `split_match.py` and Reconciled. The two Cash rows (Vape 65.00, Pokies 21.90)
+  wait for their lines from `cash_lines.py` at the final `reconcile.py --apply` (a parallel session was running). Project Canberra Ski Trip only on the two Perisher lift passes (Kogan, 16 Jul).
 - Friend's repayments, as the owner decided: the 19 Jul +90 "dinner return" is split 18.42 (half of the drinks, renamed
   "Alcoholic Drinks for two with HKM", Amount 18.42) and 71.58 to "Seafood share plates" (Amount 52.91). The 17 Jul +80
   covers both Carindale drinks bills (57.99 and 21.25, both Amount 0); the extra 0.76 is an Income row "Drink for HKM

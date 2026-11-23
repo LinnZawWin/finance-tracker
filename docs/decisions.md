@@ -815,3 +815,16 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   of 27 Jul, set as Travel (to confirm). The note's "Tax from Airport to Home" was saved as "Taxi from Airport to Home".
 - Payees from the lines: "Cafe Arboretum" (note "Arobretum"), "Kinn Thai" (note "Kinn Canberra"), "Metro Petroleum".
 - The AMEX DiDi credit +7.27 of 27 Jul is a refund on "Taxi from Airport to Home" (owner): Amount 44.62 - 7.27 = 37.35, both lines linked, Reconciled.
+
+## 2026-11-23: notes for 16 to 19 Jul 2026
+
+- 23 rows (Source Keep); 21 linked with `split_match.py` and Reconciled. The two Cash rows (Vape 65.00, Pokies 21.90)
+  wait for their lines from `cash_lines.py` at the final `reconcile.py --apply` (a parallel session was running). Project Canberra Ski Trip only on the two Perisher lift passes (Kogan, 16 Jul).
+- Friend's repayments, as the owner decided: the 19 Jul +90 "dinner return" is split 18.42 (half of the drinks, renamed
+  "Alcoholic Drinks for two with HKM", Amount 18.42) and 71.58 to "Seafood share plates" (Amount 52.91). The 17 Jul +80
+  covers both Carindale drinks bills (57.99 and 21.25, both Amount 0); the extra 0.76 is an Income row "Drink for HKM
+  Return" (Reimbursement).
+- Guessed categories (to confirm): Ski Lift Pass as Sport and Fitness; "Drink for HKM" as Alcohol (repaid, so not Gifts);
+  "Badminton and Mexican Lunch" as Sport and Fitness (as the 14 Sep "Badminton and Lunch").
+- Payees: "The Criterion Tavern" (note "Criterion"), "BWS" (note "BWS Albion Hotel"), "IGA", "The Boundary Hotel".
+- Left open: the 15 Jul Kogan Perisher lines (-228.00 x2) and other lines before 16 Jul have no notes yet.

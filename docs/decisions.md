@@ -786,7 +786,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Sunlit and PAYO lines). The 31 Jul Commute 2.00 is the 1 Aug Everyday Translink line left open before.
 - Categories by the owner's comments: the club tickets (Flex, paid to a friend) as Events; the 28 Jul card 7195 Load
   of 70.00 is a gift from a friend, so Income (Other Income) matched to the Load line, not a Transfer.
-- "Spotify Family Plan ... with Gift Card" (Wise, USD 23.80 = AUD 34.23, line 28 Jul): Subscriptions, not Gifts,
+- "Spotify Family Plan" (Notes "Payment to TLO with Amazon Gift Card", Wise, USD 23.80 = AUD 34.23, line 28 Jul): Subscriptions, not Gifts,
   because it equals the Spotify Premium series amount (to confirm with the owner).
 - Payees: "David's Noodle" for the PAYO line (PAYO is the payment processor; note merchant in Notes);
   "The Criterion Tavern" from the line. "Major" (Oktoberfest note) is not a project, so it went to Notes.

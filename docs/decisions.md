@@ -837,3 +837,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "Badminton and Mexican Lunch" as Sport and Fitness (as the 14 Sep "Badminton and Lunch").
 - Payees: "The Criterion Tavern" (note "Criterion"), "BWS" (note "BWS Albion Hotel"), "IGA", "The Boundary Hotel".
 - Left open: the 15 Jul Kogan Perisher lines (-228.00 x2) and other lines before 16 Jul have no notes yet.
+
+## 2026-11-23: notes for 11 to 15 Jul 2026
+
+- 27 rows (Source Keep), each linked with `split_match.py` and Reconciled, except the cash "Dinner and Drinks Korean"
+  (14 Jul, Sul.Zip, A): Amount 134.10 = 254.10 less two friends' repayments (+45 and +75, Everyday 15 Jul, linked);
+  its cash line comes from `cash_lines.py`. "Return for ..." and "... Return" / "Badminton Share" notes are repayments,
+  not transactions. The ATM withdrawal note (300, Transfer) was already a Cash transfer pair: no transaction.
+- "Badminton Court Hire" (11 Jul, AMEX, A): Amount 20.02 = 36.16 less two friends' repayments (+5.14 on 14 Jul and
+  +11 on 12 Jul, Everyday), all three lines linked.
+- The two 228.00 lift passes (Kogan, Mine and AA, project Canberra Ski Trip) are on the 15 Jul lines (note 14 Jul).
+  The ALDI grocery on Supermarket Slayer card 7850 is on the 14 Jul card line (note 11 Jul).
+- "Rent" note had the account in the share field ("ANZ"): saved as Everyday, Mine. The Health Insurance note's share
+  flag "W" is unknown: saved as Mine (to confirm). "Heath Insurance" saved as "Health Insurance".
+- Assets (Purchase links): Mask Wolf (Other), Jean Pants x2, Shoes White and Green, Shoes Navy Blue Tommy Hilfiger,
+  Underwear three pack x2, Men's Snow Drift Gloves (37 Degrees South, bought from a friend), all Clothing.
+- Guessed categories (to confirm): Mask Wolf as Shopping, Ski Gear Hire as Travel, Card Game as Gambling (as Poker),
+  Bag for A as Gifts, the flight as Flights.

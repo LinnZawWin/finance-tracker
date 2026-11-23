@@ -204,6 +204,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Concert, festival, gig, show or event tickets (also clubbing event tickets such as "ULTRA PRE-PARTY"; also a ticket bought for someone). Not sports tickets, club entry or attractions | Events (under Entertainment) |
 | "for <someone>" (for example "for Mom"), gift, present, souvenir (also snacks or cosmetics bought for someone, and AA trip items such as a keychain or balloon) | Gifts |
 | Hotel, accommodation | Accommodation (Travel) |
+| Flight, airline membership (Club Jetstar) | Flights (Travel) |
 | Tour guide tips, other trip costs | Travel |
 | W Support (Joint Main) | Support Payments |
 | Rent | Rent and Housing |

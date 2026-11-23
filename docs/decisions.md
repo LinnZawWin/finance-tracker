@@ -425,6 +425,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   no project (owner), 11:40 and 11:50 Brisbane (before the trip rows, as in the note), linked and Reconciled.
 - Wise 24 Aug lines Fua-Sutoshiyotsupuguran 8.01 and 8.02 are in the 25 Aug notes (Beer at Combini).
 
+### Notes of 3 to 6 Aug 2026 (entered 2026-11-23)
+- 13 transactions, all Reconciled. Virgin Australia BNE to Bali x2 (1,260.08, project Thailand EDC Trip) is linked to
+  its three AMEX lines (623.43, 623.43, 13.22) with `split_match.py`. AirAsia Bali to Phuket (Wise, IDR 5,650,064) has
+  the Wise line of 4 Aug. Commute 4 Aug linked by hand to the 4 Aug Translink line (the 2 and 5 Aug -1.00 lines stay
+  open: no notes).
+- 3 Aug ATM 290: no transaction; its Cash line already existed (BL- reference).
+- 6 Aug Australia Post withdrawal 173.40: 40 kept as cash, 133.40 bought an NZD 160 money order for a friend's passport
+  extension, repaid NZD 160 into ANZ NZ Go the same day. Owner: only the 133.40 is a Transfer. Recorded as a Transfer
+  Paid From Cash to ANZ NZ Go (Original NZD 160), so the Cash account keeps the 40.
+- Joy-con x3 and sleeping bags x2 (cash, Facebook Marketplace) added as Finance Assets with Purchase links.
+- Guessed categories (owner to confirm): Pets for the dog hotel deposit, Shopping for the Joy-cons and sleeping bags.
+
 ### Notes of 7 to 13 Aug 2026 (entered 2026-11-23)
 - Rows from the notes (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), all linked
   with `split_match.py` (the Finnair flight to both AMEX "AMERICAN EXPRESS INT'L" lines of 804.30), difference 0.

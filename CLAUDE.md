@@ -504,6 +504,10 @@ the charge less the refund (Notes "89.48 - 12.35 refund ...") and the refund lin
 per part, each with its own Category and Share Type, and the one bank line split between them
 (`split_match.py <ft> <line>=<-part>` once per part): 5 Oct TK Maxx 82.96 = Pants 39.99 (Clothing, Mine) +
 Household items 42.97 (Home and Hardware, A).
+**A repayment netted against what I owe that friend** (1 Aug: a friend owed 24.40 for a lunch and I owed them 20.88 for
+badminton they paid, so they sent 3.52): the badminton is its own transaction, and the 3.52 line gets two matches
+by hand, +24.40 on the bill and -20.88 on the badminton (`split_match.py` cannot: it allows only the line's sign).
+**Poker** with friends: one Gambling transaction per settlement line, Payee the friend, Income when they paid me.
 An AMEX Travel Credit is a refund of the booking it paid for (12 Aug Finnair flight: +450 linked, Amount 1,608.60 - 450).
 A refund on another account than the charge is linked too (7 Oct ALDI container refund on Everyday against a
 1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
@@ -644,7 +648,7 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day, plus o
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
-| 8 | Enter the notes before 9 Oct 2026 (3 to 19 Aug entered 2026-11-23; 20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines | Owner, then Claude |
+| 8 | Enter the notes before 9 Oct 2026 (1 to 19 Aug entered 2026-11-23; 20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. 6 Aug "Dog Hotel Booking Deposit" as Pets; "Switch Joy-con x3" (6 Aug) and "Outdoor sleeping bags x2" (3 Aug) as Shopping. | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are linked to "Send Amazon Gift Card ... for Duolingo Family" (22 Oct, Partly Reconciled); a third friend's 28.54, expected into Flex, is still missing. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 

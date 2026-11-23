@@ -763,3 +763,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
+
+## 2026-11-23: notes for 1 and 2 Aug 2026
+
+- 15 rows (Source Keep), each linked by hand and Reconciled. 1 Aug: Commute (Kogan 0.50, line 31 Jul), six Poker
+  settlements (Gambling, Everyday, Payee the friend; three wins as Income), Badminton 20.88 (Sport and Fitness, A),
+  Lunch Burmese for x5 (Sorai, AMEX, A, 153.42 less two friends' 61.80 and 24.40 = 67.22), the Quit Hero vape
+  starter kit (Smoking, Kogan; Payee "Quit Hero" from the description and the "Paypal *Quithero" line, the note's
+  merchant in Notes). 2 Aug: Commute (Everyday 1.00), Rent (Everyday 560), W Support 12 (Flex 1,000, Payee "Joint
+  Main" as the earlier rows, the note's "ANZ Joint" in Notes), Cake for potluck lunch (Kurtosh, AMEX, Food and Soft
+  Drinks), Grocery Asian (Genki Mart, Kogan, AA).
+- A friend's 2 Aug payment of 3.52 is their 24.40 lunch share less the 20.88 badminton they paid: matched +24.40 to
+  the lunch and -20.88 to Badminton by hand. The other friend's 61.80 is linked to the lunch.
+- One Poker note had 17.40 as paid, but its bank line is a 17.40 payment received: entered as a win (Income), to
+  confirm with the owner.
+- Left open: the 1 Aug Everyday Translink 2.00 line (no note).

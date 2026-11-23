@@ -331,7 +331,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - A Wise line's date can be corrected by hand (the Love Hotel line, Wise ID CARD_TRANSACTION-4228729316, 22 to 23
   Aug; Notes say so). So that the next export does not create it again, `statement_compare.py` now first pairs
   incoming and existing lines with the same Bank Reference and amount, whatever the date (tested offline).
-- Wise 23 Aug lines with no note yet: Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148).
+- Wise 23 Aug lines Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148) are in the 24 Aug notes
+  (created on the note's date, lines left on 23 Aug).
+
+### Notes of 24 Aug 2026 (entered 2026-11-23)
+- 15 Wise rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart, Paid From Wise,
+  Original Amount JPY), each linked to its line with `split_match.py`. Karaoke (Big Echo 40.04, Entertainment),
+  Alcoholic Drinks (Lawson, Alcohol), three Disney Premier Access (Entertainment), Cold Drinks, Popsicle, Lunch,
+  Snacks and Cold Drinks, Gyoza Dog and Beer, Popcorn, Dinner Monjayaki (Moheji) (Food and Soft Drinks), Hotel near
+  Disneyland (Grandnikko Tokyobay Mai 183.89, Accommodation), all A; Keychain and Balloon Disney (AA, Shopping,
+  guessed, owner to confirm).
+- Not entered (owner): W Support 1,000 (Flex) and Health Insurance 163.05 (AHM, Everyday) from the 24 Aug note.
+- Wise 24 Aug lines with no note: Fua-Sutoshiyotsupuguran 8.01 and 8.02 (JPY 910 each).
 
 ### Notes of 22 Aug 2026 (entered 2026-11-22)
 - 3 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart), each linked to its line with

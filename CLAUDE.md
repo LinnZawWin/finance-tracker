@@ -541,7 +541,7 @@ the one Everyday line; Last Rate 110.619469). Leftover JPY 1,500 from an earlier
 (Other Income, 22 Aug, owner's choice; the CNY leftover above is a Transfer), the 30,000 spent without notes is one
 "Cash Trip Expenses" (Travel, A, 22 Aug), and JPY Cash ends at JPY 2,200 as in the notes.
 
-Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 3054, 4481, 7195, 7850, 8979), Account Type Other.
+Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 3054, 4481, 7195, 7850, 8979, 9873), Account Type Other.
 Add a card the same way when a note names a new one.
 Each card has one Bank Statement named after it (no statements from the issuer: lines typed from screenshots of the
 card's activity in the app, opening and closing balance 0, period from the first Load to the screenshot date).

@@ -348,8 +348,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Original Amount JPY), each linked to its line with `split_match.py`. Karaoke (Big Echo 40.04, Entertainment),
   Alcoholic Drinks (Lawson, Alcohol), three Disney Premier Access (Entertainment), Cold Drinks, Popsicle, Lunch,
   Snacks and Cold Drinks, Gyoza Dog and Beer, Popcorn, Dinner Monjayaki (Moheji) (Food and Soft Drinks), Hotel near
-  Disneyland (Grandnikko Tokyobay Mai 183.89, Accommodation), all A; Keychain and Balloon Disney (AA, Shopping,
-  guessed, owner to confirm).
+  Disneyland (Grandnikko Tokyobay Mai 183.89, Accommodation), all A; Keychain and Balloon Disney (AA, Gifts, owner).
 - W Support (Joint Main 1,000, Flex, Support Payments) and Health Insurance (AHM 163.05, Everyday, Insurance): Mine,
   no project (owner), 11:40 and 11:50 Brisbane (before the trip rows, as in the note), linked and Reconciled.
 - Wise 24 Aug lines with no note: Fua-Sutoshiyotsupuguran 8.01 and 8.02 (JPY 910 each).

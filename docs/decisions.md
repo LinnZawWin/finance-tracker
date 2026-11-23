@@ -652,6 +652,14 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   auto-confirmed (payee shares no word with the line), linked by hand at the owner's request.
 - "Drinks Iced Chocolate" payee corrected to "Wisteria Heavenly" as on the Kogan line.
 
+### Supermarket Slayer Card 8979 (2026-11-23)
+- Bank Account "Supermarket Slayer Card 8979" (`Special8979`) and its Bank Statement added like card 7850, with the
+  10 lines from the owner's screenshot: Load 200.00 (23 Dec 2025), then ALDI, WW Metro, Woolworths and Coles
+  purchases to 17 Feb 2026 totalling 200.00 (balance 0, so the check passes). Dates as shown in the app.
+- The Load has no counterpart: no "SPECIAL.GIFT" charge of 200.00 in Dec 2025 is imported (bank lines start
+  9 Jan 2026). It stays Unmatched until that statement is imported. The purchases have no transactions
+  (no notes for that period).
+
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.
 - The publisher unique name and environment URL are read from environment variables, never stored here.

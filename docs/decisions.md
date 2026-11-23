@@ -626,6 +626,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   reconciliation is serialised by the lock. A session that finds the lock held waits and retries by itself
   instead of stopping, because the lock only means another run is writing, not that something is wrong.
   Duplicates and same-day ordering are avoided by giving each session its own notes.
+- **Reconcile once, at the end** (owner, 2026-11-23). Parallel sessions spent their time queued behind each
+  other's lock. Now they only create transactions and import lines (`--no-reconcile`), run their own
+  `split_match.py` links together at the end, and one session runs `reconcile.py --apply` after all have
+  finished. A reconcile run during creation left rows open anyway, so the final run was needed regardless.
+  A lock per account was rejected: transfers and split matches span two accounts.
 
 - **Split bills** (owner, 2026-11-21): one transaction per bill linked to the charge and every repayment or
   refund, so Actual Amount is what was really paid and the matches list shows all the money involved. Chosen
@@ -683,6 +688,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The Load has no counterpart: no "SPECIAL.GIFT" charge of 200.00 in Dec 2025 is imported (bank lines start
   9 Jan 2026). It stays Unmatched until that statement is imported. The purchases have no transactions
   (no notes for that period).
+
+### Card 9873 (2026-11-23)
+- Bank Account "Supermarket Slayer Card 9873" (`Special9873`) added like the others, with its Bank Statement
+  (11 Mar to 23 Nov 2026, balances 0) and 9 lines from the owner's screenshot: Load 200.00 (11 Mar) and 8
+  purchases (Coles x3, Seasons Supermarkets, IGA Bowen Hills, ALDI x2, Woolworths 0.05) totalling 200.00.
+- No "SPECIAL.GIFT" charge for the Load: no -200 bank line near 11 Mar exists on any account, so the
+  Load stays Unmatched (like card 7195's). The purchases have no notes or transactions yet.
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

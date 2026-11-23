@@ -355,8 +355,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "あづま", 33.68, A), Bedsheet (Nitori 55.93, A, Home and Hardware), Coffee (Cafe Veloce 8.83, A), Alcoholic Drinks
   (Lawson 4.19 / JPY 479, Alcohol), Dinner Tonkatsu (Narita Airport 62.47), Cosmetics for mom (Narita Airport 58.85,
   Gifts), Snacks flight (Lawson 5.61 / JPY 641). Empty share flag = Mine.
-- JPY Cash tally: in JPY 40,000; cash spends entered so far JPY 9,300 (23 Aug 1,500, 30 Aug 7,800), so the account
-  shows JPY 30,700 against the 2,200 in the owner's notes: JPY 28,500 of cash spending is not in the notes entered.
+- JPY Cash tally (owner, 2026-11-23): the 10,000 is part of the 40,000; the 2,200 in the notes is what was left after
+  the 10,000 that morning and the 30 Aug cash spends. The 23 Aug cash spends (JPY 1,500) came from cash left over from
+  an earlier trip: "Leftover JPY from Previous Japan Trip", Income from JPY Cash, 22 Aug (first day), JPY 1,500 =
+  13.56, Other Income (guessed), Mine. The other 30,000 is "Cash Trip Expenses", 22 Aug, JPY 30,000 = 271.20, A,
+  Travel. Both cash lines generated and Reconciled. JPY Cash now ends at JPY 2,200 (AUD 19.89); its running balance
+  dips below 0 between 22 Aug and 1 Sep because the 30,000 Transfer is dated on the payment day.
 
 ### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
 - 17 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes

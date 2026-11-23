@@ -313,6 +313,23 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Car wash = Car Maintenance (owner agreed). Khao Kluk Kapi stays on 20 Sep, the note's date (owner); the
   AMEX line is dated 19 Sep. Claude Pro: the AMEX charge is dated the 4th every month, the notes the 5th.
 
+### Notes of 23 Aug 2026 (entered 2026-11-23)
+- 10 bank rows (Source Keep, 12:00 Brisbane then 10 minutes apart), each linked to its line with `split_match.py`
+  and Reconciled. Project Japan Tokyo Trip except Rent (Madison Heights 560, Everyday, Rent, Mine, no project: the
+  owner marked it as an Australian transaction). Wise rows: Love Hotel (Stellate 138.41, JPY 15,730, A,
+  Accommodation; the Wise line is dated 22 Aug, the note's date was kept), Costume and drinks at Love Hotel (12.32,
+  Entertainment, guessed), Lunch (Gyukatsu Motomura 51.22), Hotel Early Check-in (Hotel Ginza Daiei 8.79,
+  Accommodation), Beer (FamilyMart 2.74, Alcohol), Shopping Clothes (Uniqlo 226.06, Clothing, Mine), Socks
+  (Cocokarafine 22.87, Clothing, Mine), Drinks (FamilyMart 14.07, Food and Soft Drinks by the shop "Drink" rule).
+  AMEX: Hotel Booking for Matsumoto Hotel Morschein (Agoda 295.77, A, Accommodation).
+- JPY cash (owner's choice, 2026-11-23): Bank Account "JPY Cash" (`JPYCash`, Account Currency JPY, Last Rate
+  110.619469 from 1 Sep 2026) was added. The 1 Sep "Japanese Cash in Tokyo Trip 40k" (AUD 361.60, JPY 40,000,
+  bought from a friend) changed from a Travel expense to a Transfer from Everyday into JPY Cash (still matched to
+  its Everyday line, no Category), so the cash spends are recorded one by one instead. Cash spends on 23 Aug at
+  that rate: Orange Juice (JPY 350 = 3.16, AA), JPY cash gift to a friend (JPY 200 = 1.81, AA, Gifts), Cash Card
+  Topup (JPY 950 = 8.59, Public Transport). Whatever of the JPY 40,000 is not entered stays on JPY Cash.
+- Wise 23 Aug lines with no note yet: Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148).
+
 ### Notes of 22 Aug 2026 (entered 2026-11-22)
 - 3 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart), each linked to its line with
   `split_match.py` and Reconciled: Taxi from Home to Airport (Uber 18.14, AMEX, Taxi), Medicine (Welcia, Wise JPY 1,188

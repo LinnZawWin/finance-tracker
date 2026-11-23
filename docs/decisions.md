@@ -788,8 +788,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 
 ## 2026-11-23: notes for 4 to 10 Jul 2026
 
-- 36 rows (Source Keep); 34 linked with one `split_match.py --batch` run and Reconciled. The two Cash rows
-  (Pokies at Casino 50.00, Vape x2 85.00) get their lines from `cash_lines.py` at the next `reconcile.py --apply`.
+- 36 rows (Source Keep), all Reconciled: 34 linked with one `split_match.py --batch` run (36 matches); the two Cash
+  rows (Pokies at Casino 50.00, Vape x2 85.00) by their lines from `cash_lines.py` in the following `reconcile.py --apply`.
 - Combined at the owner's request: the 7 Jul dinner at The Lex (Amount 171.38) is linked to the AMEX W Brisbane line
   (-161.38) and the 6 Jul First Table reservation (-10.00). The 4 Jul lunch at Chu The Phat (EatClub, Payee the venue)
   includes the badminton 17 a friend paid: Amount 69.26 = 77.63 less the friend's +8.37 (5 Jul, linked). The note

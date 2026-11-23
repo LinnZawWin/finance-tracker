@@ -344,7 +344,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   (created on the note's date, lines left on 23 Aug).
 
 ### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
-- 16 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes
+- 17 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes
   apart in the note's order per day), each linked to its line with `split_match.py`. 28 Aug: Beer (Lawson 25.64,
   line dated 27 Aug), Love Hotel Stay at Sara Grande (Payee Hotel Sara Grande, owner, 236.79, Accommodation), Lunch
   pasta (Yomenya Goemon), Accommodation Tax (Hotel Sunroute Plaza Shinjuku 1.75, Accommodation), Clubbing Ticket
@@ -354,8 +354,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   29 Aug: Haircut (Kuefu 56.00, Mine, Personal Care), Lunch Tempura (Tempura Hisago), Dinner sushi (Tachizushi
   Yokocho), Alcoholic Drinks and snacks (FamilyMart 26.01, Alcohol), Airport Shuttle Bus (Limousine Web 62.99 /
   JPY 7,200, Payee Airport Limousine, Travel, owner). All A except Haircut.
-- Not created yet: Taxi from Ayano House to Train Station (note Uber 8.79 / JPY 1,008, no such line; the owner's
-  answer was cut off). The only open Uber line left is 12.25 / JPY 1,400 on 28 Aug.
+- Taxi from Ayano House to Train Station (28 Aug, Uber, Taxi, A): the note said 8.79 / JPY 1,008, but no line has
+  that amount; linked to the Uber line 12.25 / JPY 1,400 at the owner's request (Amount 12.25, Notes say so).
 
 ### Notes of 26 and 27 Aug 2026 (entered 2026-11-23)
 - 23 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart in the note's order per day),

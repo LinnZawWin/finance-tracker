@@ -240,9 +240,17 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   event tickets, and relinked 10 transactions to it: Post Malone, Together For Tomorrow (both, including the ticket
   bought for a friend, which was Gifts), ULTRA PRE-PARTY, Shokk Halloween, Guns N' Roses, Hardstyle Carnival,
   Ultra, YOASOBI, Blanc de Blanc.
-- Kept in Entertainment by the owner's choice: sports tickets (Baseball Tickets x2, Tokyo), club entry fees,
-  karaoke, attractions (Disney Premier Access, maze, gondola, glowworms, hot tubs, thermal park).
+- Kept in Entertainment by the owner's choice: club entry fees, karaoke, shisha bar. Attractions and sports tickets
+  moved to Activities and Attractions later the same day (below).
 - An event ticket bought for someone is Events, not Gifts, so the Events rule comes before the Gifts rule.
+
+### Activities and Attractions (2026-11-23)
+- Owner moved 9 transactions from Entertainment to **Activities and Attractions**: the three Disney Premier Access
+  rows, Maze for two, Waiotapu Thermal Wonderland, Gondola and Ludge (Skyline Rotorua), Redwood Glowworms, Hot Tub
+  Spa, and Baseball Tickets x2 (sports tickets are rare and bought while travelling). The two ski lift passes were
+  already there.
+- "Park Use Fee Perisher Kosciuszko National Park" (26 Jul) moved from Travel to Parking (Transport).
+- Ice Skate stays in Sport and Fitness. Club entry, karaoke and shisha bar stay in Entertainment.
 
 ### Foreign cash (2026-11-21)
 - **One cash Bank Account per currency** (first: "CNY Cash", short name `CNYCash`, Account Type Other,

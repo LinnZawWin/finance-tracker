@@ -216,8 +216,9 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
-| Ski lift pass (owner, 2026-11-23) | Activities & Attractions (under Entertainment) |
-| Sports tickets, attractions, club entry, cover charge, cat cafe entry, shisha bar | Entertainment |
+| Attractions and paid activities: ski lift pass, theme park passes (Disney Premier Access), maze, gondola and luge, thermal park, glowworms, hot tubs; also sports tickets (rare, while travelling) | Activities and Attractions (under Entertainment) |
+| National park entry or park use fee | Parking (Transport) |
+| Club entry, cover charge, cat cafe entry, shisha bar, karaoke | Entertainment |
 | Ice skating, gym | Sport and Fitness |
 | Clinic, vaccination, supplements, chemist | Health |
 | Haircut, laser hair removal, cosmetics (own) | Personal Care |

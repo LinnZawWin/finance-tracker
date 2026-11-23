@@ -343,6 +343,16 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Wise 23 Aug lines Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148) are in the 24 Aug notes
   (created on the note's date, lines left on 23 Aug).
 
+### Notes of 26 and 27 Aug 2026 (entered 2026-11-23)
+- 23 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart in the note's order per day),
+  each linked to its line with `split_match.py`. AMEX: Hotel Booking Sunroute Plaza Shinjuku (Agoda 331.94, A,
+  Accommodation; line dated 26 Aug). The rest Paid From Wise with Original Amount JPY; three 27 Aug rows (Breakfast
+  JR East, Coffee Starbucks, Breakfast FamilyMart) have Wise lines dated 26 Aug. Categories: meals, coffee, soft
+  drinks as Food and Soft Drinks; beers and alcoholic drinks as Alcohol; train and bus tickets as Public Transport;
+  Baseball Tickets as Entertainment; Locker as Travel; T-shirt (Mine) as Shopping; Socks and earrings as Clothing
+  (guessed); Band-aid (AA) as Health. The bus ticket note had no merchant: Payee "Alpico Kotsu" from the Wise line
+  "Alpicokotsuticket" (guessed). Empty share flag = Mine.
+
 ### Notes of 25 Aug 2026 (entered 2026-11-23)
 - 13 rows (Source Keep, 11:40 Brisbane then 10 minutes apart in the note's order), each linked to its line with
   `split_match.py` and Reconciled. Utility Bill (Altogether 145.77, Utilities) and YouTube Premium (6.60, Payee a

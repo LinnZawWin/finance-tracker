@@ -343,6 +343,19 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Wise 23 Aug lines Big Echo Ginzasukiyabas 40.04 (JPY 4,550) and Lawson 10.11 (JPY 1,148) are in the 24 Aug notes
   (created on the note's date, lines left on 23 Aug).
 
+### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
+- 10 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes
+  apart in the note's order per day), each linked to its line with `split_match.py`. 28 Aug: Beer (Lawson 25.64,
+  line dated 27 Aug), Love Hotel Stay at Sara Grande (Payee Payment-One as in the note, line Hotel Sara Grande 236.79,
+  Accommodation), Lunch pasta (Yomenya Goemon), Accommodation Tax (Hotel Sunroute Plaza Shinjuku 1.75, Accommodation),
+  Clubbing Ticket (Zouk Tokyo 43.64, Entertainment), Alcoholic Drinks (FamilyMart 2.20). 29 Aug: Haircut (Kuefu 56.00,
+  Mine, Personal Care), Lunch Tempura (Tempura Hisago), Dinner sushi (Tachizushi Yokocho), Alcoholic Drinks and snacks
+  (FamilyMart 26.01, Alcohol). All A except Haircut.
+- Not created yet (waiting for the owner): Taxi from Ayano House (note Uber 8.79 / JPY 1,008, no such Wise line; open
+  Wise lines Uber 37.05 / JPY 4,233 and 12.25 / JPY 1,400 on 28 Aug) and the four "Alcoholic Drink in the Club" rows
+  without amounts (open lines Zouk Tokyo 23.61 / JPY 2,700, 17.50 and 17.51 / JPY 2,000, 7-Eleven 4.36 / JPY 500).
+  Also open: Limousine Web 62.99 / JPY 7,200 (29 Aug), not in the notes.
+
 ### Notes of 26 and 27 Aug 2026 (entered 2026-11-23)
 - 23 rows (Source Keep, project Japan Tokyo Trip, 12:00 Brisbane then 10 minutes apart in the note's order per day),
   each linked to its line with `split_match.py`. AMEX: Hotel Booking Sunroute Plaza Shinjuku (Agoda 331.94, A,

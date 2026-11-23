@@ -499,7 +499,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - 2026-11-23 (owner): the two "Yunnan Trip Tour x2" transactions (13 Sep USD 1,500 = AUD 2,092.05, 22 Oct
   USD 1,400 = AUD 2,032.14) were merged into one dated 22 Oct, "Yunnan Trip Tour for Mom and me", Amount 4,124.19,
   Original Amount USD 2,900, Notes listing both exchanges. Both bank lines are linked to it (difference 0); the
-  13 Sep transaction was deleted.
+  13 Sep transaction was deleted. Then dated 31 Oct (owner: the cash was paid to Mom that night), last row of
+  that day.
 - First Finance Assets (owner's request): Washing Machine (Mykin MFLW800W, 479) and Compact Freezer (Devanti 31L,
   169.95), each with a Purchase link. Category Home and Hardware is a guess. The last note field "Major" is not a
   project, so it went to Notes.

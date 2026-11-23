@@ -529,14 +529,19 @@ Status Transfer with the largest charge line as Transfer Counterpart; Notes give
 Foreign cash bought from a friend for a trip that is over, and spent on it, is one Travel expense with Original
 Amount / Currency, no cash account (USD 1400 for Yunnan). Exception: when the notes list the cash spends, the cash is
 a Transfer into the currency's cash account and each spend is entered from it (JPY 40,000 for Tokyo, paid back on
-1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 on 1 Sep and the 10,000 "Cash from <friend>" on 30 Aug, sharing
-the one Everyday line; Last Rate 110.619469). JPY Cash shows JPY 30,700 left against 2,200 in the notes (item 12).
+1 Sep 2026: two Transfers Everyday to "JPY Cash", 30,000 dated 22 Aug (the line is 1 Sep) and the 10,000 "Cash from <friend>" on 30 Aug, sharing
+the one Everyday line; Last Rate 110.619469). Leftover JPY 1,500 from an earlier Japan trip is Income
+(Other Income, 22 Aug, owner's choice; the CNY leftover above is a Transfer), the 30,000 spent without notes is one
+"Cash Trip Expenses" (Travel, A, 22 Aug), and JPY Cash ends at JPY 2,200 as in the notes.
 
-Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 4481, 7195, 7850), Account Type Other.
+Supermarket Slayer cards: Bank Accounts `Special<last 4 digits>` (2486, 3054, 4481, 7195, 7850, 8979), Account Type Other.
 Add a card the same way when a note names a new one.
 Each card has one Bank Statement named after it (no statements from the issuer: lines typed from screenshots of the
 card's activity in the app, opening and closing balance 0, period from the first Load to the screenshot date).
-The Load is a Transfer paired with the "SPECIAL.GIFT ..." charge on the card that bought it (7850: AMEX, 3 Jul).
+The Load is a Transfer paired with the "SPECIAL.GIFT ..." charge on the card that bought it (7850: AMEX, 3 Jul;
+3054: AMEX 250.00, 12 Jun).
+8979 (added 2026-11-23): Load 200.00 on 23 Dec 2025 and 9 supermarket purchases to 17 Feb 2026, balance 0. Its Load
+stays Unmatched: the charge that bought it is before the first imported bank line (9 Jan 2026).
 
 Payments to "ANZ Access Advantage" are an expense (Support Payments), not a transfer. NZD payments from Wise to
 the owner's own name belong to the project "NZ House".
@@ -625,7 +630,6 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day, plus o
 | 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
 | 8 | Enter the notes before 9 Oct 2026 (20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines | Owner, then Claude |
 | 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. | Owner |
-| 12 | JPY Cash (Tokyo) does not tally: JPY 40,000 in, 9,300 of cash spends entered, 30,700 left against the 2,200 in the notes. JPY 28,500 of cash spends missing | Owner |
 | 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are linked to "Send Amazon Gift Card ... for Duolingo Family" (22 Oct, Partly Reconciled); a third friend's 28.54, expected into Flex, is still missing. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
 
 Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced

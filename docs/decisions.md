@@ -364,8 +364,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   "あづま", 33.68, A), Bedsheet (Nitori 55.93, A, Home and Hardware), Coffee (Cafe Veloce 8.83, A), Alcoholic Drinks
   (Lawson 4.19 / JPY 479, Alcohol), Dinner Tonkatsu (Narita Airport 62.47), Cosmetics for mom (Narita Airport 58.85,
   Gifts), Snacks flight (Lawson 5.61 / JPY 641). Empty share flag = Mine.
-- JPY Cash tally: in JPY 40,000; cash spends entered so far JPY 9,300 (23 Aug 1,500, 30 Aug 7,800), so the account
-  shows JPY 30,700 against the 2,200 in the owner's notes: JPY 28,500 of cash spending is not in the notes entered.
+- JPY Cash tally (owner, 2026-11-23): the 10,000 is part of the 40,000; the 2,200 in the notes is what was left after
+  the 10,000 that morning and the 30 Aug cash spends. The 23 Aug cash spends (JPY 1,500) came from cash left over from
+  an earlier trip: "Leftover JPY from Previous Japan Trip", Income from JPY Cash, 22 Aug (first day), JPY 1,500 =
+  13.56, Other Income (guessed), Mine. The other 30,000 is "Cash Trip Expenses", 22 Aug, JPY 30,000 = 271.20, A,
+  Travel. Both cash lines generated and Reconciled. JPY Cash now ends at JPY 2,200 (AUD 19.89). The 30,000 Transfer
+  was redated from 1 Sep to 22 Aug 11:50 Brisbane (owner), so the running balance never goes below 0; its Everyday
+  line stays on 1 Sep, still matched.
 
 ### Notes of 28 and 29 Aug 2026 (entered 2026-11-23)
 - 17 rows (Source Keep, project Japan Tokyo Trip, Paid From Wise, Original Amount JPY, 12:00 Brisbane then 10 minutes
@@ -646,6 +651,20 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - "Hotel Warwick Vines Motel at Expedia" (payee "Travel Reservation") against EXPEDIA -110.93 on AMEX: not
   auto-confirmed (payee shares no word with the line), linked by hand at the owner's request.
 - "Drinks Iced Chocolate" payee corrected to "Wisteria Heavenly" as on the Kogan line.
+
+### Supermarket Slayer Card 3054 (2026-11-23)
+- New Bank Account "Supermarket Slayer Card 3054" (`Special3054`) and its statement from the owner's screenshot:
+  Load 250.00 (12 Jun, Transfer paired with the AMEX SPECIAL.GIFT LANE COVE -250.00 line), ALDI 153.29 (16 Jun),
+  ALDI 15.54 (7 Jul), ALDI 80.42 (31 Jul), Woolworths 2596 0.75 (14 Aug). Balance 0. The four purchases have no
+  Finance Transaction (no notes for those days).
+
+### Supermarket Slayer Card 8979 (2026-11-23)
+- Bank Account "Supermarket Slayer Card 8979" (`Special8979`) and its Bank Statement added like card 7850, with the
+  10 lines from the owner's screenshot: Load 200.00 (23 Dec 2025), then ALDI, WW Metro, Woolworths and Coles
+  purchases to 17 Feb 2026 totalling 200.00 (balance 0, so the check passes). Dates as shown in the app.
+- The Load has no counterpart: no "SPECIAL.GIFT" charge of 200.00 in Dec 2025 is imported (bank lines start
+  9 Jan 2026). It stays Unmatched until that statement is imported. The purchases have no transactions
+  (no notes for that period).
 
 ### Repository
 - No solution export is committed, because it contains the publisher's display name.

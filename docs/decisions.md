@@ -348,8 +348,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   `split_match.py` and Reconciled. Utility Bill (Altogether 145.77, Utilities) and YouTube Premium (6.60, Payee a
   family member as in Sep and Oct, Subscriptions): Everyday, Mine, no project (owner: the lines between the
   separators). The 11 Wise rows: project Japan Tokyo Trip, A, Paid From Wise, Original Amount JPY: two Beer at
-  Combini (Fua-Sutoshiyotsupuguran 8.01 and 8.02, lines dated 24 Aug; the note says JPY 510 each, the lines JPY 910,
-  so 910 was used), Beer, three Alcoholic Drinks rows (Don Quijote, Jms Furinkazan, 7-Eleven "and snacks") as
+  Combini (Fua-Sutoshiyotsupuguran 8.01 and 8.02, lines dated 24 Aug; JPY 910 each as on the lines; the note's 510 was
+  a typo, owner confirmed), Beer, three Alcoholic Drinks rows (Don Quijote, Jms Furinkazan, 7-Eleven "and snacks") as
   Alcohol; Coffee and breakfast, Bento Boxes, Dinner (Kuranomukou) as Food and Soft Drinks; Train Tickets from Tokyo
   to Matsumoto (JR Central 126.29) as Public Transport; Karaoke (Joyjoy Matsumoto Stn) as Entertainment.
 

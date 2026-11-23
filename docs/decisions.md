@@ -778,3 +778,15 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - One Poker note had 17.40 as paid, but its bank line is a 17.40 payment received: entered as a win (Income), to
   confirm with the owner.
 - Left open: the 1 Aug Everyday Translink 2.00 line (no note).
+
+## 2026-11-23: notes for 28 to 31 Jul 2026
+
+- 16 rows (Source Keep), each linked to its line with `split_match.py` and Reconciled (difference 0).
+- Account taken from the bank line where the note had none (AMEX for the beer, Kinn Imm, Criterion, Moshtix,
+  Sunlit and PAYO lines). The 31 Jul Commute 2.00 is the 1 Aug Everyday Translink line left open before.
+- Categories by the owner's comments: the club tickets (Flex, paid to a friend) as Events; the 28 Jul card 7195 Load
+  of 70.00 is a gift from a friend, so Income (Other Income) matched to the Load line, not a Transfer.
+- "Spotify Family Plan ... with Gift Card" (Wise, USD 23.80 = AUD 34.23, line 28 Jul): Subscriptions, not Gifts,
+  because it equals the Spotify Premium series amount (to confirm with the owner).
+- Payees: "David's Noodle" for the PAYO line (PAYO is the payment processor; note merchant in Notes);
+  "The Criterion Tavern" from the line. "Major" (Oktoberfest note) is not a project, so it went to Notes.

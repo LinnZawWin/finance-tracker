@@ -864,8 +864,18 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The two 228.00 lift passes (Kogan, Mine and AA, project Canberra Ski Trip) are on the 15 Jul lines (note 14 Jul).
   The ALDI grocery on Supermarket Slayer card 7850 is on the 14 Jul card line (note 11 Jul).
 - "Rent" note had the account in the share field ("ANZ"): saved as Everyday, Mine. The Health Insurance note's share
-  flag "W" is unknown: saved as Mine (to confirm). "Heath Insurance" saved as "Health Insurance".
+  flag "W": Mine (owner). "Heath Insurance" saved as "Health Insurance".
 - Assets (Purchase links): Mask Wolf (Other), Jean Pants x2, Shoes White and Green, Shoes Navy Blue Tommy Hilfiger,
   Underwear three pack x2, Men's Snow Drift Gloves (37 Degrees South, bought from a friend), all Clothing.
-- Guessed categories (to confirm): Mask Wolf as Shopping, Ski Gear Hire as Travel, Card Game as Gambling (as Poker),
+- Ski Gear Hire (14 Jul) and Ski gear upgrade (25 Jul) set to Activities and Attractions (owner).
+- Guessed categories (to confirm): Mask Wolf as Shopping, Card Game as Gambling (as Poker),
   Bag for A as Gifts, the flight as Flights.
+
+## 2026-11-23: why linking is slow
+
+- Measured: every Web API call through the proxy takes about 1 second, whatever its size. A `reconcile.py` dry run
+  is 15 reads, 17 seconds. One `split_match.py --apply` makes about 12 to 15 calls (lock, match, line status, two
+  rollups, transaction status, release), about 25 to 30 seconds, so 27 transactions took 13 minutes.
+- Time grows with the number of writes in a run, not with the size of the tables: reads are paged 5,000 rows at a
+  time and the matching is in memory. Possible speed-up (not done): link several transactions in one
+  `split_match.py` run, under one lock.

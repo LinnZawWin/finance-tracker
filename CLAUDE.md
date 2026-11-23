@@ -317,12 +317,18 @@ Several sessions may create Finance Transactions at the same time. Creating them
 - Only `reconcile.py --apply` (with `cash_lines.py`) and `split_match.py --apply` take `lzw_ReconcileLock`.
   When another session holds it, the run writes nothing: `reconcile.py` prints NOT RUN and exits with code 2,
   `split_match.py` stops with a `Busy` error. That is not a failure.
+- **Reconcile once, at the end** (owner, 2026-11-23). When the owner says other sessions are running, a session
+  only creates transactions and imports lines, with `statement_import.py --apply --no-reconcile`. It does not
+  run `reconcile.py --apply`. Links that `reconcile.py` cannot find (split bills, refunds, one line split over
+  several parts, ANZ NZ Go, claims) are run with `split_match.py --apply` together at the end of the session,
+  not one by one. Report the lines and transactions left open.
+- Once every session has finished creating, one session (the last one, or a new one the owner starts) runs
+  `reconcile.py --apply --verbose`, then suggests Payees (Reconciliation rule 7). A single session on its own
+  keeps the normal flow (the import reconciles itself).
 - **When the lock is held, wait and retry without asking.** Check it with `python scripts/lock.py` every few
   minutes (in a cloud session use Monitor with an until-loop, not a foreground `sleep`) and rerun the step as
   soon as it shows "(free)". Do not run `lock.py --release` while the holder is under 60 minutes old: only a
   lock older than that is abandoned (the next run takes it over by itself). Report how long you waited.
-- A reconcile run while another session is still creating transactions can leave lines unmatched or
-  Proposed. Run `reconcile.py --apply` again once all sessions have finished creating.
 - Each session updates this file and `docs/decisions.md`. Before pushing, merge the latest `main` and keep
   both sessions' changes.
 
@@ -382,7 +388,8 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
     every Unmatched or Partly Matched bank line (all accounts, not only the new ones) against the Finance
     Transactions as far as the Reconciliation rules below allow, without being asked. Confirm what the
     rules allow, leave the rest Proposed or unmatched, and report what was matched, proposed and left.
-    `statement_import.py --apply` does this itself: after the lines it runs `reconcile.py --apply --verbose`,
+    `statement_import.py --apply` does this itself (not in parallel sessions, see "Parallel sessions"): after
+    the lines it runs `reconcile.py --apply --verbose`,
     which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
     the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
     wait and retry as under "Parallel sessions". On its own,

@@ -652,6 +652,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   auto-confirmed (payee shares no word with the line), linked by hand at the owner's request.
 - "Drinks Iced Chocolate" payee corrected to "Wisteria Heavenly" as on the Kogan line.
 
+### Supermarket Slayer Card 3054 (2026-11-23)
+- New Bank Account "Supermarket Slayer Card 3054" (`Special3054`) and its statement from the owner's screenshot:
+  Load 250.00 (12 Jun, Transfer paired with the AMEX SPECIAL.GIFT LANE COVE -250.00 line), ALDI 153.29 (16 Jun),
+  ALDI 15.54 (7 Jul), ALDI 80.42 (31 Jul), Woolworths 2596 0.75 (14 Aug). Balance 0. The four purchases have no
+  Finance Transaction (no notes for those days).
+
 ### Supermarket Slayer Card 8979 (2026-11-23)
 - Bank Account "Supermarket Slayer Card 8979" (`Special8979`) and its Bank Statement added like card 7850, with the
   10 lines from the owner's screenshot: Load 200.00 (23 Dec 2025), then ALDI, WW Metro, Woolworths and Coles

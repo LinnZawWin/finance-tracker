@@ -790,3 +790,13 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   because it equals the Spotify Premium series amount (to confirm with the owner).
 - Payees: "David's Noodle" for the PAYO line (PAYO is the payment processor; note merchant in Notes);
   "The Criterion Tavern" from the line. "Major" (Oktoberfest note) is not a project, so it went to Notes.
+
+## 2026-11-23: notes for 26 and 27 Jul 2026
+
+- 16 rows (Source Keep), each linked with `split_match.py` and Reconciled, except the cash Vape (its cash line comes
+  from `cash_lines.py`). Project Canberra Ski Trip on all except the owner's marked rows: Vape (Cash), Health
+  Insurance (AHM, Everyday), Grocery Beef Minced (IGA, AMEX), Rent (Everyday) and W Support 11 (Flex, Payee "Joint Main").
+- "Coffee at Perisher Base" (26 Jul note) is the AMEX FARWILL line of 25 Jul. "Park Use Fee" is the Service NSW line
+  of 27 Jul, set as Travel (to confirm). The note's "Tax from Airport to Home" was saved as "Taxi from Airport to Home".
+- Payees from the lines: "Cafe Arboretum" (note "Arobretum"), "Kinn Thai" (note "Kinn Canberra"), "Metro Petroleum".
+- Left open: the AMEX DiDi credit +7.27 of 27 Jul (no note; probably a fare adjustment).

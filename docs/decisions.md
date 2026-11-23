@@ -417,13 +417,14 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Wise 24 Aug lines Fua-Sutoshiyotsupuguran 8.01 and 8.02 are in the 25 Aug notes (Beer at Combini).
 
 ### Notes of 7 to 13 Aug 2026 (entered 2026-11-23)
-- 21 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day). 20 linked one to one
+- Rows from the notes (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), all linked
   with `split_match.py` (the Finnair flight to both AMEX "AMERICAN EXPRESS INT'L" lines of 804.30), difference 0.
-  Project Thailand EDC Trip for the two flights and the booking fee.
+  Project Thailand EDC Trip for the two flights.
 - "Grocery Woolworths AMEX" (13 Aug, no amount): the AMEX line MACARTHUR BRISBANE 120.77 (the rest after the
   Special9873 0.05 and Special3054 0.75 parts; those card lines are dated 14 Aug). Share A guessed from the other parts.
-- "AMEX Travel Service booking fee" 1.42 (Notes "Used Travel Credit -450") is not linked: no AMEX line has 1.42 or
-  451.42, and the 12 Aug "Platinum Annual Travel Credit" +450 is left Unmatched. Owner to say how they relate.
+- The AMEX Travel booking fee 1.42 has no AMEX line and is not a row of its own (owner, 2026-11-23): it is in the
+  Notes of the Finnair flight. The 12 Aug "Platinum Annual Travel Credit" +450 is linked to the flight as its
+  refund, so its Amount is 1,158.60 (1,608.60 - 450), Reconciled with difference 0. 20 rows in all.
 - Payees: "Osso" for the EatClub line (venue rule), "Satay Boss" for PAYO PAYMENTS (note merchant PAYO in Notes),
   "ATO" for the GST BPAY as on the earlier GST row, "Joint Main" for W Support (ANZ Access Advantage line, 10 Aug),
   "CSIS Espresso Bowen Hills" (the note's "Expresso" in Notes).

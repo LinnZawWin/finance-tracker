@@ -362,7 +362,8 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
    When one statement is supplied in several formats, import one and move all of them.
 3. **Check the totals** against the statement's opening and closing balance before writing anything.
 4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
-5. Compare by **count per (date, amount, description)** and create only the shortfall, because identical
+5. A line with the same **Bank Reference** and amount as an existing one is that line, even when its date differs
+   (a date corrected by hand). Then compare by **count per (date, amount, description)** and create only the shortfall, because identical
    purchases on one day are real. Use **Bank Reference** when the bank gives one, **Running Balance** or
    **Line Number** otherwise, to separate identical lines.
 6. A **PDF or spreadsheet statement is final**: update the matching screenshot rows (description, balance) and

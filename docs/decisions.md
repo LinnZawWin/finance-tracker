@@ -823,9 +823,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Payees from the lines where the note's merchant was a processor or another name (note's merchant in Notes):
   "JJ & PK" (note Square), "Chattahoochee Joe's" (note Bank Vault Lounge), "Hair Studio Monochrome" as before.
   "Grove Social" for the EatClub line (venue rule). "1l4.50" (Ice for house party) is 4.50, the line.
-- Guessed categories (to confirm): Health for "Grocery medicine", Groceries for "Ice for house party", Entertainment
-  for the Eat Street night market entry, Gifts for the GoFundMe donation (as the earlier "Donation"), Food and Soft
-  Drinks for the AA birthday lunch for Partner.
+- Categories confirmed by the owner (2026-11-24): Health for "Grocery medicine", Groceries for "Ice for house party",
+  Entertainment for the Eat Street night market entry, Gifts for the GoFundMe donation, Food and Soft Drinks for the
+  AA birthday lunch for Partner. The Payees taken from the lines stay. The cash vape's Payee is "Valley Tobacco" (owner).
 
 ## 2026-11-23: notes for 27 Jun to 3 Jul 2026
 

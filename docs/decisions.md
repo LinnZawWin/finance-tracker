@@ -803,6 +803,30 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
 
+## 2026-11-24: notes for 17 to 26 Jun 2026
+
+- 49 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), 48 linked with one
+  `split_match.py --batch` run; the cash Vape (Punk Apes, 25 Jun, A) by its line from `cash_lines.py`.
+- Account from the bank line where the note had none (AMEX for most, Everyday for "ANZ"). "Rent" had the account in
+  the share field: Everyday, Mine.
+- "Badminton and Lunch" (22 Jun note, one Everyday payment of 52.10 to a friend) is two rows on 21 Jun (owner):
+  Badminton 19.10 (Sport and Fitness) and Lunch 33.00 (Food and Soft Drinks), both A, the line split between them.
+- New category "Investment" (Expense, no parent), owner's choice: "Kiwi Saver" (ANZ NZ Go NZD 1,042.86 = AUD 849.72
+  at 1.2273, Payee "Milford KiwiSaver Plan", no project), set Reconciled by hand (rollup difference 0).
+- The ticket sale row (26 Jun, ANZ NZ Go NZD 482.21): the owner is a middle man. A ticket resale company paid the owner
+  earlier for the friend's ticket and this passes it on. Amount 0 (Other Expense), the outgoing line linked; it stays
+  Partly Reconciled until the earlier resale payment is found and linked.
+- The 25 Jun Wise payment to my own name (NZD 1,568.45, AUD 1,288.95) and the ANZ NZ Go credit of the same NZD
+  amount are paired as a transfer by hand (different currencies, so `reconcile.py` does not pair them).
+- "A Return ..." notes (24 Jun) are Partner's repayments: the two Everyday PAYMENT FROM lines (+51.25, +63.90) stay
+  open until the bills (before 17 Jun) are entered.
+- Payees from the lines where the note's merchant was a processor or another name (note's merchant in Notes):
+  "JJ & PK" (note Square), "Chattahoochee Joe's" (note Bank Vault Lounge), "Hair Studio Monochrome" as before.
+  "Grove Social" for the EatClub line (venue rule). "1l4.50" (Ice for house party) is 4.50, the line.
+- Guessed categories (to confirm): Health for "Grocery medicine", Groceries for "Ice for house party", Entertainment
+  for the Eat Street night market entry, Gifts for the GoFundMe donation (as the earlier "Donation"), Food and Soft
+  Drinks for the AA birthday lunch for Partner.
+
 ## 2026-11-23: notes for 27 Jun to 3 Jul 2026
 
 - 37 rows (Source Keep) plus one Manual, all linked with `split_match.py --batch` and Reconciled. Account taken from

@@ -765,14 +765,17 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Load stays Unmatched (like card 7195's). The purchases have no notes or transactions yet.
 
 ### Open lines from April to August closed by hand (2026-11-23)
-- Owner's instructions, for lines with no note behind them. 29 rows, Source Manual, linked with one
-  `split_match.py --batch` (31 matches), all Reconciled:
+- Owner's instructions, for lines with no note behind them. 29 rows (27 after 2026-11-24), Source Manual, linked
+  with one `split_match.py --batch`, all Reconciled:
   - W Support 5 and 12 Jul (Flex 1,000, Payee Joint Main); Salary 7 Jul (Everyday 30,250, Delta Insights).
-  - Two AMEX charges spent by W and paid back by PayID on 13 Jul: "Flight (spent by W)" (Air New Zealand 353.40,
-    Flights) and "Malee Mad (spent by W)" (206.86, no category: the business could not be identified online).
-    Each is Amount 0, Share AA, linked to its charge and its PayID credit (split bill rule: my share is 0).
+  - Two AMEX charges spent by W and paid back by PayID on 13 Jul (Air New Zealand 353.40, Malee Mad 206.86): first
+    created as Amount 0 / Share AA transactions linked to both lines; on 2026-11-24 the owner preferred no
+    transaction, so both were deleted with their matches and each charge is paired with its credit as Status
+    Transfer (Transfer Counterpart both ways). It is not my money, so no cost or category is recorded.
+  - Parking 27 Jul: "EASYPARK PRAHRAN" is the EasyPark app (Australian office in Melbourne), so the descriptor's
+    suburb is not where the car was; the owner was in Canberra, project Canberra Ski Trip stays.
   - Crunchyroll 21 May, 22 Jun and 21 Jul (ANZ NZ Go NZD 6.66 = AUD 5.43), set Reconciled by hand (rollup difference 0).
-  - Parking 27 Jul (EasyPark, AMEX 11.82, project Canberra Ski Trip, owner's choice).
+  - Parking 27 Jul (EasyPark, AMEX 11.82, project Canberra Ski Trip).
   - All open Credit Interest and Bonus Credit Interest lines (30 Apr, 29 May, 30 Jun, 31 Jul; Flex and Growth Saver;
     Interest, Payee ANZ).
   - Taxi from Badminton to Burmese Restaurant 1 Aug (DiDi, AMEX 11.32, A); Commute 5 Aug (Translink, Everyday 1.00).

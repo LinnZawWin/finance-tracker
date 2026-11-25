@@ -115,8 +115,7 @@ Finance Transaction **Type**: Expense (859130000), Income, Transfer (859130002).
 
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
-Estimated), Paid From `lzw_paidfrom` (Bank Account), Finance Category `lzw_financecategory`, Processed
-`lzw_processed` (Yes/No, default No). Forms "Planned Transaction" / "Recurring Transaction", views
+Estimated), Paid From `lzw_paidfrom` (Bank Account), Finance Category `lzw_financecategory`. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
 "Planned Transactions" / "Recurring Transactions". Both tables are under Capture in the app. The old lookups
 Financial Account and Transaction Category (to the old MoneyManagement tables) were deleted.
 

@@ -167,21 +167,22 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   with the relationships), and the 1,823 planned-transaction appointments dated before 2026-11-19. 20 past
   appointments without an Amount were kept. Deleting all instances of the ended "Car Loan" series also
   removed the series itself. Backups of the deleted values were kept outside the repo.
-- **Processed** (Yes/No, default No) exists on both tables. The flow only reads and sets it on Appointment.
-  Leave it No on the series: the platform copies series values to new instances.
+- **Processed was removed on 2026-11-25** from both tables (owner's request: it has no purpose on the series, and
+  Status Reason = Completed says the same on the appointment). The 6 appointments with Processed = Yes were set to
+  Completed, the column was taken off the forms and views and deleted. Side effect: the old filter
+  `lzw_processed eq false` skipped rows where it was null (12 Salary instances); the new filter does not.
 - **Sign convention:** Amount on the series is positive = expense, negative = income (the reverse of the
   bank). The old data used negative = money out, so the open series were flipped on 2026-11-19 (the
   platform carried the change to their open instances). Appointments were not patched directly.
 - **Updating a series rewrites all its open instances** (past and future), tested on Netflix: 21 open
   instances took the new amount, the 3 completed ones kept the old one. Completed and cancelled
-  appointments are read-only. A series edit may also reset Processed on its open instances, which is why
-  the flow checks for an existing transaction before creating one.
-- The flow runs daily at 6 AM Brisbane and takes open or scheduled appointments with Processed = No and
+  appointments are read-only. The flow checks for an existing transaction before creating one.
+- The flow runs daily at 6 AM Brisbane and takes open or scheduled appointments and
   Start before tomorrow (Brisbane). Each gets a Finance Transaction: Description and Payee = Subject, Date =
   Start (Brisbane), Type = Income if Amount < 0 else Expense, Amount = abs(Amount), Share Type =
   Mine, Source = Recurring (new option 859130003), Source Row ID = appointment ID, currency = the
-  appointment's currency (AUD if it has none). The flow then sets Processed = Yes. A failed appointment
-  stays No, is retried next run, and the run ends Failed.
+  appointment's currency (AUD if it has none). The flow then sets the appointment to Completed. A failed appointment
+  stays Open, is retried next run, and the run ends Failed.
 
 ### Bills with a varying amount or date (2026-11-19)
 - A planned amount is only a plan: the actual comes from the matched bank line (Actual Amount rollup).

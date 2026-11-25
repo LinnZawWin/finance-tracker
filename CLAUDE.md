@@ -24,22 +24,6 @@ This file holds only the rules every session needs. Before a task, read its topi
 Entering notes usually ends with a reconciliation, so read both files for that. Rules in one file refer to sections
 in another by name (for example "Cash lines" is in the reconciliation file, "Payee" in the entry file).
 
-## Topic files: read the one the task needs
-
-This file holds only the rules every session needs. Before a task, read its topic file in full:
-
-| Task | Read |
-|---|---|
-| Entering notes as Finance Transactions (categories, payees, foreign cash, assets, trips, gift cards) | [docs/entering-notes.md](docs/entering-notes.md) |
-| Importing statements from the Drive inbox (ANZ, AMEX, Kogan, ANZ NZ Go, Wise) | [docs/statement-import.md](docs/statement-import.md) |
-| Reconciling, cash lines, split bills, refunds, work claims | [docs/reconciliation.md](docs/reconciliation.md) |
-| Planned / Recurring Transactions and the scheduled flow | [docs/planned-transactions.md](docs/planned-transactions.md) |
-| The web page, the retired Keep sheet | [docs/web-page.md](docs/web-page.md) |
-| What is still open | [docs/outstanding.md](docs/outstanding.md) |
-
-Entering notes usually ends with a reconciliation, so read both files for that. Rules in one file refer to sections
-in another by name (for example "Cash lines" is in the reconciliation file, "Payee" in the entry file).
-
 ## Rules
 
 - **Keep this file current.** After every change to Dataverse, the flows, the scripts or the data, update

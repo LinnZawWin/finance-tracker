@@ -807,7 +807,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 
 - 60 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day). 49 linked with one
   `split_match.py --batch` run and Reconciled; the four Cash rows (Vape Moggin 60, Pokies 90, Pokies Win 50.55 as
-  Income, Office Chair 190) by their lines from `cash_lines.py`. The seven 24 and 25 Nov rows wait for their bank lines.
+  Income, Office Chair 190) by their lines from `cash_lines.py`. The 24 and 25 Nov rows wait for their bank lines.
+- Later the same day (owner): Pitbull Concert Ticket and Lunch Burger changed to A; added 25 Nov Groceries 33.75 (A)
+  and Snacks Cake 2.95 (AA, Food and Soft Drinks). No account in the notes.
 - Owner's answers: "Income Tax" 82,434.30 is an Expense (Tax) on AMEX as written; Salary 12,557.33 is Everyday;
   the cash vape has no Payee; "Ayanochan Goodbye and Salmon Party" (Everyday 80 to a friend) is Food and Soft Drinks.
 - Parking fines are now **Parking Fines** (owner's comment). The earlier parking fines (30 Jun, 3 Jul) are still Fines:

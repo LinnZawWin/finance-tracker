@@ -20,6 +20,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 
 ## Planned Transactions
 
+- System view **Current Week Pending Transactions** (Start Time this week, Status Open; created 2026-11-25 by `build_week_view.py`, replaces a personal view that listed the deleted Financial Account column).
 - The scheduled flow takes open or scheduled appointments with Start before tomorrow
   (Brisbane) and creates a Finance Transaction for each: Description and Payee = Subject, Date = Start,
   Type = Income if Amount < 0 else Expense, Estimated Amount = abs(Amount), Share Type = Mine, Source =

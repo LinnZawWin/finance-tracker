@@ -50,8 +50,9 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 | Car Servicing | 400.00 | Yearly, 1 Dec | AMEX | Manual | Car Maintenance |
 | Car Insurance and Roadside Assist | 602.42 | Yearly, 11 Mar | AMEX | Manual | Insurance |
 | Car Registration | 1,049.72 | Yearly, 28 Feb | AMEX | Manual | Transport |
+| W Support | 1,000.00 | Weekly, Monday (from 23 Nov 2026) | Flex | Auto | Support Payments |
 
-  These 15 are the only series with an Amount. All other old series (24 open, 59 cancelled) were deleted on
+  These 16 are the only series with an Amount. All other old series (24 open, 59 cancelled) were deleted on
   2026-11-19 at the owner's request. 2 cancelled series without an Amount are calendar items: leave them.
 - **Bills whose amount or date varies:**
   - Regular (monthly, for example electricity): a series on the typical debit day with Payment Type =
@@ -71,5 +72,13 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
     so the flow reads them from the series (`seriesid`) when the instance has none. Set them on the series.
   - Keep Processed = No on series.
   - Deleting every instance of a series deletes the series too.
+- **Creating a series by API:** set `utcconversiontimezonecode` = 260 (as the other series) and use the same start
+  style as Health Insurance (`starttime` Monday 14:00Z, `patternstartdate` 2026-11-18T14:00Z, mask 2 = Monday).
+  Without the time zone code the instances land a day late (Tuesday Brisbane); changing it afterwards does not
+  regenerate them, so delete and recreate. Lookup binds are `lzw_PaidFrom_RecurringAppointmentMaster@odata.bind`
+  and `lzw_FinanceCategory_RecurringAppointmentMaster@odata.bind`. A create can run twice through the proxy:
+  check for a duplicate series afterwards. W Support's description is "Joint Main", but the flow sets Payee =
+  Subject ("W Support"), so its transactions need Payee "Joint Main" set by hand until the flow reads a payee
+  from the appointment (flow change, pending).
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.

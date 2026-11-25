@@ -1005,3 +1005,8 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   Partly Matched), then removed: all four Reconciled, lines correct. 28 calls, about 26 seconds plus one proxy drop
   (a dropped call costs about 25 seconds: the proxy cuts it after 10 silent seconds and `dv.py` waits 15 before the
   retry). The old way made about 15 calls per transaction.
+
+### W Support series (2026-11-25)
+- Created the weekly Monday W Support series ($1,000, Flex, Support Payments, Auto) from 23 Nov 2026, because the
+  earlier one was missing. Payee: the flow sets Payee from Subject, so "Joint Main" is only in the Description.
+  Pending: let the flow take Payee from the appointment (needs a flow change, Opus).

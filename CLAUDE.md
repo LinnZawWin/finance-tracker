@@ -21,6 +21,12 @@ Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions
   request does not depend on what is only in this session (scratchpad files, IDs looked up, a running task), say
   so at the end of the reply and suggest starting a new session. Make sure this file and `docs/decisions.md` are
   current first, so the new session loses nothing. Do not suggest it in the middle of a task.
+- **Model: Sonnet by default, Opus when the rules do not settle it.** `.claude/settings.json` sets
+  `"model": "sonnet"`, so new sessions start on Sonnet for routine work (entering notes, imports, rule-based
+  reconciliation). When a Sonnet session meets something the rules in this file do not settle clearly (a split
+  bill, a netted repayment, an ambiguous match, a new kind of transaction, a schema or flow change), stop before
+  writing that part, say what is unclear and suggest switching with `/model opus`. Carry on with the parts the
+  rules do settle. Claude cannot switch the model itself.
 - Active or inactive is the built-in **Status** on every table. Do not add "Is Active" columns.
 - If a host is blocked ("Host not in allowlist"), stop that step, report the host and wait. Do not work around it.
 - Match tables and columns by logical name. Add only what is missing. If a column exists with a different

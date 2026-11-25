@@ -526,3 +526,11 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   Funny" (lines 56.35, 40.25, 24.15); "Clubbing YoYo table 130" (no line); 8 May "Club entry for 4 Yenda" (75/25) and
   "Beer x2" (Vegas Group lines 60.99 and 22.36 of 9 May?); 7 May "Drinks for x3 and snacks" (2/3 / 1/3) and "Drinks"
   (Felons 79.83 and 41.19); 6 May "Washing machine marketplace 150" (no account).
+
+## 2026-11-25: past work claims from Xero
+
+Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status Claimed, Claim Amount = Amount, no Paid
+From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI Sales conference); 6 Sep 2025 Air New
+Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
+25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
+16.05, 20.63 and 24.36.

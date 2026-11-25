@@ -1,4 +1,4 @@
-"""Reconcile the open Bank Statement Lines against the Finance Transactions, by the Reconciliation rules in CLAUDE.md.
+"""Reconcile the open Bank Statement Lines against the Finance Transactions, by the rules in docs/reconciliation.md.
 
     python scripts/reconcile.py            dry run: what would be paired, confirmed and left
     python scripts/reconcile.py --apply    write the transfers and the confirmed matches

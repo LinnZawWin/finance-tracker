@@ -1,5 +1,5 @@
 """Link Finance Transactions to bank lines: a split bill (the card charge plus each friend's repayment), a charge
-and its refund, or one transaction per line in bulk. See "Split bills" in CLAUDE.md.
+and its refund, or one transaction per line in bulk. See "Split bills" in docs/reconciliation.md.
 
     python scripts/split_match.py <finance transaction id> <line id>[=<amount>] ... [--apply]
     python scripts/split_match.py --batch <file> [--apply]

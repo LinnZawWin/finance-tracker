@@ -803,6 +803,12 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
 
+## 2026-11-25: CLAUDE.md split into topic files
+- Owner's request, to use less of the plan allowance: CLAUDE.md (58 KB) was sent with every turn of every session.
+  It now holds only the rules every session needs (16 KB) and a table of topic files in `docs/`: entering-notes,
+  statement-import, reconciliation, planned-transactions, web-page, outstanding. A session reads the one its task
+  needs. The text was moved unchanged (checked line by line); only the links and the "keep this file current" rule changed.
+
 ## 2026-11-25: Sonnet as the default model
 - Owner's request, to use less of the weekly plan allowance: Opus uses up the limits faster than Sonnet
   (https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan).

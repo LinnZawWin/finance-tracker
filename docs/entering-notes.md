@@ -2,6 +2,30 @@
 
 How to turn the owner's notes into Finance Transactions: foreign cash, categories, payees, assets, projects and gift cards. Part of the project rules: read with [../CLAUDE.md](../CLAUDE.md).
 
+## Notes file (`scripts/create_transactions.py`)
+
+Enter notes in two steps, so no creation code is written per batch:
+
+1. Turn the owner's notes, however they are written, into a notes file in the scratchpad (outside the repo),
+   one line per Finance Transaction with every field filled from these rules (Category, Payee, account, project):
+
+   ```
+   date | description | payee | amount | share | account | project | category | notes | original
+   2026-11-24 | Lunch Burger | Grill'd | 21.90 | A | AMEX | | Food and Soft Drinks
+   2026-10-23 | Dinner | Some Restaurant | 42.86 | | CNYCash | China Yunnan Trip | Food and Soft Drinks | rate 4.666043 | CNY 200
+   ```
+
+   Amount is AUD, negative = Income. Share: empty (Mine), A, AA or P (Paid for Others). Account: the Bank Account
+   name or a Short Name alias. Original: a foreign amount (`CNY 200`) for Original Amount / Currency.
+2. `python scripts/create_transactions.py <file>` (dry run: counts, duplicates and problems), then `--apply`.
+   It writes nothing while any line has a problem. Rerunning the same file creates only what is missing.
+
+Lines whose meaning is unclear (no amount, unknown account or payee, no category rule fits) are not put in the
+file: ask about them all in one list. What the format cannot hold is created by hand as before: Transfers, split
+bills with friends' shares, one purchase split into parts, assets (Finance Asset and Link), foreign cash spends
+that need a rate worked out, netted repayments. Keep the script output short: do not pass `--verbose` unless a
+row needs checking.
+
 ## Foreign cash
 
 - One cash Bank Account per currency, reused across trips: "CNY Cash" (short name `CNYCash`, Account Type
@@ -29,7 +53,7 @@ How to turn the owner's notes into Finance Transactions: foreign cash, categorie
   Note lines: `Description Amount [A|AA] [Account] [Project]` or `Description|Merchant|AUD|Share|Account|
   Project|Currency|Original Amount`; `CNY100` = a foreign amount; a date line may end with the project
   ("Yunnan Trip" = "China Yunnan Trip"). Fill Payee, Paid From and Original Amount from the matching Wise
-  line when the note has none, then run `reconcile.py`.
+  line when the note has none. Reconcile once at the end of the session (`reconcile.py`).
 
 ## Categories
 

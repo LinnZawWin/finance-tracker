@@ -3,7 +3,10 @@
 Personal finance tracker on Dataverse: capture expenses (Google Keep notes entered through the web page),
 import bank statements, reconcile bank lines against transactions, and track assets.
 Model-driven app **Finance Tracker**. Schema as built: [docs/schema.md](docs/schema.md).
-Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions.md). Read it before changing anything.
+Decisions, their reasoning and pending items: [docs/decisions.md](docs/decisions.md). Read it before changing the schema,
+the flows, the scripts or the web page. Entering notes, imports and reconciliation do not need it: the topic files
+hold the rules. Old note-batch logs are in [docs/decisions-archive.md](docs/decisions-archive.md); read it only to look
+up how a past batch was handled.
 
 ## Topic files: read the one the task needs
 
@@ -27,7 +30,8 @@ in another by name (for example "Cash lines" is in the reconciliation file, "Pay
   this file and the topic file it concerns (see the table above) in the same session so a new session can
   start from it without losing context: the current state
   (tables, columns, flows and whether they are on, sign conventions, rules learned), not a history.
-  Put the reasoning and the pending items in `docs/decisions.md`. Do this before reporting the work as done.
+  Put the reasoning and the pending items in `docs/decisions.md`, and the log of a note batch (what was entered,
+  what was closed by hand) in `docs/decisions-archive.md`. Do this before reporting the work as done.
 - This repo is public. Never commit the Dataverse URL, an email address, a tenant ID, tokens, token caches
   (`~/.azure`, `~/.pac`), exported data, statements, or any person's name. Write "Partner" instead of names.
 - Use the Dataverse Python SDK, PAC CLI, Azure CLI and Web API. Do not use or register the Dataverse MCP
@@ -137,7 +141,9 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
-| `statement_import.py <out> [--apply] [--include-possible] [--no-reconcile]` | Create the Bank Statements and only the missing lines (dry run by default). `--apply` then runs `reconcile.py --apply --verbose` itself (exit code 2 if another run holds the lock) |
+| `create_transactions.py <notes file> [--apply] [--verbose]` | Create Finance Transactions from a notes file in the fixed format ("Notes file" in `docs/entering-notes.md`): looks up accounts, projects and categories, skips duplicates, sets the order times; writes nothing while any row has a problem (dry run by default) |
+| `statement_import.py <out> [--apply] [--include-possible] [--reconcile]` | Create the Bank Statements and only the missing lines (dry run by default). `--reconcile` also runs `reconcile.py --apply` afterwards; normally reconcile once at the end of the session instead |
+| `report.py` | Short output for `reconcile.py` and `cash_lines.py`: counts and the pairs for the owner on screen, every detail in a file outside the repo whose path is printed (`--verbose` prints it all). Read that file only when a detail is needed |
 | `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
 | `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
 | `lock.py [--release]` | The reconciliation lock: environment variable `lzw_ReconcileLock` ("<holder> <UTC time>", empty = free), taken with If-Match so only one session reconciles at a time; older than 60 minutes = abandoned. `--release` clears it after a crashed run |
@@ -184,14 +190,14 @@ Several sessions may create Finance Transactions at the same time. Creating them
 - Only `reconcile.py --apply` (with `cash_lines.py`) and `split_match.py --apply` take `lzw_ReconcileLock`.
   When another session holds it, the run writes nothing: `reconcile.py` prints NOT RUN and exits with code 2,
   `split_match.py` stops with a `Busy` error. That is not a failure.
-- **Reconcile once, at the end** (owner, 2026-11-23). When the owner says other sessions are running, a session
-  only creates transactions and imports lines, with `statement_import.py --apply --no-reconcile`. It does not
-  run `reconcile.py --apply`. Links that `reconcile.py` cannot find (split bills, refunds, one line split over
+- **Reconcile once, at the end of every session** (owner, 2026-11-23; the default for every session since
+  2026-11-25). Batches of notes and imports only create rows (`create_transactions.py --apply`,
+  `statement_import.py --apply`). Links that `reconcile.py` cannot find (split bills, refunds, one line split over
   several parts, ANZ NZ Go, claims) are run with one `split_match.py --batch <file> --apply` at the end of the session,
-  not one by one. Report the lines and transactions left open.
-- Once every session has finished creating, one session (the last one, or a new one the owner starts) runs
-  `reconcile.py --apply --verbose`, then suggests Payees (Reconciliation rule 7). A single session on its own
-  keeps the normal flow (the import reconciles itself).
+  not one by one. Then one `reconcile.py --apply` and the Payee suggestions (Reconciliation rule 7) close the session.
+  Report the lines and transactions left open.
+- When the owner says other sessions are running, only the last session to finish (or a new one the owner starts)
+  runs `reconcile.py --apply`.
 - **When the lock is held, wait and retry without asking.** Check it with `python scripts/lock.py` every few
   minutes (in a cloud session use Monitor with an until-loop, not a foreground `sleep`) and rerun the step as
   soon as it shows "(free)". Do not run `lock.py --release` while the holder is under 60 minutes old: only a

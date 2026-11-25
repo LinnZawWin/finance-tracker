@@ -3,7 +3,7 @@
     python scripts/reconcile.py            dry run: what would be paired, confirmed and left
     python scripts/reconcile.py --apply    write the transfers and the confirmed matches
 
-Run after every statement inbox import (statement import rule 10). Steps:
+Run once at the end of a session, after the imports and note entry (statement import rule 10). Steps:
 1. Transfers: two open lines on two of my accounts with opposite amounts within 3 days, both with a transfer
    description (TRANSFER TO/FROM, PAYMENT TO, BPAY, PayID Payment Received, Money added from, ...). The same
    Bank Reference or the other account's number in the description wins a tie. A line with two equally good
@@ -24,7 +24,8 @@ Step 0 generates the cash lines (scripts/cash_lines.py: cash transactions, withd
 With --apply it holds the Dataverse lock lzw_ReconcileLock (scripts/lock.py) from the first read to the last
 write, so two sessions cannot reconcile at the same time; a second run stops with exit code 2. It then
 recalculates the rollups of the rows it matched, so recalc.py is not needed afterwards.
-statement_import.py --apply runs this script with --apply after writing lines.
+statement_import.py --apply --reconcile runs this script with --apply after writing lines.
+Output: counts and the pairs for the owner; every pair is in the details file it names (--verbose prints them all).
 """
 import datetime as dt
 import re
@@ -33,6 +34,7 @@ from collections import defaultdict
 
 import dv
 import lock
+import report
 from recalc import rollup
 
 APPLY = "--apply" in sys.argv
@@ -164,10 +166,9 @@ for key, a, b in cands:
     transfers.append((a, b))
 print(f"1. Transfers: {len(transfers)} pairs, {len(unsure)} left (more than one counterpart)")
 for a, b, n in unsure:
-    print("   unsure:", show_l(a), "<->", show_l(b), f"+{n} other")
-if "--verbose" in sys.argv:
-    for a, b in transfers:
-        print("   transfer:", show_l(a), "<->", show_l(b))
+    report.need("   unsure: " + show_l(a) + " <-> " + show_l(b) + f" +{n} other", "unsure transfer")
+for a, b in transfers:
+    report.detail("   transfer: " + show_l(a) + " <-> " + show_l(b))
 
 # 2. Transaction to line
 open_lines = [l for l in lines if l["lzw_bankstatementlineid"] not in used]
@@ -228,12 +229,12 @@ for c in pc:
 print(f"2. Transaction to line: {len(confirm)} to confirm, {len(propose)} for the owner "
       f"(another candidate), {len(fts) - len(confirm) - len(propose)} transactions with no candidate")
 for c in confirm:
-    print("   confirm:", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}{', same merchant' if c['merchant'] else ''}, {c['days']} d]")
+    report.detail("   confirm: " + show_t(c["t"]) + " <-> " + show_l(c["l"]) + f" [{c['reason']}{', same merchant' if c['merchant'] else ''}, {c['days']} d]")
 for c in propose:
-    print("   owner:  ", show_t(c["t"]), "<->", show_l(c["l"]), f"[{c['reason']}, {c['days']} d, " + (f"+{c['others']} other" if c["others"] else "payee differs") + "]")
+    report.need("   owner:   " + show_t(c["t"]) + " <-> " + show_l(c["l"]) + f" [{c['reason']}, {c['days']} d, " + (f"+{c['others']} other" if c["others"] else "payee differs") + "]", "owner")
 for t in fts:
     if t["lzw_financetransactionid"] not in uT:
-        print("   none:   ", show_t(t))
+        report.detail("   none:    " + show_t(t))
 
 # 3. Bank Rules (count only)
 left = [l for l in open_lines if l["lzw_bankstatementlineid"] not in uL]

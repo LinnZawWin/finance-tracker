@@ -54,16 +54,17 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
 9. Parse with `scripts/statement_parse.py` and `scripts/wise_lines.py`, then compare and write with
    `scripts/statement_import.py` (dry run by default, `--apply` to write). Keep the
    downloaded and parsed files outside the repo.
-10. **Then always reconcile.** Processing the inbox is not finished when the lines are written: reconcile
+10. **Then always reconcile, once, at the end of the session.** Processing the inbox is not finished when the lines are written: reconcile
     every Unmatched or Partly Matched bank line (all accounts, not only the new ones) against the Finance
     Transactions as far as the Reconciliation rules below allow, without being asked. Confirm what the
     rules allow, leave the rest Proposed or unmatched, and report what was matched, proposed and left.
-    `statement_import.py --apply` does this itself (not in parallel sessions, see "Parallel sessions"): after
-    the lines it runs `reconcile.py --apply --verbose`,
-    which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
+    Run `reconcile.py --apply` once after the last import and note batch of the session (or
+    `statement_import.py --apply --reconcile` when the import is the session's only task; not in parallel
+    sessions, see "Parallel sessions"). It holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
     the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
     wait and retry as under "Parallel sessions". On its own,
-    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs). Then suggest Payees for
+    `python scripts/reconcile.py` is a dry run. It prints counts and the pairs for the owner; every pair is in the
+    details file it names (`--verbose` prints them all). Then suggest Payees for
     the linked transactions that have none (Reconciliation rule 7).
 
 Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,

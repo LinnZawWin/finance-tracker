@@ -22,6 +22,7 @@ import re
 import sys
 
 import dv
+import report
 import statement_compare as sc
 from recalc import rollup
 
@@ -68,7 +69,7 @@ def run(apply, verbose=False):
             f"{cash[acc_id]['lzw_name']} - {proj.get(project_id, 'No project')}"
         key = (acc_id, sname)
         if key not in stmts:
-            print(f"  + statement {sname}")
+            report.detail(f"  + statement {sname}")
             stmts[key] = None
             if apply:
                 _, h = dv.call("POST", "lzw_bankstatements", {
@@ -126,7 +127,7 @@ def run(apply, verbose=False):
             continue
         sid = statement(w["acc"], w["project"])
         verb = "update" if old else "create"
-        print(f"  {verb} {cash[w['acc']]['lzw_name']:9} {l['date']} {l['amount']:>9.2f}  {l['description'][:60]}")
+        report.detail(f"  {verb} {cash[w['acc']]['lzw_name']:9} {l['date']} {l['amount']:>9.2f}  {l['description'][:60]}")
         if not apply:
             continue
         body = sc.line_body(l, w["acc"], sid, "Generated", aud)
@@ -176,7 +177,7 @@ def run(apply, verbose=False):
     for ref, old in existing.items():
         if ref in wanted:
             continue
-        print(f"  remove    {old['lzw_transactiondate']} {old['lzw_amount']:>9.2f}  {old['lzw_name'][:60]}")
+        report.detail(f"  remove    {old['lzw_transactiondate']} {old['lzw_amount']:>9.2f}  {old['lzw_name'][:60]}")
         if not apply:
             continue
         lid = old["lzw_bankstatementlineid"]

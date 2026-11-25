@@ -1,8 +1,8 @@
 """Create the Bank Statements and their lines from the files written by statement_parse.py and wise_lines.py.
 
     python scripts/statement_import.py <lines folder>            # dry run: summary per statement
-    python scripts/statement_import.py <lines folder> --apply    # write, then reconcile (reconcile.py --apply)
-    add --no-reconcile to write the lines only
+    python scripts/statement_import.py <lines folder> --apply    # write the lines
+    add --reconcile to run reconcile.py --apply afterwards (normally reconcile once, at the end of the session)
     add --include-possible to also create the lines flagged as possible duplicates (after checking them)
 
 Each statement is compared with the lines already in Dataverse (statement_compare.compare), so a re-run or
@@ -104,9 +104,9 @@ if APPLY:
     from recalc import rollup
     for sid in written:
         rollup("lzw_bankstatements", sid, "lzw_linecount")
-    if "--no-reconcile" not in sys.argv:
+    if "--reconcile" in sys.argv:
         import subprocess
         print("Reconciling (reconcile.py --apply):", flush=True)
         r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "reconcile.py"),
-                            "--apply", "--verbose"])
+                            "--apply"])
         sys.exit(r.returncode)

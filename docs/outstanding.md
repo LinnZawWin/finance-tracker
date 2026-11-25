@@ -9,7 +9,7 @@ Finance Transactions start on 9 Oct 2026 (notes entered back to that day, plus o
 |---|---|---|
 | 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
 | 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
-| 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 155 transfer pairs and 23 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (478 lines fit a rule) | Owner |
+| 3 | Reconciliation runs once at the end of each session (statement import rule 10, `reconcile.py`). 2026-11-21: 155 transfer pairs and 23 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (478 lines fit a rule) | Owner |
 | 4 | Import the next Wise export (after the Thailand trip) into "Wise 2026". Check that the hand-entered 28 Oct "Money added" +100 (`TRANSFER-2457903123`) is recognised, not duplicated | Claude |
 | 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
 | 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |

@@ -212,8 +212,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Utility, broadband, electricity, water, mobile | Utilities |
 | YouTube, Claude Pro, Prime Video, Crunchyroll, Spotify, Duolingo, DiDi Pass | Subscriptions |
 | Annual fee, bank fees | Fees and Charges |
-| Interlock device, car tow | Fines |
-| Parking fine (owner, 2026-11-25) | Parking Fines |
+| Interlock device | Fines |
+| Parking fine, car tow (owner, 2026-11-25) | Parking Fines |
 | Fuel | Fuel (Transport) |
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |

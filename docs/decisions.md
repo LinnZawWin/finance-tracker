@@ -803,6 +803,16 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
 
+## 2026-11-25: Sonnet as the default model
+- Owner's request, to use less of the weekly plan allowance: Opus uses up the limits faster than Sonnet
+  (https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan).
+- Set in the committed `.claude/settings.json` (`"model": "sonnet"`), not `settings.local.json`: a cloud session
+  starts from a fresh clone, so a git-ignored file would not reach it. The model name is not sensitive.
+- Claude cannot change the model of its own session, and a Sonnet subagent run from an Opus session would still
+  pay for the Opus turns, so the rule in CLAUDE.md is to stop and suggest `/model opus` when the rules are unclear.
+- Check in the next new session (`/model`) that it starts on Sonnet. A model chosen when starting a cloud session
+  in the app may take precedence over the file.
+
 ## 2026-11-25: notes for 5 to 16 Jun and 24 to 25 Nov 2026
 
 - 60 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day). 49 linked with one

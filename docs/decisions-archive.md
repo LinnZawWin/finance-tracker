@@ -471,3 +471,14 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Ski Gear Hire (14 Jul) and Ski gear upgrade (25 Jul) set to Activities and Attractions (owner).
 - Guessed categories (to confirm): Mask Wolf as Shopping, Card Game as Gambling (as Poker),
   Bag for A as Gifts, the flight as Flights.
+
+## 2026-11-25: notes for 30 May to 4 Jun 2026
+
+- 27 rows (Source Keep), nothing reconciled yet (owner: reconcile later). The 1 Jun Health Insurance already existed (skipped).
+- "Return for Thai Dinner" notes are the friends' repayments, not transactions: "Thai Dinner for whole table" (4 Jun,
+  Dodee Boran, A) has Amount 41.75 = 148.15 less 24.50, 40, 19.90 and 22 (Notes). Link the four PAYMENT FROM lines with `split_match.py`.
+- Air Fryer (1 Jun, Everyday, 50.00, Home and Hardware): Finance Asset (Appliance, Brand Philips) and Purchase link; Payee "Marketplace" as noted.
+- Not entered (no amount): 30 May "Uber to pickup A", "Uber by A (Returned by <friend> at a later date)", "Taxi from casino to home".
+- Guessed (to confirm): Batting cage as Activities and Attractions; Milksha as Payee (note field said "We Partner");
+  "Thi Ngoc Dung Tran" kept as Payee as written; Royal George written as "Royal George Hotel" (as before); Kmart Mount as "Kmart".
+

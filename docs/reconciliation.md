@@ -90,8 +90,11 @@ The Reconciliation Difference then equals the Amount, so `split_match.py` sets P
 line of a claimed transaction is linked, set it to Reconciled by hand. **Half claims and pending claims** (owner, 2026-11-25): a flight claimed half has the full Amount; the claim credit is
 split onto it with half the amount, so its Actual Amount is the half I paid, and it is set Reconciled by hand. A claim
 not yet paid ("pending claim, keep it open"): link the charge only and set the transaction to Partly Reconciled by hand
-(Notes "TO CLAIM ... pending"), so it stays open until the claim line arrives. 25 May Delta Insights claim 471.50 =
-262.50 (29 Apr Melbourne flight for Partner) + 131.00 (7 Apr flight for Partner) + 78.00 (7 Apr own flight, in full).
+(Notes "TO CLAIM ... pending"), so it stays open until the claim line arrives; a half claimed with the other half
+pending is linked to the charge and the claimed half and also stays Partly Reconciled. A booking for both of us whose
+my half is claimed is AA (I paid for Partner's seat) with my half of the claim linked. 25 May Delta Insights claim
+471.50 = 262.50 (29 Apr own Melbourne ticket, other half pending) + 131.00 (7 Apr booking for both, NJ9VFI) +
+78.00 (7 Apr own ticket JW44UJ, in full).
 A claim paid at another rate than the
 platform's leaves a few cents of Actual Amount on the foreign rows (6 Nov claim: 0.41 on the two NZD meals).
 

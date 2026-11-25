@@ -20,6 +20,10 @@ Done on 2026-11-15: the five formula columns were created and put on forms and v
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
 verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
 
+2026-11-25: `reconcile.py --apply` posted each match without a check, so a connection reset during the TLS handshake
+stopped the run (three times in one session) before the rollups were recalculated. The POST now checks for the match
+before retrying, as `split_match.py` does. After a crashed run, run `recalc.py --days 1`.
+
 2026-11-23: the cloud environment's setup script never installed its tools (`|| true` hid the errors): pip could not
 replace the Debian `argcomplete`, and PAC CLI 2.x needs .NET 10, not 8. The script now uses
 `--ignore-installed argcomplete` and `dotnet-sdk-10.0` and also installs the script dependencies. Its commands were

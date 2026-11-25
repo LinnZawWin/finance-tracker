@@ -4,7 +4,7 @@ Created OFF, like the Keep flow. Reuses the lzw_FinanceTrackerDataverse connecti
 Appointment Amount convention (after the sign flip of the series): positive = expense, negative = income.
 Finance Transaction gets Amount = abs(Amount) and Type from the sign.
 A transaction is created once per appointment (Source = Recurring, Source Row ID = appointment ID), so a
-series edit that resets Processed on its open instances cannot create duplicates.
+series edit cannot create duplicates. A processed appointment is set to Completed (status reason Completed).
 """
 import json
 import sys
@@ -20,7 +20,7 @@ ESTIMATED = O + 2  # Payment Type (global choice lzw_paymenttype): Auto, Manual,
 TZ = bf.TZ
 DV = bf.DV_API
 
-T_LIST = "List_rows:_Appointment_(Due_and_Not_Processed)"
+T_LIST = "List_rows:_Appointment_(Due_and_Open)"
 T_LOOP = "Apply_to_each:_Appointment"
 T_TRY = "Scope:_Try"
 T_EXIST = "List_rows:_Finance_Transaction_(Existing)"
@@ -94,8 +94,9 @@ def definition(sets):
                 "actions": {"Add_a_new_row:_Finance_Transaction": create},
                 "else": {"actions": {}},
             },
-            "Update_a_row:_Appointment_(Processed)": a("UpdateRecord", {
-                "entityName": "appointments", "recordId": f"@{item('activityid')}", "item/lzw_processed": True,
+            "Update_a_row:_Appointment_(Completed)": a("UpdateRecord", {
+                "entityName": "appointments", "recordId": f"@{item('activityid')}",
+                "item/statecode": 1, "item/statuscode": 3,  # Completed
             }, {"Condition:_Transaction_Not_Created": ["Succeeded"]}),
         },
     }
@@ -106,7 +107,7 @@ def definition(sets):
         "runtimeConfiguration": {"concurrency": {"repetitions": 1}},
         "actions": {
             T_TRY: try_scope,
-            # A failed appointment stays Processed = No and is retried on the next run.
+            # A failed appointment stays Open and is retried on the next run.
             f"Increment_variable:_{VAR}": {
                 "runAfter": {T_TRY: ["Failed", "TimedOut"]}, "type": "IncrementVariable",
                 "inputs": {"name": VAR, "value": 1},
@@ -136,8 +137,8 @@ def definition(sets):
                 "entityName": "appointments", "$top": 5000, "$orderby": "scheduledstart asc",
                 "$select": "activityid,seriesid,subject,description,scheduledstart,lzw_amount,lzw_paymenttype,_lzw_paidfrom_value,"
                            "_lzw_financecategory_value,_transactioncurrencyid_value",
-                # Open (0) or Scheduled (3) only: completed and cancelled appointments are read-only.
-                "$filter": f"lzw_processed eq false and lzw_amount ne null and (statecode eq 0 or statecode eq 3) "
+                # Open (0) or Scheduled (3) only: completed (done) and cancelled appointments are read-only.
+                "$filter": f"lzw_amount ne null and (statecode eq 0 or statecode eq 3) "
                            f"and scheduledstart lt @{{outputs('{T_END}')}}",
             }, {T_END: ["Succeeded"], T_AUD: ["Succeeded"]}),
             "Condition:_Appointments_Found": {
@@ -155,7 +156,7 @@ def definition(sets):
                     "runStatus": "Failed", "runError": {
                         "code": "AppointmentsFailed",
                         "message": f"@concat('Failed to Add new row: Finance Transaction for ', "
-                                   f"string(variables('{VAR}')), ' appointment(s). They stay unprocessed.')"}}}},
+                                   f"string(variables('{VAR}')), ' appointment(s). They stay open.')"}}}},
                 "else": {"actions": {"Terminate:_Succeeded": {
                     "runAfter": {}, "type": "Terminate", "inputs": {"runStatus": "Succeeded"}}}},
             },
@@ -187,7 +188,7 @@ def main():
     dv.post("workflows", {
         "category": 5, "name": FLOW_NAME, "type": 1, "primaryentity": "none",
         "description": "Daily 6 AM (Brisbane): creates a Finance Transaction for each open Planned Transaction "
-                       "(appointment) dated today or earlier with Processed = No, then sets Processed = Yes.",
+                       "(appointment) dated today or earlier, then sets the appointment to Completed.",
         "clientdata": data,
     }, solution=True, done=lambda: bool(dv.get(q)["value"]))
     print("  + flow created (OFF):", FLOW_NAME)

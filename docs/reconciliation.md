@@ -87,7 +87,12 @@ cash paid (it has no bank line), so the transaction stays Partly Reconciled unti
 ("ANZ INTERNET BANKING TRANSFER EXPENSE CLAIMS ..." on Everyday). Link the claim credit to those transactions
 the same way, split between them by their amounts (`line=amount`), so each one's Actual Amount is 0.
 The Reconciliation Difference then equals the Amount, so `split_match.py` sets Partly Reconciled: once every
-line of a claimed transaction is linked, set it to Reconciled by hand. A claim paid at another rate than the
+line of a claimed transaction is linked, set it to Reconciled by hand. **Half claims and pending claims** (owner, 2026-11-25): a flight claimed half has the full Amount; the claim credit is
+split onto it with half the amount, so its Actual Amount is the half I paid, and it is set Reconciled by hand. A claim
+not yet paid ("pending claim, keep it open"): link the charge only and set the transaction to Partly Reconciled by hand
+(Notes "TO CLAIM ... pending"), so it stays open until the claim line arrives. 25 May Delta Insights claim 471.50 =
+262.50 (29 Apr Melbourne flight for Partner) + 131.00 (7 Apr flight for Partner) + 78.00 (7 Apr own flight, in full).
+A claim paid at another rate than the
 platform's leaves a few cents of Actual Amount on the foreign rows (6 Nov claim: 0.41 on the two NZD meals).
 
 Bank Rules are for statement lines that have no Keep note behind them (rent, salary, interest, tolls, card

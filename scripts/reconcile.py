@@ -261,7 +261,9 @@ for c in confirm:
                                f"{c['days']} day(s) apart, no other candidate"}
     if l["_transactioncurrencyid_value"]:
         body["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({l['_transactioncurrencyid_value']})"
-    dv.post("lzw_reconciliationmatchs", body)
+    q = (f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter=_lzw_bankstatementline_value"
+         f" eq {l['lzw_bankstatementlineid']} and _lzw_financetransaction_value eq {t['lzw_financetransactionid']}")
+    dv.post("lzw_reconciliationmatchs", body, done=lambda q=q: bool(dv.get(q)["value"]))
     dv.patch(f"lzw_bankstatementlines({l['lzw_bankstatementlineid']})", {"lzw_status": MATCHED})
     if t["est"]:
         fb = {"lzw_reconciliationstatus": RECONCILED, "lzw_needsdetails": False, "lzw_amount": abs(l["rem"]) / 100}

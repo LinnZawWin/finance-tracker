@@ -482,3 +482,23 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Guessed (to confirm): Batting cage as Activities and Attractions; Milksha as Payee (note field said "We Partner");
   "Thi Ngoc Dung Tran" kept as Payee as written; Royal George written as "Royal George Hotel" (as before); Kmart Mount as "Kmart".
 
+
+## 2026-11-25: notes for 21 May to 30 May 2026, the April flights and reconciliation to 4 Jun
+
+- 28 rows (Source Keep) with `create_transactions.py`, accounts and amounts from the bank lines where the note had none.
+- Flights (Flights, Sydney AI Tour Trip / Melbourne Estia Health Trip): 7 Apr own 78.00 (Everyday) and Partner's 262.00
+  (Flex, AA), 8 Apr Partner's 83.00 (Flex, AA), 29 Apr own 525.00, the 11.13 card surcharge and Partner's 525.00 (AMEX, AA).
+  The 25 May Delta Insights claim +471.50 is split 78.00 / 131.00 / 262.50 onto the own 7 Apr ticket and Partner's two
+  half-claimed tickets (Reconciled by hand). The own 29 Apr ticket (half claim pending) and the surcharge (claim pending)
+  are linked to their charges and set Partly Reconciled by hand, as the owner asked.
+- The two identical 29 Apr Virgin 525.00 lines were assigned one each. The 23 May DiDi rides: 16.75 to "Charmy to Yoyo",
+  10.59 to "Yoyo to home" (by line order, a guess). "Dinner with HKM Couple" is the Goukai 101.65 line (the note named no place).
+- Small desk (27 May, Everyday 30.00, Payee Marketplace): Finance Asset (Furniture) and Purchase link.
+- Casino Win 4.05 (Income, Gambling, Cash): its cash line came from `cash_lines.py`.
+- Reconciled to 4 Jun: `reconcile.py --apply` confirmed the plain pairs; `split_match.py --batch` linked the claims, the
+  Thai dinner (charge and four repayments), the desk, the Commutes, Air Fryer, Milksha, Hanaromart and the identical
+  Ballpark and Royal George rows. The 30 May to 4 Jun rows are all Reconciled.
+- `reconcile.py` crashed three times on a connection reset during a match POST; it now checks for the match before
+  retrying (as `split_match.py`), and `recalc.py --days 1` recalculated the rollups the crashed runs skipped.
+- Not entered (owner to answer): the three 30 May Uber / taxi notes, "Cookies for house party" (24 May). The Kmart refund
+  +19.00 (21 May) waits for the 19 May Kmart purchase.

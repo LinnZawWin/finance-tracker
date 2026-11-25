@@ -493,8 +493,8 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   Reconciled), 131.00 (my half of NJ9VFI, Reconciled by hand) and 262.50 (own 29 Apr ticket: half claimed, the other half
   pending, Partly Reconciled). The surcharge (claim pending) is linked to its charge and Partly Reconciled. Partner's
   29 Apr ticket is not claimed (Reconciled). The 262.50 was first put on Partner's ticket and moved at the owner's request.
-- The two identical 29 Apr Virgin 525.00 lines were assigned one each. The 23 May DiDi rides: 16.75 to "Charmy to Yoyo",
-  10.59 to "Yoyo to home" (by line order, a guess). "Dinner with HKM Couple" is the Goukai 101.65 line (the note named no place).
+- The two identical 29 Apr Virgin 525.00 lines were assigned one each. The 23 May DiDi rides (owner): 10.59 "Charmy to Yoyo",
+  16.75 "Yoyo to home". "Dinner with HKM Couple" is the Goukai 101.65 line (the note named no place).
 - Small desk (27 May, Everyday 30.00, Payee Marketplace): Finance Asset (Furniture) and Purchase link.
 - Casino Win 4.05 (Income, Gambling, Cash): its cash line came from `cash_lines.py`.
 - Reconciled to 4 Jun: `reconcile.py --apply` confirmed the plain pairs; `split_match.py --batch` linked the claims, the
@@ -502,5 +502,7 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   Ballpark and Royal George rows. The 30 May to 4 Jun rows are all Reconciled.
 - `reconcile.py` crashed three times on a connection reset during a match POST; it now checks for the match before
   retrying (as `split_match.py`), and `recalc.py --days 1` recalculated the rollups the crashed runs skipped.
-- Not entered (owner to answer): the three 30 May Uber / taxi notes, "Cookies for house party" (24 May). The Kmart refund
-  +19.00 (21 May) waits for the 19 May Kmart purchase.
+- Added after the owner's answers: 30 May "Uber to pickup A" 60.48 and "Taxi from casino to home" 14.00 (Uber, AA);
+  "Uber by A" (AA) Amount 0: the 29 May 51.25 charge and Partner's 24 Jun +51.25 repayment are both linked. "Cookies for
+  house party" (24 May, 54.02, Payee Kürtősh, the West End bakery behind "LS KÜRT_SH"). 19 May "Household items at Kmart"
+  Amount 60.00 = 79.00 (18 May Kmart Stafford line) - 19.00 refund (21 May, laundry basket), both lines linked. All Reconciled.

@@ -97,7 +97,11 @@ Pending; a note saying it is for the tax return sets Income Tax, Pending. Amount
   Claim Amount is what the employer's expense system (Xero) shows as claimed: on NZD rows it can be a few cents below
   Amount (14-15 Oct: Sushi 16.05, Uber 20.63, dinner 24.36, set 2026-11-25).
   Claims from before the first imported bank line (Oct 2024 Sydney conference, Sep and Nov 2025 NZ trips, 12 rows) were
-  created from the Xero list as Employer, Claimed, with no Paid From, project or match (no bank lines to reconcile).
+  created from the Xero list as Employer, Claimed, with no Paid From or match (no bank lines to reconcile), each in its
+  trip project (Sydney Microsoft AI Tour 2024 Trip; New Zealand Palmerston North and Auckland for NZTA and DI Team Event
+  2026 Trip; New Zealand Palmerston North and Wellington NZTA NZBAS Trip).
+  The 29 Apr Melbourne ticket (Claim Amount 525.00) and its 11.13 surcharge stay Employer, Pending on purpose: the owner
+  has asked HR about them (2026-11-25).
 - **Income Tax**: no bank line. Set Claim Status = Claimed when the tax return that includes it is lodged.
 - The ATO allows no deduction for what the employer reimburses, so one transaction has one Claim Type.
 A claim paid at another rate than the

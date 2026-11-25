@@ -30,9 +30,9 @@ Partly Reconciled with a negative difference, or Employer + Pending; "Claims" li
 Pending; "TO CLAIM" was removed from their Notes. `create_transactions.py` takes an 11th field `claim`.
 2026-11-25: Claims checked against the owner's Xero expense list. Oct 2026 Claim Amounts set to the Xero figures
 (three NZD rows a few cents below Amount). 12 claimed rows from Oct 2024 to Nov 2025 created (no bank lines, so no
-Paid From or matches). Pending: Xero shows the 29 Apr Virgin Australia ticket claimed and paid at 262.50, while the
-row holds Claim Amount 525.00 Pending and the 11.13 surcharge Pending; left unchanged until the owner says whether
-the other half or the surcharge will be claimed.
+Paid From or matches), in three new projects dated from the Travel calendar (2-3 Oct 2024, 4-7 Sep 2025, 25-30 Nov
+2025). Xero shows the 29 Apr Virgin Australia ticket at 262.50 paid; the row's Claim Amount 525.00 Pending and the
+11.13 surcharge Pending are left as they are on purpose (owner has emailed HR about them).
 
 2026-11-25: `reconcile.py --apply` posted each match without a check, so a connection reset during the TLS handshake
 stopped the run (three times in one session) before the rollups were recalculated. The POST now checks for the match

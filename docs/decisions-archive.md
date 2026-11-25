@@ -533,7 +533,9 @@ Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status 
 From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI Sales conference); 6 Sep 2025 Air New
 Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
 25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
-16.05, 20.63 and 24.36.
+16.05, 20.63 and 24.36. Projects created and linked: Sydney Microsoft AI Tour 2024 Trip (3 rows), New Zealand
+Palmerston North and Auckland for NZTA and DI Team Event 2026 Trip (4), New Zealand Palmerston North and Wellington
+NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd Hawt Chicken" (as in Xero).
 
 ## 2026-11-25: notes for 28 Apr to 4 May 2026 (Melbourne Estia Health Trip)
 

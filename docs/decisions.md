@@ -812,8 +812,10 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
   and Snacks Cake 2.95 (AA, Food and Soft Drinks). No account in the notes.
 - Owner's answers: "Income Tax" 82,434.30 is an Expense (Tax) on AMEX as written; Salary 12,557.33 is Everyday;
   the cash vape has no Payee; "Ayanochan Goodbye and Salmon Party" (Everyday 80 to a friend) is Food and Soft Drinks.
-- Parking fines are now **Parking Fines** (owner's comment). The earlier parking fines (30 Jun, 3 Jul) are still Fines:
-  ask the owner whether to move them.
+- Parking fines are now **Parking Fines** (owner's comment). The 30 Jun and 3 Jul parking fines were already Parking
+  Fines when checked, and so was "Car Tow Collect" (2 Jul), although the category rule says Fines for a tow: to confirm.
+- Payees written (owner, 2026-11-25): the suggested ones, the party row as the friend's name, and "Sabzi Mandi (24x7
+  Fruit and Vege)" for the 247FRUITV line. Every Pokies Win row was already Gambling (Income).
 - Not transactions: "Special Grocery Gift Card 3054" (already the AMEX SPECIAL.GIFT / card 3054 Load pair) and
   "Cash Withdraw for Office chair" (already a Cash transfer pair). Office Chair is a Finance Asset (Furniture,
   Purchase link 190, Total Cost 190).

@@ -534,3 +534,22 @@ From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI S
 Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
 25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
 16.05, 20.63 and 24.36.
+
+## 2026-11-25: notes for 28 Apr to 4 May 2026 (Melbourne Estia Health Trip)
+
+- 29 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none.
+  Project Melbourne Estia Health Trip on every 30 Apr to 4 May row and the 29 Apr hotel (Super.com 326.87, A, Everyday),
+  except Cirque Du Rave. 27 linked with `split_match.py --batch`; the two Cash rows (Vacuum cleaner 175.00, Vape 60.00 A)
+  got their lines from `cash_lines.py`. All 29 Reconciled.
+- Vacuum cleaner (28 Apr, Marketplace 189.00 = 175.00 cash + 14.00 Everyday PAYMENT TO the seller): two transactions,
+  one Finance Asset (Appliance) with two Purchase links, Total Cost 189.00.
+- Guessed (to confirm): 1 May Beer x3 = the three Francis Hotel 14.08 lines and Retro club entry = Francis Hotel 20.12
+  (posted 2 May, note said 20); Pinot Noir Carafe = Main Bar 59.00; 30 Apr Asahi Beer x2 = QT Melbourne 30.45; Udon
+  Izakaya lines 107.65 dinner, 27.25 Sake (AA), 18.20 Udon; 2 May USB cable = Ampol Apollo Bay 25.00; 3 May Fuel before
+  car return = 7-Eleven 11.10; Cirque Du Rave (Events, A) = Everyday FIXR.CO 88.00 (note said Stripe); Twelve Apostles
+  Motel Payee Agoda (note said Booking.com, the line is Agoda).
+- Not entered, asked: 28 Apr Japanese dinner and 29 Apr Bowling (35.90) and Malay dinner (Ya Hoo Kit 114.60) with the
+  friend's 74.00 out and 100.00 in; 30 Apr City Express Bus (only a +33.60 Skybus credit, no charge); 2 May Dinner
+  Confectionary and Beer 6 pack (Port Campbell Hotel 29.41?); 4 May Taxi BNE airport to home (DiDi 3 May 39.57 or
+  35.46); Cirque Du Rave Fixr AMEX refund (no AMEX line). Lines left open: BTI Pty Ltd Melbourne Airport 83.40 (30 Apr),
+  Bernie Dieter 156.85 (1 May).

@@ -59,7 +59,7 @@ Entity set: `lzw_bankstatementlines`. Primary column: `lzw_name` (Description, t
 | Original Currency | `lzw_originalcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankstatementline_OriginalCurrency`, navigation property `lzw_OriginalCurrency`) |  |
 | Running Balance | `lzw_runningbalance` | Currency, precision 2, signed |  |
 | Merchant | `lzw_merchant` | Text (200) |  |
-| Source | `lzw_source` | Choice: Screenshot (859130000), CSV (859130001), PDF (859130002) |  |
+| Source | `lzw_source` | Choice: Screenshot (859130000), CSV (859130001), PDF (859130002), Generated (859130003) |  |
 | Is Pending | `lzw_ispending` | Yes/No (default No) |  |
 | Status | `lzw_status` | Choice: Unmatched (859130000), Partly Matched (859130001), Matched (859130002), Transfer (859130003), Ignored (859130004); default Unmatched |  |
 | Transfer Counterpart | `lzw_transfercounterpart` | Lookup to lzw_bankstatementline, Restrict delete (relationship `lzw_bankstatementline_TransferCounterpart`, navigation property `lzw_TransferCounterpart`) |  |

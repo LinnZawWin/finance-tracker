@@ -2,7 +2,7 @@
 
 Amount and Payment Type on these tables come from an older solution. Its lookups to the old account and
 category tables were removed on 2026-11-19 (one-off, not part of this script). This script adds:
-- Processed (Yes/No), Paid From (-> Bank Account) and Finance Category (-> Finance Category) on both tables.
+- Paid From (-> Bank Account) and Finance Category (-> Finance Category) on both tables.
   "Finance Category" rather than "Category" because Appointment already has an OOTB Category column.
 - The 'Recurring' option on Finance Transaction Source.
 - Those columns, Amount, Payment Type (and its global choice), the Planned / Recurring Transaction forms
@@ -26,20 +26,7 @@ LEGACY = ("lzw_amount", "lzw_paymenttype")  # existing columns that belong in th
 LOOKUPS = (("Paid From", "lzw_bankaccount"), ("Finance Category", "lzw_financecategory"))
 SOURCE_RECURRING = 859130003
 LOOKUP_CLASS = "{270BD3DB-D9AF-4782-9025-509E298DEC0A}"
-BOOL_CLASS = "{B0C6723A-8503-4FD7-BB28-C8A06AC933C2}"  # check box
 AUDIT = {"Value": True, "CanBeChanged": True, "ManagedPropertyLogicalName": "canmodifyauditsettings"}
-
-
-def ensure_processed(tl):
-    if bs.existing_attr(tl, "lzw_processed"):
-        return
-    dv.post(f"EntityDefinitions(LogicalName='{tl}')/Attributes", {
-        "@odata.type": "Microsoft.Dynamics.CRM.BooleanAttributeMetadata", "SchemaName": "lzw_Processed",
-        "DisplayName": label("Processed"), "RequiredLevel": {"Value": "None"}, "DefaultValue": False,
-        "Description": label("Set to Yes when the scheduled flow has created the Finance Transaction."),
-        "IsAuditEnabled": AUDIT, "OptionSet": bs.bool_options(),
-    }, solution=True, done=lambda: bs.existing_attr(tl, "lzw_processed") is not None)
-    print(f"  + {tl}.lzw_processed")
 
 
 def ensure_lookup(tl, display, target):
@@ -78,7 +65,7 @@ def add_components():
         mid = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=MetadataId")["MetadataId"]
         dv.post("AddSolutionComponent", {"ComponentId": mid, "ComponentType": 1, "SolutionUniqueName": dv.SOLUTION,
                                          "AddRequiredComponents": False, "DoNotIncludeSubcomponents": True})
-        for cl in LEGACY + ("lzw_processed", "lzw_paidfrom", "lzw_financecategory"):
+        for cl in LEGACY + ("lzw_paidfrom", "lzw_financecategory"):
             aid = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')?$select=MetadataId")
             dv.add_to_solution(aid["MetadataId"], 2)
         rels = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=LogicalName&$expand=ManyToOneRelationships"
@@ -117,11 +104,10 @@ def update_form(tl):
     # New rows go after the row that holds Amount.
     m = re.search(r'datafieldname="lzw_amount".*?</row>', xml, re.S)
     rows = (f"<row>{cell('lzw_paidfrom', 'Paid From', LOOKUP_CLASS)}"
-            f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>"
-            f"<row>{cell('lzw_processed', 'Processed', BOOL_CLASS)}</row>")
+            f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>")
     xml = xml[:m.end()] + rows + xml[m.end():]
     dv.patch(f"systemforms({fid})", {"formxml": xml})
-    print(f"  form {FORMS[tl]}: added Paid From, Finance Category, Processed")
+    print(f"  form {FORMS[tl]}: added Paid From, Finance Category")
 
 
 def update_view(tl):
@@ -129,7 +115,7 @@ def update_view(tl):
     lay, fx = v["layoutxml"], v["fetchxml"]
     if 'name="lzw_paidfrom"' in lay:
         return
-    cols = ["lzw_paidfrom", "lzw_financecategory"] + (["lzw_processed"] if tl == "appointment" else [])
+    cols = ["lzw_paidfrom", "lzw_financecategory"]
     lay = lay.replace("</row>", "".join(f'<cell name="{c}" width="150"/>' for c in cols) + "</row>")
     fx = fx.replace("</entity>", "".join(f'<attribute name="{c}"/>' for c in cols) + "</entity>")
     dv.patch(f"savedqueries({v['savedqueryid']})", {"layoutxml": lay, "fetchxml": fx})
@@ -173,7 +159,6 @@ def add_to_app():
 
 def main():
     for tl in TABLES:
-        ensure_processed(tl)
         for display, target in LOOKUPS:
             ensure_lookup(tl, display, target)
     ensure_source_option()

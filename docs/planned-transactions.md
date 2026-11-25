@@ -20,14 +20,14 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 
 ## Planned Transactions
 
-- The scheduled flow takes open or scheduled appointments with Processed = No and Start before tomorrow
+- The scheduled flow takes open or scheduled appointments with Start before tomorrow
   (Brisbane) and creates a Finance Transaction for each: Description and Payee = Subject, Date = Start,
   Type = Income if Amount < 0 else Expense, Estimated Amount = abs(Amount), Share Type = Mine, Source =
   Recurring, Source Row ID = appointment ID, Paid From and Category from the appointment or else its
   series, Needs Details = Yes when Paid
   From is empty or Payment Type = Estimated, Notes = "Created from Planned Transaction. Payment Type: <x>"
   plus the appointment's Description on a new line, currency = the appointment's (AUD if none). Then it
-  sets Processed = Yes. It skips an appointment that already has a Recurring transaction with that Source
+  sets the appointment to Completed (Status = Completed, status reason Completed). It skips an appointment that already has a Recurring transaction with that Source
   Row ID.
 - The appointment **Description** holds the payee or how to pay ("Manual - ..." = paid by hand). Every
   series has a Paid From (the account the money leaves), including Manual ones.
@@ -70,7 +70,6 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   - Amount, Payment Type, Description and currency are copied from a series to its instances (on create
     and on update). **Paid From and Finance Category are not** (tested 2026-11-19: empty on every instance),
     so the flow reads them from the series (`seriesid`) when the instance has none. Set them on the series.
-  - Keep Processed = No on series.
   - Deleting every instance of a series deletes the series too.
 - **Creating a series by API:** set `utcconversiontimezonecode` = 260 (as the other series) and use the same start
   style as Health Insurance (`starttime` Monday 14:00Z, `patternstartdate` 2026-11-18T14:00Z, mask 2 = Monday).

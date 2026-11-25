@@ -10,13 +10,14 @@ Enter notes in two steps, so no creation code is written per batch:
    one line per Finance Transaction with every field filled from these rules (Category, Payee, account, project):
 
    ```
-   date | description | payee | amount | share | account | project | category | notes | original
+   date | description | payee | amount | share | account | project | category | notes | original | claim
    2026-11-24 | Lunch Burger | Grill'd | 21.90 | A | AMEX | | Food and Soft Drinks
    2026-10-23 | Dinner | Some Restaurant | 42.86 | | CNYCash | China Yunnan Trip | Food and Soft Drinks | rate 4.666043 | CNY 200
    ```
 
    Amount is AUD, negative = Income. Share: empty (Mine), A, AA or P (Paid for Others). Account: the Bank Account
-   name or a Short Name alias. Original: a foreign amount (`CNY 200`) for Original Amount / Currency.
+   name or a Short Name alias. Original: a foreign amount (`CNY 200`) for Original Amount / Currency. Claim: `Employer` or `Tax`, with the part to claim when
+   it is not all of it (`Employer 262.50`): Claim Type, Claim Status Pending, Claim Amount (see "Claims" in the reconciliation file).
 2. `python scripts/create_transactions.py <file>` (dry run: counts, duplicates and problems), then `--apply`.
    It writes nothing while any line has a problem. Rerunning the same file creates only what is missing.
 

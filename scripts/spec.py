@@ -143,6 +143,13 @@ TABLES = [
         # A transfer moves my own money between accounts: no cost.
         calc("My Cost", "If(Value(lzw_type) = 859130002, 0, Decimal(lzw_amount) - lzw_partnershare)"),
         choice("Reconciliation Status", ["Unreconciled", "Partly Reconciled", "Reconciled"], "Unreconciled"),
+        # Claims (owner, 2026-11-25): Employer = reimbursed by the employer (closed by the claim bank line),
+        # Income Tax = a deduction in the tax return (closed when the return is lodged).
+        choice("Claim Type", ["Employer", "Income Tax"],
+               description="Employer: reimbursed by the employer into a bank account. Income Tax: claimed as a deduction"),
+        choice("Claim Status", ["Pending", "Claimed"],
+               description="Pending until the whole Claim Amount is reimbursed (Employer) or lodged in a tax return (Income Tax)"),
+        money("Claim Amount", False, description="The part of Amount to claim, positive. Empty = the whole Amount"),
         memo("Notes"),
     ]),
     dict(schema="lzw_ReconciliationMatch", display="Reconciliation Match", plural="Reconciliation Matches",

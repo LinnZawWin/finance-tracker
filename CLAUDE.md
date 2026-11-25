@@ -112,6 +112,8 @@ Plus `account.lzw_isbank` and the Account view "Banks". Global choice `lzw_share
 Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 Finance Transaction **Source**: Keep (859130000), Manual, Import, Recurring (859130003).
 Finance Transaction **Type**: Expense (859130000), Income, Transfer (859130002).
+Finance Transaction **Claim Type**: Employer (859130000), Income Tax; **Claim Status**: Pending (859130000), Claimed;
+**Claim Amount** (money, empty = the whole Amount). Views "Owed to me" and "Claims".
 
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,

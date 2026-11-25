@@ -6,12 +6,14 @@
 
 One row per line, fields separated by "|" (spaces around them ignored, empty trailing fields may be left out):
 
-    date | description | payee | amount | share | account | project | category | notes | original
+    date | description | payee | amount | share | account | project | category | notes | original | claim
 
 - date: yyyy-mm-dd. amount: AUD, positive = Expense, negative = Income (saved positive).
 - share: empty or Mine, A, AA, P (Paid for Others). account: the Bank Account name or one of its Short Name
   aliases. project: the Finance Project name. category: the Finance Category name (required). Matching ignores case.
 - original: a foreign amount such as "CNY 100" (Original Amount and Original Currency; the AUD amount is still needed).
+- claim: "Employer" or "Tax", optionally with the part to claim ("Employer 262.50"); sets Claim Type, Claim Status
+  Pending and Claim Amount (the whole Amount when no part is given).
 - "#" starts a comment line; blank lines are ignored.
 
 Transfers, split bills, assets and anything else these fields cannot hold are not taken: create those by hand.
@@ -37,7 +39,8 @@ KEEP = OPT
 SHARE = {"": 0, "mine": 0, "a": 1, "aa": 2, "p": 3}
 TZ = dt.timezone(dt.timedelta(hours=10))  # Brisbane, no daylight saving
 STEP = dt.timedelta(minutes=10)
-FIELDS = ["date", "description", "payee", "amount", "share", "account", "project", "category", "notes", "original"]
+FIELDS = ["date", "description", "payee", "amount", "share", "account", "project", "category", "notes", "original", "claim"]
+CLAIM = {"employer": OPT, "tax": OPT + 1, "income tax": OPT + 1}  # Claim Type; Claim Status Pending = OPT
 
 
 def esc(s):
@@ -114,10 +117,20 @@ def main():
                     orig = (sc.currency_id(m.group(1).upper()), round(float(m.group(2).replace(",", "")), 2))
                 except Exception:
                     bad.append(f"currency '{m.group(1)}' not found")
+        claim = None
+        if f["claim"]:
+            m = re.fullmatch(r"(employer|income tax|tax)\s*([\d,]+(?:\.\d+)?)?", f["claim"].strip().lower())
+            if not m:
+                bad.append(f"claim '{f['claim']}' (write Employer or Tax, optionally with the amount)")
+            else:
+                part = round(float(m.group(2).replace(",", "")), 2) if m.group(2) else None
+                if part is not None and amount is not None and part > abs(amount):
+                    bad.append(f"claim {part} is more than the amount")
+                claim = (CLAIM[m.group(1)], part)
         if bad:
             problems.append(f"line {n}: " + "; ".join(bad) + f"  [{line.strip()[:80]}]")
             continue
-        rows.append(dict(n=n, day=day, f=f, amount=amount, share=share, acct=acct, proj=proj, cat=cat, orig=orig,
+        rows.append(dict(n=n, day=day, f=f, amount=amount, share=share, acct=acct, proj=proj, cat=cat, orig=orig, claim=claim,
                          rid=f"notes:{tag}:{n}"))
 
     # Existing rows on those days: duplicates and the time of each day's last row
@@ -182,6 +195,9 @@ def main():
         if r["orig"]:
             body["lzw_OriginalCurrency@odata.bind"] = f"/transactioncurrencies({r['orig'][0]})"
             body["lzw_originalamount"] = r["orig"][1]
+        if r["claim"]:
+            body.update(lzw_claimtype=r["claim"][0], lzw_claimstatus=OPT,
+                        lzw_claimamount=r["claim"][1] if r["claim"][1] is not None else abs(r["amount"]))
         done = lambda rid=r["rid"]: bool(dv.get("lzw_financetransactions?$select=lzw_financetransactionid"
                                                 f"&$filter=lzw_sourcerowid eq '{esc(rid)}'")["value"])
         dv.post("lzw_financetransactions", body, done=done)

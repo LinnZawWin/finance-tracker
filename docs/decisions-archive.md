@@ -507,6 +507,26 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   house party" (24 May, 54.02, Payee Kürtősh, the West End bakery behind "LS KÜRT_SH"). 19 May "Household items at Kmart"
   Amount 60.00 = 79.00 (18 May Kmart Stafford line) - 19.00 refund (21 May, laundry basket), both lines linked. All Reconciled.
 
+## 2026-11-25: notes for 5 to 20 May 2026 and 26 Nov
+
+- 52 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none.
+  49 linked with `split_match.py --batch` and Reconciled; the two Cash rows (Vape Alibaba 60.00 A, Drying hanger 5.00)
+  get their lines from `cash_lines.py`; Commute 0.50 (26 Nov, Everyday) waits for its Translink line.
+- Two lines on one row: "Asian groceries" (6 May, A) = both Sunlit Asian Supermarket charges 120.32 + 26.99;
+  "Trolley hire" (6 May) Amount 15.00 = Bunnings 115.00 charge less the 100.00 refund the same day, both linked.
+- "Scam Vape" (20 May) is the Everyday PAYMENT TO 100.00 the same day, Other Expense (no scam or loss category).
+- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; the two 16 May DiDi lines
+  14.83 = "Funny Funny to The Met", 18.17 = "club to home"; 6 May notes on the 4 and 5 May lines (Kmart 133.00 =
+  household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair products, ALDI 148.19
+  and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line, Payee KFC (Collins Foods
+  runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as Subscriptions; Pearson VUE exam
+  as Education, not a claim.
+- Not entered, asked: 10 May "Bowling for six" (Strike 296.14) and "Thai Dinner for 7" (Kinn Imm 126.88, credit 8.12)
+  with the four PAYMENT FROM lines of 10 May (50, 67, 84, 100); 9 May "Drinking at Funny Funny" and two "Beer at Funny
+  Funny" (lines 56.35, 40.25, 24.15); "Clubbing YoYo table 130" (no line); 8 May "Club entry for 4 Yenda" (75/25) and
+  "Beer x2" (Vegas Group lines 60.99 and 22.36 of 9 May?); 7 May "Drinks for x3 and snacks" (2/3 / 1/3) and "Drinks"
+  (Felons 79.83 and 41.19); 6 May "Washing machine marketplace 150" (no account).
+
 ## 2026-11-25: past work claims from Xero
 
 Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status Claimed, Claim Amount = Amount, no Paid
@@ -514,3 +534,22 @@ From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI S
 Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
 25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
 16.05, 20.63 and 24.36.
+
+## 2026-11-25: notes for 28 Apr to 4 May 2026 (Melbourne Estia Health Trip)
+
+- 29 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none.
+  Project Melbourne Estia Health Trip on every 30 Apr to 4 May row and the 29 Apr hotel (Super.com 326.87, A, Everyday),
+  except Cirque Du Rave. 27 linked with `split_match.py --batch`; the two Cash rows (Vacuum cleaner 175.00, Vape 60.00 A)
+  got their lines from `cash_lines.py`. All 29 Reconciled.
+- Vacuum cleaner (28 Apr, Marketplace 189.00 = 175.00 cash + 14.00 Everyday PAYMENT TO the seller): two transactions,
+  one Finance Asset (Appliance) with two Purchase links, Total Cost 189.00.
+- Guessed (to confirm): 1 May Beer x3 = the three Francis Hotel 14.08 lines and Retro club entry = Francis Hotel 20.12
+  (posted 2 May, note said 20); Pinot Noir Carafe = Main Bar 59.00; 30 Apr Asahi Beer x2 = QT Melbourne 30.45; Udon
+  Izakaya lines 107.65 dinner, 27.25 Sake (AA), 18.20 Udon; 2 May USB cable = Ampol Apollo Bay 25.00; 3 May Fuel before
+  car return = 7-Eleven 11.10; Cirque Du Rave (Events, A) = Everyday FIXR.CO 88.00 (note said Stripe); Twelve Apostles
+  Motel Payee Agoda (note said Booking.com, the line is Agoda).
+- Not entered, asked: 28 Apr Japanese dinner and 29 Apr Bowling (35.90) and Malay dinner (Ya Hoo Kit 114.60) with the
+  friend's 74.00 out and 100.00 in; 30 Apr City Express Bus (only a +33.60 Skybus credit, no charge); 2 May Dinner
+  Confectionary and Beer 6 pack (Port Campbell Hotel 29.41?); 4 May Taxi BNE airport to home (DiDi 3 May 39.57 or
+  35.46); Cirque Du Rave Fixr AMEX refund (no AMEX line). Lines left open: BTI Pty Ltd Melbourne Airport 83.40 (30 Apr),
+  Bernie Dieter 156.85 (1 May).

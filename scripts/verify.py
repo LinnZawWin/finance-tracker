@@ -159,7 +159,9 @@ def main():
              "Unmatched Lines": "Status = Unmatched or Partly Matched", "Pending Lines": "Is Pending = Yes",
              "Transfers": "Status = Transfer", "Proposed Matches": "Match Status = Proposed (editable grid)",
              "Confirmed Matches": "Match Status = Confirmed", "Owned Assets": "Status = Owned",
-             "Sold Assets": "Status = Sold", "Banks": "Is Bank = Yes"}
+             "Sold Assets": "Status = Sold", "Banks": "Is Bank = Yes",
+             "Owed to me": "Partly Reconciled with Reconciliation Difference below 0, or Claim Type = Employer with Claim Status = Pending",
+             "Claims": "Claim Type has a value"}
     view_ids = {}
     for table, views in build_ui.VIEWS.items():
         for name, *_ in views:

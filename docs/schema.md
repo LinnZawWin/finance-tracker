@@ -59,7 +59,7 @@ Entity set: `lzw_bankstatementlines`. Primary column: `lzw_name` (Description, t
 | Original Currency | `lzw_originalcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankstatementline_OriginalCurrency`, navigation property `lzw_OriginalCurrency`) |  |
 | Running Balance | `lzw_runningbalance` | Currency, precision 2, signed |  |
 | Merchant | `lzw_merchant` | Text (200) |  |
-| Source | `lzw_source` | Choice: Screenshot (859130000), CSV (859130001), PDF (859130002) |  |
+| Source | `lzw_source` | Choice: Screenshot (859130000), CSV (859130001), PDF (859130002), Generated (859130003) |  |
 | Is Pending | `lzw_ispending` | Yes/No (default No) |  |
 | Status | `lzw_status` | Choice: Unmatched (859130000), Partly Matched (859130001), Matched (859130002), Transfer (859130003), Ignored (859130004); default Unmatched |  |
 | Transfer Counterpart | `lzw_transfercounterpart` | Lookup to lzw_bankstatementline, Restrict delete (relationship `lzw_bankstatementline_TransferCounterpart`, navigation property `lzw_TransferCounterpart`) |  |
@@ -99,6 +99,9 @@ Entity set: `lzw_financetransactions`. Primary column: `lzw_name` (Description, 
 | Partner Share | `lzw_partnershare` | Formula (Power Fx), decimal, 2 places |  |
 | My Cost | `lzw_mycost` | Formula (Power Fx), decimal, 2 places |  |
 | Reconciliation Status | `lzw_reconciliationstatus` | Choice: Unreconciled (859130000), Partly Reconciled (859130001), Reconciled (859130002); default Unreconciled |  |
+| Claim Type | `lzw_claimtype` | Choice: Employer (859130000), Income Tax (859130001) |  |
+| Claim Status | `lzw_claimstatus` | Choice: Pending (859130000), Claimed (859130001) |  |
+| Claim Amount | `lzw_claimamount` | Currency, precision 2, 0 or more |  |
 | Notes | `lzw_notes` | Multiline text |  |
 
 ### Reconciliation Match (`lzw_reconciliationmatch`)
@@ -213,6 +216,8 @@ Power Fx formula columns (Decimal, 2 places), created by `build_formulas.py`. A 
 | `lzw_financetransaction` | Needs Details | Needs Details = Yes (active rows) |
 | `lzw_financetransaction` | Unreconciled | Reconciliation Status = Unreconciled (active rows) |
 | `lzw_financetransaction` | Last 30 Days | Transaction Date in the last 30 days (active rows) |
+| `lzw_financetransaction` | Owed to me | Partly Reconciled with Reconciliation Difference below 0, or Claim Type = Employer with Claim Status = Pending (active rows) |
+| `lzw_financetransaction` | Claims | Claim Type has a value (active rows) |
 | `lzw_financetransaction` | By Project | Project has a value, sorted by Project (active rows) |
 | `lzw_bankstatementline` | Unmatched Lines | Status = Unmatched or Partly Matched (active rows) |
 | `lzw_bankstatementline` | Pending Lines | Is Pending = Yes (active rows) |

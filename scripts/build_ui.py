@@ -50,6 +50,9 @@ def cond(attr, op, value=None):
 
 ACTIVE = cond("statecode", "eq", 0)
 FT, BSL, RM, FA = "lzw_financetransaction", "lzw_bankstatementline", "lzw_reconciliationmatch", "lzw_financeasset"
+CLAIM_COLS = [("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 140), ("lzw_amount", 110),
+              ("lzw_actualamount", 110), ("lzw_reconciliationdifference", 120), ("lzw_claimtype", 110),
+              ("lzw_claimstatus", 110), ("lzw_claimamount", 110), ("lzw_reconciliationstatus", 140), ("lzw_notes", 200)]
 
 # Extra public views: table -> [(name, filter xml, optional column override, optional sort)]
 VIEWS = {
@@ -57,6 +60,11 @@ VIEWS = {
         ("Needs Details", ACTIVE + cond("lzw_needsdetails", "eq", 1), None, None),
         ("Unreconciled", ACTIVE + cond("lzw_reconciliationstatus", "eq", O), None, None),
         ("Last 30 Days", ACTIVE + cond("lzw_transactiondate", "last-x-days", 30), None, None),
+        # Someone owes me: a split bill not yet paid back (difference below 0) or an employer claim not yet reimbursed.
+        ("Owed to me", ACTIVE + '<filter type="or"><filter type="and">' + cond("lzw_reconciliationstatus", "eq", O + 1)
+         + cond("lzw_reconciliationdifference", "lt", 0) + '</filter><filter type="and">' + cond("lzw_claimtype", "eq", O)
+         + cond("lzw_claimstatus", "eq", O) + "</filter></filter>", CLAIM_COLS, ("lzw_transactiondate", False)),
+        ("Claims", ACTIVE + cond("lzw_claimtype", "not-null"), CLAIM_COLS, ("lzw_transactiondate", True)),
         ("By Project", ACTIVE + cond("lzw_project", "not-null"),
          [("lzw_project", 170), ("lzw_transactiondate", 110), ("lzw_name", 260), ("lzw_payee", 150),
           ("lzw_amount", 120), ("lzw_mycost", 110), ("lzw_category", 150), ("lzw_sharetype", 150)], ("lzw_project", False)),
@@ -119,6 +127,7 @@ FORMS = {
                          "lzw_mycost", "lzw_needsdetails"]),
         ("Reconciliation", ["lzw_actualamount", "lzw_reconciliationdifference", "lzw_reconciliationstatus",
                             "lzw_source", "lzw_sourcerowid", "transactioncurrencyid", "ownerid"]),
+        ("Claim", ["lzw_claimtype", "lzw_claimstatus", "lzw_claimamount"]),
         ("Notes", ["lzw_notes"]),
     ]), ("Matches and Assets", [
         ("subgrid", "Reconciliation Matches", RM, "lzw_reconciliationmatch_FinanceTransaction"),

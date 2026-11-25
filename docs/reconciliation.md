@@ -83,18 +83,19 @@ A refund on another account than the charge is linked too (7 Oct ALDI container 
 1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash
 account). **Bill paid in cash, repaid by bank transfer**: link the repayments; the difference stays at the
 cash paid (it has no bank line), so the transaction stays Partly Reconciled until its cash line is generated (see "Cash lines"), then it is 0.
-**Work expense claims**: a purchase noted "TO CLAIM" is paid by me and repaid by the employer
-("ANZ INTERNET BANKING TRANSFER EXPENSE CLAIMS ..." on Everyday). Link the claim credit to those transactions
-the same way, split between them by their amounts (`line=amount`), so each one's Actual Amount is 0.
-The Reconciliation Difference then equals the Amount, so `split_match.py` sets Partly Reconciled: once every
-line of a claimed transaction is linked, set it to Reconciled by hand. **Half claims and pending claims** (owner, 2026-11-25): a flight claimed half has the full Amount; the claim credit is
-split onto it with half the amount, so its Actual Amount is the half I paid, and it is set Reconciled by hand. A claim
-not yet paid ("pending claim, keep it open"): link the charge only and set the transaction to Partly Reconciled by hand
-(Notes "TO CLAIM ... pending"), so it stays open until the claim line arrives; a half claimed with the other half
-pending is linked to the charge and the claimed half and also stays Partly Reconciled. A booking for both of us whose
-my half is claimed is AA (I paid for Partner's seat) with my half of the claim linked. 25 May Delta Insights claim
-471.50 = 262.50 (29 Apr own Melbourne ticket, other half pending) + 131.00 (7 Apr booking for both, NJ9VFI) +
-78.00 (7 Apr own ticket JW44UJ, in full).
+**Claims** (columns since 2026-11-25, owner): **Claim Type** (Employer, Income Tax), **Claim Status** (Pending, Claimed)
+and **Claim Amount** (the part of Amount to claim; empty = all of it). A note saying "to claim" (work trip) sets Employer,
+Pending; a note saying it is for the tax return sets Income Tax, Pending. Amount stays the full price. Not in Notes any more.
+- **Employer**: repaid by the employer ("ANZ INTERNET BANKING TRANSFER EXPENSE CLAIMS ..." on Everyday). Link the claim
+  credit to those transactions, split by the part each one claims (`line=amount`). When the linked credits reach the
+  Claim Amount, set Claim Status = Claimed and the transaction to Reconciled by hand (the Reconciliation Difference then
+  equals the claimed part, so `split_match.py` leaves Partly Reconciled). While anything is still to come, Claim Status
+  stays Pending and the transaction Partly Reconciled: the "Owed to me" view lists Employer + Pending.
+  A booking for both of us whose my half is claimed is AA (I paid for Partner's seat), Claim Amount = my half.
+  25 May Delta Insights claim 471.50 = 262.50 (29 Apr own Melbourne ticket, Claim Amount 525.00, so still Pending) +
+  131.00 (7 Apr booking for both, NJ9VFI) + 78.00 (7 Apr own ticket JW44UJ).
+- **Income Tax**: no bank line. Set Claim Status = Claimed when the tax return that includes it is lodged.
+- The ATO allows no deduction for what the employer reimburses, so one transaction has one Claim Type.
 A claim paid at another rate than the
 platform's leaves a few cents of Actual Amount on the foreign rows (6 Nov claim: 0.41 on the two NZD meals).
 

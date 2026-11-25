@@ -20,6 +20,15 @@ Done on 2026-11-15: the five formula columns were created and put on forms and v
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
 verified as bound; confidence threshold agreed at 0.95. `verify.py`: 370 checks, 0 problems.
 
+2026-11-25: **Claim columns** on Finance Transaction (owner): Claim Type (Employer, Income Tax), Claim Status (Pending,
+Claimed), Claim Amount. Chosen over one four-value choice so views can filter on type or status alone, and Claim Amount
+holds a half claim without Notes. One transaction has one type: the ATO allows no deduction for what the employer
+reimburses. The claim keeps the full price as Amount (option 2, Amount = cost after the claim, was shown and not
+taken: category totals would lose the claimed spend). "Owed to me" (first made in the app) is now built by `build_ui.py`:
+Partly Reconciled with a negative difference, or Employer + Pending; "Claims" lists every claim. The 7 claimed rows
+(Oct taxis and meals, two 7 Apr flights) were set Employer, Claimed; the 29 Apr Melbourne ticket and its surcharge Employer,
+Pending; "TO CLAIM" was removed from their Notes. `create_transactions.py` takes an 11th field `claim`.
+
 2026-11-25: `reconcile.py --apply` posted each match without a check, so a connection reset during the TLS handshake
 stopped the run (three times in one session) before the rollups were recalculated. The POST now checks for the match
 before retrying, as `split_match.py` does. After a crashed run, run `recalc.py --days 1`.

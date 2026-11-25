@@ -507,6 +507,26 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   house party" (24 May, 54.02, Payee Kürtősh, the West End bakery behind "LS KÜRT_SH"). 19 May "Household items at Kmart"
   Amount 60.00 = 79.00 (18 May Kmart Stafford line) - 19.00 refund (21 May, laundry basket), both lines linked. All Reconciled.
 
+## 2026-11-25: notes for 5 to 20 May 2026 and 26 Nov
+
+- 52 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none.
+  49 linked with `split_match.py --batch` and Reconciled; the two Cash rows (Vape Alibaba 60.00 A, Drying hanger 5.00)
+  get their lines from `cash_lines.py`; Commute 0.50 (26 Nov, Everyday) waits for its Translink line.
+- Two lines on one row: "Asian groceries" (6 May, A) = both Sunlit Asian Supermarket charges 120.32 + 26.99;
+  "Trolley hire" (6 May) Amount 15.00 = Bunnings 115.00 charge less the 100.00 refund the same day, both linked.
+- "Scam Vape" (20 May) is the Everyday PAYMENT TO 100.00 the same day, Other Expense (no scam or loss category).
+- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; the two 16 May DiDi lines
+  14.83 = "Funny Funny to The Met", 18.17 = "club to home"; 6 May notes on the 4 and 5 May lines (Kmart 133.00 =
+  household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair products, ALDI 148.19
+  and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line, Payee KFC (Collins Foods
+  runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as Subscriptions; Pearson VUE exam
+  as Education, not a claim.
+- Not entered, asked: 10 May "Bowling for six" (Strike 296.14) and "Thai Dinner for 7" (Kinn Imm 126.88, credit 8.12)
+  with the four PAYMENT FROM lines of 10 May (50, 67, 84, 100); 9 May "Drinking at Funny Funny" and two "Beer at Funny
+  Funny" (lines 56.35, 40.25, 24.15); "Clubbing YoYo table 130" (no line); 8 May "Club entry for 4 Yenda" (75/25) and
+  "Beer x2" (Vegas Group lines 60.99 and 22.36 of 9 May?); 7 May "Drinks for x3 and snacks" (2/3 / 1/3) and "Drinks"
+  (Felons 79.83 and 41.19); 6 May "Washing machine marketplace 150" (no account).
+
 ## 2026-11-25: past work claims from Xero
 
 Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status Claimed, Claim Amount = Amount, no Paid

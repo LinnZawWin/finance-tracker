@@ -94,6 +94,10 @@ Pending; a note saying it is for the tax return sets Income Tax, Pending. Amount
   A booking for both of us whose my half is claimed is AA (I paid for Partner's seat), Claim Amount = my half.
   25 May Delta Insights claim 471.50 = 262.50 (29 Apr own Melbourne ticket, Claim Amount 525.00, so still Pending) +
   131.00 (7 Apr booking for both, NJ9VFI) + 78.00 (7 Apr own ticket JW44UJ).
+  Claim Amount is what the employer's expense system (Xero) shows as claimed: on NZD rows it can be a few cents below
+  Amount (14-15 Oct: Sushi 16.05, Uber 20.63, dinner 24.36, set 2026-11-25).
+  Claims from before the first imported bank line (Oct 2024 Sydney conference, Sep and Nov 2025 NZ trips, 12 rows) were
+  created from the Xero list as Employer, Claimed, with no Paid From, project or match (no bank lines to reconcile).
 - **Income Tax**: no bank line. Set Claim Status = Claimed when the tax return that includes it is lodged.
 - The ATO allows no deduction for what the employer reimburses, so one transaction has one Claim Type.
 A claim paid at another rate than the

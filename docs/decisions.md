@@ -28,6 +28,11 @@ taken: category totals would lose the claimed spend). "Owed to me" (first made i
 Partly Reconciled with a negative difference, or Employer + Pending; "Claims" lists every claim. The 7 claimed rows
 (Oct taxis and meals, two 7 Apr flights) were set Employer, Claimed; the 29 Apr Melbourne ticket and its surcharge Employer,
 Pending; "TO CLAIM" was removed from their Notes. `create_transactions.py` takes an 11th field `claim`.
+2026-11-25: Claims checked against the owner's Xero expense list. Oct 2026 Claim Amounts set to the Xero figures
+(three NZD rows a few cents below Amount). 12 claimed rows from Oct 2024 to Nov 2025 created (no bank lines, so no
+Paid From or matches). Pending: Xero shows the 29 Apr Virgin Australia ticket claimed and paid at 262.50, while the
+row holds Claim Amount 525.00 Pending and the 11.13 surcharge Pending; left unchanged until the owner says whether
+the other half or the surcharge will be claimed.
 
 2026-11-25: `reconcile.py --apply` posted each match without a check, so a connection reset during the TLS handshake
 stopped the run (three times in one session) before the rollups were recalculated. The POST now checks for the match

@@ -506,3 +506,11 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   "Uber by A" (AA) Amount 0: the 29 May 51.25 charge and Partner's 24 Jun +51.25 repayment are both linked. "Cookies for
   house party" (24 May, 54.02, Payee Kürtősh, the West End bakery behind "LS KÜRT_SH"). 19 May "Household items at Kmart"
   Amount 60.00 = 79.00 (18 May Kmart Stafford line) - 19.00 refund (21 May, laundry basket), both lines linked. All Reconciled.
+
+## 2026-11-25: past work claims from Xero
+
+Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status Claimed, Claim Amount = Amount, no Paid
+From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI Sales conference); 6 Sep 2025 Air New
+Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
+25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
+16.05, 20.63 and 24.36.

@@ -1,0 +1,23 @@
+# Outstanding work
+
+Open items. Part of the project rules: read with [../CLAUDE.md](../CLAUDE.md).
+
+Details and reasoning are in [decisions.md](decisions.md). State as of 2026-11-21:
+Finance Transactions start on 9 Oct 2026 (notes entered back to that day, plus older notes as listed in item 8); bank lines go back to March.
+
+| # | Item | Who |
+|---|---|---|
+| 1 | Test Claude Code GitHub Actions: comment `@claude` on an issue and check the run, including the Azure sign-in (`.github/workflows/claude.yml`, never run yet) | Owner |
+| 2 | Decide whether to delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets` (used only by the deleted Keep flow) | Owner |
+| 3 | Reconciliation runs with every inbox run (statement import rule 10, `reconcile.py`). 2026-11-21: 155 transfer pairs and 23 matches written. Decide whether `reconcile.py` should create Finance Transactions from Bank Rules for unmatched lines (478 lines fit a rule) | Owner |
+| 4 | Import the next Wise export (after the Thailand trip) into "Wise 2026". Check that the hand-entered 28 Oct "Money added" +100 (`TRANSFER-2457903123`) is recognised, not duplicated | Claude |
+| 5 | Test `statement_compare.py --apply` with real rows (`recalc.py` and the formula columns were checked on real rows 2026-11-21) | Claude |
+| 6 | The editable grid setting for Reconciliation Match works but could not be added to the solution (error 0x80048536). Matters only for a solution export | Claude |
+| 7 | Web page support for foreign cash, Transfer and Category (Dataverse side done 2026-11-21; page entries get no Category yet) | Owner to ask |
+| 8 | Enter the notes before 9 Oct 2026 (5 to 16 Jun entered 2026-11-25, 17 Jun to 26 Jun entered 2026-11-24, 27 Jun to 19 Aug 2026-11-23; 20 to 29 Aug, 31 Aug, 1 Sep, 5 Sep, 12 Sep to 1 Oct and 2 to 12 Oct entered 2026-11-22). The friend's flight AKL to BNE (23 Sep) is linked to its NZ Go line and Reconciled (Payee Air New Zealand). "Hotel Deposit" (15 Oct note) has no bank line and was not created. "Fuel" 85.73 (22 Nov) and "Toll Road Top-up" 20 (23 Nov), no account, wait for their bank lines; so do the 24 and 25 Nov rows entered 2026-11-25 (Salary 12,557.33 Everyday, Parking Fine 129 Kogan, Lottery, Pitbull Concert Ticket A, Lunch Burger A, Groceries 33.75 A, Snacks Cake 2.95 AA, Income Tax 82,434.30 AMEX, Icecream and Soft drinks AA) | Owner, then Claude |
+| 9 | Confirm guessed categories: "Drinks at Lake View Cafe" / "Mountain View Cafe" and "Drink" (Lawson) set as Food and Soft Drinks; "Drinks" at Waterloo Hotel, Funny Funny, Hey Chica as Alcohol. Project for "Taxi from Home to Airport" (24 Oct, none now). Project Japan Tokyo Trip for "Taxi from Airport to Home" (31 Aug); Payee "Just Vapes" for the 31 Aug vapes (note: OZ Shop). Washing Machine and Compact Freezer (1 Oct) set as Home and Hardware. 6 Aug "Dog Hotel Booking Deposit" as Pets; "Switch Joy-con x3" (6 Aug) and "Outdoor sleeping bags x2" (3 Aug) as Shopping. 11 to 15 Jul: "Mask Wolf" (Shopping), "Card Game" (Gambling), the gloves bought from a friend (Clothing). 4 to 10 Jul: "Intercom App Access" (Rent), project Canberra Ski Trip (not Japan Tokyo Trip as the comment said) on the BNE to Canberra flight. | Owner |
+| 12 | 24 Jun Everyday PAYMENT FROM Partner +51.25 and +63.90 ("A Return" notes: Uber fares, and five bottles of wine on 11 Jun) wait for the notes before 17 Jun; then link each to its bill. The ticket sale row (26 Jun, Amount 0, Partly Reconciled) waits for the earlier ticket resale payment to me | Owner, then Claude |
+| 11 | Everyday credits waiting for the October notes the owner will import: the two Duolingo repayments +28.54 and +57.08 (19 Nov) are linked to "Send Amazon Gift Card ... for Duolingo Family" (22 Oct, Partly Reconciled); a third friend's 28.54, expected into Flex, is still missing. ING Savings Booster +200.36 (12 Nov) against two transactions of 100.36 (11 and 12 Nov): the owner will upload the ING statements (ING is not a Bank Account yet; it needs one and a parser) | Owner, then Claude |
+
+Done 2026-11-20: GitHub Pages is on (Source = GitHub Actions, latest deploy succeeded); the web page replaced
+the Keep Inbox sheet and the Keep flow was deleted.

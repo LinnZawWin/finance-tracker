@@ -1,4 +1,4 @@
-"""Generate Bank Statement Lines for cash, which has no bank statement. See "Cash lines" in CLAUDE.md.
+"""Generate Bank Statement Lines for cash, which has no bank statement. See "Cash lines" in docs/reconciliation.md.
 
     python scripts/cash_lines.py            dry run: what would be created, updated or removed
     python scripts/cash_lines.py --apply    write (reconcile.py runs this first, under the lock)

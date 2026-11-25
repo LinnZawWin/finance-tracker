@@ -1,0 +1,104 @@
+# Statement import
+
+Importing bank statements from the Drive inbox, including ANZ New Zealand and Wise. Part of the project rules: read with [../CLAUDE.md](../CLAUDE.md).
+
+## Statement import rules
+
+Files: the owner drops statements in the Google Drive folder `Statements/Inbox`. After a statement is imported
+and its balance check passes, move the file to `Statements/Processed` (mid-cycle exports to
+`Statements/Processed/Mid-cycle`) and rename it there, so the files are easy to find for manual checks.
+A file that fails stays in the inbox. Save the downloaded copy under the same new name before parsing: the
+parser reads these names, and the Bank Statement is named after the file (without the extension).
+
+| File | Name in Processed |
+|---|---|
+| ANZ Plus Everyday | `ANZ Plus <period end> - Everyday x3029 Statement.pdf` |
+| ANZ Plus Flex Saver | `ANZ Plus Flex Saver <period end> - Flex Saver x5149 Statement.pdf` |
+| ANZ Plus Growth Saver | `ANZ Save <period end> - Growth Saver x3037 Statement.pdf` |
+| AMEX | `AMEX <period end>.xlsx` |
+| Kogan | `KoganMoneyBlackCard_<yyyymmdd of period end>.pdf` |
+| ANZ NZ Go | `ANZ NZ Go <period end> - Statement.pdf` |
+| Wise | `Wise <year> (until <Mon>).csv` |
+| Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
+
+Dates are `yyyy-mm-dd` and are the period printed on the statement, not the download date.
+
+1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
+   disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from
+   `read_file_content`: it loses the credit and debit columns. On the owner's Windows machine the Drive folder
+   is mounted locally (`G:\My Drive\Statements`), so read the files there. Its Python is ARM64, where
+   `pdfplumber` does not install (no `cryptography` wheel): use `pypdf` with `extraction_mode="layout"` and
+   take each ANZ line's sign from the running balance change, which checks every line as well.
+2. **Preferred format per account**: a spreadsheet export when the bank offers one, otherwise the PDF.
+   AMEX: `.xlsx` (lines plus the balance summary), then `.csv` (same lines, no balances), then PDF.
+   ANZ Plus offers PDF only.
+   **Mid-cycle exports** create a **placeholder** Bank Statement (Notes start with "Interim", balances are
+   those of the export). The next export or the final statement whose period overlaps it updates that same
+   record (name, period, balances, source type, notes) and adds only the lines it lacks, so the lines stay in
+   one statement. Two exports are recognised: the ANZ Plus "Transaction List" PDF (period from "Commencing"
+   to the day before "generated on") and the AMEX current-cycle `.xlsx` (its summary has "Total Balance"
+   instead of "Statement Balance"; the period starts on the cycle start and ends on the last date in the
+   file name). `statement_import.py --include-possible` also creates the possible duplicates, after they are
+   checked to be separate charges.
+   When one statement is supplied in several formats, import one and move all of them.
+3. **Check the totals** against the statement's opening and closing balance before writing anything.
+4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
+5. A line with the same **Bank Reference** and amount as an existing one is that line, even when its date differs
+   (a date corrected by hand). Then compare by **count per (date, amount, description)** and create only the shortfall, because identical
+   purchases on one day are real. Use **Bank Reference** when the bank gives one, **Running Balance** or
+   **Line Number** otherwise, to separate identical lines.
+6. A **PDF or spreadsheet statement is final**: update the matching screenshot rows (description, balance) and
+   create only the leftovers.
+7. Flag description or amount differences as **possible duplicates**.
+8. Show a summary (new, existing, possible duplicates) **before writing**.
+9. Parse with `scripts/statement_parse.py` and `scripts/wise_lines.py`, then compare and write with
+   `scripts/statement_import.py` (dry run by default, `--apply` to write). Keep the
+   downloaded and parsed files outside the repo.
+10. **Then always reconcile.** Processing the inbox is not finished when the lines are written: reconcile
+    every Unmatched or Partly Matched bank line (all accounts, not only the new ones) against the Finance
+    Transactions as far as the Reconciliation rules below allow, without being asked. Confirm what the
+    rules allow, leave the rest Proposed or unmatched, and report what was matched, proposed and left.
+    `statement_import.py --apply` does this itself (not in parallel sessions, see "Parallel sessions"): after
+    the lines it runs `reconcile.py --apply --verbose`,
+    which holds the lock `lzw_ReconcileLock`, writes only what the rules allow and recalculates the rollups of
+    the rows it matched. Check its output and report it. If it says NOT RUN (another session holds the lock),
+    wait and retry as under "Parallel sessions". On its own,
+    `python scripts/reconcile.py` is a dry run (`--verbose` lists the transfer pairs). Then suggest Payees for
+    the linked transactions that have none (Reconciliation rule 7).
+
+Columns: **Transaction Date** is the purchase date ("Effective Date" on ANZ, "Transaction Date" on Kogan,
+"Date" on AMEX). **Posted Date** is the date the bank processed it. **Card Holder** is the card member on AMEX
+(a name other than the owner's = supplementary card; those lines are imported like the others).
+**Fee Amount** and **Bank Category** come from Wise. **Bank Reference**: the ANZ receipt number (`#123456`),
+the AMEX Reference, the Wise ID. **Line Number** is the order in the statement, oldest first.
+AMEX `.xlsx` totals: the "Transaction Summary" sheet (Previous Balance, Payments & Credits, Charges &
+Adjustments, Statement Balance); Opening / Closing Balance are stored signed like the bank (owed = negative).
+
+ANZ New Zealand (2026-11-21): Bank Account "ANZ NZ Go" (`NZGo`, bank "ANZ New Zealand", Account Currency
+NZD). PDF named `<account number>_Statement_<date>.pdf` by the bank (`ANZ NZ Go <period end> - Statement.pdf` once processed; the parser reads both); pypdf gives no text, so the parser uses pdfplumber.
+The account stays in NZD: statements and lines have row currency NZD, Amount and balances in NZD as printed,
+Original Amount / Currency = the same NZD amount. Transaction Date = "Orig date" under Visa lines, else the
+statement date. `statement_import.py` sets the currency per account (`CURRENCY`). Statements imported: May to Oct 2026
+(the parser checks a renamed `ANZ NZ Go ...` file before the ANZ Plus prefix).
+A Finance Transaction paid from ANZ NZ Go stays AUD like every other: Amount = NZD / the platform NZD rate
+(1.2273), rounded to cents, Original Amount / Currency = the NZD amount, Notes say the rate. The match is written
+in NZD (row currency NZD, Allocated Amount = the line amount) and the rollup converts it back at the same rate,
+so the difference is 0. `reconcile.py` finds no candidate for these (AUD Amount against an NZD line): link them
+by hand (Method Manual) and check the difference after the rollup. `split_match.py` compares the NZD line with the AUD
+Amount, so it reports a false difference and sets Partly Reconciled: set Reconciled by hand when the rollup gives 0.
+
+Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
+- One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
+  newer full-year export; compare it against the existing lines and create only the new ones.
+- Skip REFUNDED rows and conversions between balances (Direction NEUTRAL). They are not imported.
+- Amount is AUD. AUD-funded rows: source amount plus fee. Original Amount and Original Currency are the
+  target (merchant) amount and currency; Fee Amount is the Wise fee.
+- Rows paid from a foreign balance: AUD = foreign amount / the rate of the last AUD-to-that-currency
+  conversion before the row (effective rate, fee included). Without one: the first later conversion, then
+  the rate of an AUD-funded card payment in that currency, then a cross rate through another currency's
+  conversion. Notes say which rate was used. This applies to USD, NZD, THB, EUR, JPY, CAD and SGD balances.
+- A payment split across two balances (the CSV repeats its ID) is one line; Notes list the parts.
+- A transaction hidden in the Wise app is missing from the export: enter it by hand with Bank Reference
+  `TRANSFER-<transaction number>` (or the ID the CSV would give), so the next export finds it and does not
+  create it again. 28 Oct 2026 "Money added" +100 (TRANSFER-2457903123) was entered this way; check it
+  matches when the next export arrives.

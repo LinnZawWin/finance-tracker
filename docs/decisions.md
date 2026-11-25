@@ -803,6 +803,27 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - The publisher unique name and environment URL are read from environment variables, never stored here.
 - Statement files and parsed lines stay outside the repo (see `.gitignore`).
 
+## 2026-11-25: notes for 5 to 16 Jun and 24 to 25 Nov 2026
+
+- 60 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day). 49 linked with one
+  `split_match.py --batch` run and Reconciled; the four Cash rows (Vape Moggin 60, Pokies 90, Pokies Win 50.55 as
+  Income, Office Chair 190) by their lines from `cash_lines.py`. The seven 24 and 25 Nov rows wait for their bank lines.
+- Owner's answers: "Income Tax" 82,434.30 is an Expense (Tax) on AMEX as written; Salary 12,557.33 is Everyday;
+  the cash vape has no Payee; "Ayanochan Goodbye and Salmon Party" (Everyday 80 to a friend) is Food and Soft Drinks.
+- Parking fines are now **Parking Fines** (owner's comment). The earlier parking fines (30 Jun, 3 Jul) are still Fines:
+  ask the owner whether to move them.
+- Not transactions: "Special Grocery Gift Card 3054" (already the AMEX SPECIAL.GIFT / card 3054 Load pair) and
+  "Cash Withdraw for Office chair" (already a Cash transfer pair). Office Chair is a Finance Asset (Furniture,
+  Purchase link 190, Total Cost 190).
+- Amounts from the lines where the note had none: Homeware and Games Kmart 52.00, Table tennis 20.19, Dinner skewer
+  49.37, Fruits and vegetables 16.17 (247FRUITV), Grocery Indian 22.47 (Gol Gappa), Breakfast Bread 9.94, x3 Beer
+  39.27, Bowling 39.80, Yakiniku 86.58, Lunch Ramen 42.00. Accounts from the lines where the note had none.
+- The 16 Jun Commute is the 15 Jun Everyday Translink line; the 6 Jun MET rows are on 7 Jun Everyday lines.
+- Guessed (to confirm): Bowling as Sport and Fitness, Board game entry as Entertainment, Kmart homeware as Home and
+  Hardware, Office Chair as Home and Hardware.
+- Left open (no notes): 9 and 12 Jun Everyday Translink lines, 15 Jun AMEX Prime Video 2.99, 1 to 5 Jun lines
+  (notes before 5 Jun not entered yet).
+
 ## 2026-11-24: notes for 17 to 26 Jun 2026
 
 - 49 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day), 48 linked with one

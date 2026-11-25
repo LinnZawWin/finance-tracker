@@ -813,7 +813,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Owner's answers: "Income Tax" 82,434.30 is an Expense (Tax) on AMEX as written; Salary 12,557.33 is Everyday;
   the cash vape has no Payee; "Ayanochan Goodbye and Salmon Party" (Everyday 80 to a friend) is Food and Soft Drinks.
 - Parking fines are now **Parking Fines** (owner's comment). The 30 Jun and 3 Jul parking fines were already Parking
-  Fines when checked, and so was "Car Tow Collect" (2 Jul), although the category rule says Fines for a tow: to confirm.
+  Fines when checked, and so was "Car Tow Collect" (2 Jul). The owner then moved the tow rule to Parking Fines too.
 - Payees written (owner, 2026-11-25): the suggested ones, the party row as the friend's name, and "Sabzi Mandi (24x7
   Fruit and Vege)" for the 247FRUITV line. Every Pokies Win row was already Gambling (Income).
 - Not transactions: "Special Grocery Gift Card 3054" (already the AMEX SPECIAL.GIFT / card 3054 Load pair) and
@@ -865,7 +865,7 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Parking fines (owner): the 137.50 one is the 30 Jun note, on the 1 Jul Flex BPAY line. The 3 Jul note is the
   Everyday BPAY of 333.00 (Amount and account changed from the note's 137.50 Flex). Payee "Brisbane City Council",
   the fine number in Notes. "Major" went to Notes on these, the lawyer and the tow.
-- "Car Tow Collect" is Fines, like the parking fines; "Hyokatsu for JC" is Alcohol like the other Hyokatsu rows (owner).
+- "Car Tow Collect" is Parking Fines, like the parking fines (Fines until 2026-11-25); "Hyokatsu for JC" is Alcohol like the other Hyokatsu rows (owner).
 - Guessed (to confirm): Ekka tickets as Events; the Kmart / Target household rows as Home and Hardware; the Health
   Insurance note's share flag "W" as Mine (as before).
 

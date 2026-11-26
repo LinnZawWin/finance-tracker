@@ -154,8 +154,9 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - Each table's default "Active" view was given useful columns and is the view used by form subgrids.
 - **Editable grid is set per table, not per view**, so inline editing applies to every Reconciliation
   Match view, not only Proposed Matches.
-- "Banks" in the site map is a URL sub-area that opens Account with the Banks view, because a table
-  sub-area cannot pin a view.
+- "Banks" in the site map is a table sub-area on Account with the title "Banks" (2026-11-26, was a URL
+  sub-area). A table sub-area cannot pin a view, but the app holds only the Account view "Banks", so that
+  view opens, and the sub-area shows the standard Account icon.
 - Opening and Closing Balance allow negative values, because credit card balances can be negative.
 
 ### Flow
@@ -438,6 +439,11 @@ the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages
 - `build_icons.py` creates one SVG web resource per table (`lzw_/icons/<table>.svg`) plus the app icon and
   sets `IconVectorName`. Run against the environment on 2026-11-15.
 - The Account table is not given an icon: it is a standard table shared with the owner's other apps.
+- Table icons match the built-in Fluent icons (2026-11-26, owner): 20 px, 1 px line, `currentColor` and no
+  hard-coded colour, so the app colours them like the standard tables in light and dark. Microsoft
+  recommends `currentColor` for `IconVectorName` icons
+  (https://learn.microsoft.com/power-apps/developer/model-driven-apps/image-web-resources). The app icon keeps
+  its navy tile.
 - The first GitHub Actions run (issue 7) wrote the script but did not run it, although the workflow had
   signed in to Azure, because `CLAUDE.md` then described only the device-code sign-in. `CLAUDE.md` now
   tells Claude to run and verify scripts itself.

@@ -604,9 +604,11 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   22 Apr PAYMENT FROM lines linked to it.
 - 21 Apr Charmy lines: 21.24 x2 = the two beer packs (Mine), 20.22 = "Two wines" (A); Livewire 20.16 = "Heineken x2" (A),
   the 22 Apr Livewire 10.00 = "Heineken" (Mine).
-- Guessed (to confirm): Ear plugs x2 (Shokk Merch 51.00) as Shopping; Payee "Royal National Agricultural and Industrial
-  Association" for the RNA Queensland beer lines, "Sunnybank Hotel" for ALH GROUP 8780 SUNNYBANK.
-- No Payee yet: the two Cash rows.
+- Guessed (to confirm): Payee "Royal National Agricultural and Industrial Association" for the RNA Queensland beer lines,
+  "Sunnybank Hotel" for ALH GROUP 8780 SUNNYBANK.
+- Owner's answers (2026-11-26): Ear plugs x2 is Shopping, and one pair is a Finance Asset "Ear plugs" (Other, Purchase
+  link 25.50, half the shared 51.00). Payees of the cash rows: "GOAT - Squid (Telegram)" (the gummies seller) and
+  "The Star" (pokies win at The Star Casino, as the 29 May Casino Win).
 - Lines left open without notes: 17 Apr Translink 1.00, 18 Apr DiDi 31.24, 19 Apr Charmy 21.24, 20 Apr Woolworths Newstead
   113.20 and Translink 1.00, 21 Apr DiDi 11.49 and GloBird Energy 34.43, 22 Apr Opal 20.95.
 

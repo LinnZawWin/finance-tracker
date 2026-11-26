@@ -77,8 +77,12 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   Without the time zone code the instances land a day late (Tuesday Brisbane); changing it afterwards does not
   regenerate them, so delete and recreate. Lookup binds are `lzw_PaidFrom_RecurringAppointmentMaster@odata.bind`
   and `lzw_FinanceCategory_RecurringAppointmentMaster@odata.bind`. A create can run twice through the proxy:
-  check for a duplicate series afterwards. W Support's description is "Joint Main", but the flow sets Payee =
-  Subject ("W Support"), so its transactions need Payee "Joint Main" set by hand until the flow reads a payee
-  from the appointment (flow change, pending).
+  check for a duplicate series afterwards.
+- **Payee by hand** (owner, 2026-11-26): the flow sets Payee = Subject, so until it reads a payee from the appointment
+  (flow change, pending) set the Payee on each new Recurring transaction to the one the bank line names: Rent =
+  Madison Heights, Health Insurance = AHM, W Support = Joint Main, Broadband = Rush, Utility (Electricity/Gas) =
+  Altogether, YouTube Premium = the person the family share is paid to (as on the Sep and Oct rows). Done for the
+  20 to 25 Nov rows.
+- No series for Prime Video (unsubscribed) or GST activity statements (no longer a contractor): owner, 2026-11-26.
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.

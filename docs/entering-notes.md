@@ -122,6 +122,9 @@ give the source. Do this after every reconciliation run, including the one at th
 
 ## Other entry rules
 
+**Utilities are Mine** (owner, 2026-11-26): every transaction in Utilities (electricity, gas, water, broadband,
+mobile) has Share Type Mine, including the Altogether and water bills that were A.
+
 **Translink fares** (owner, 2026-11-26): name them "Public Transport", Payee Translink, Paid From Everyday (card 1793),
 Mine. Translink posts the charge about 3 to 5 days after the trip, so link a fare to the next open Translink line
 after its date, not a line dated before it. A Translink line with no note behind it gets a "Public Transport"

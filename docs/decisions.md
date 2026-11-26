@@ -581,3 +581,16 @@ Owner's request, to use less of the plan allowance:
 - Created the weekly Monday W Support series ($1,000, Flex, Support Payments, Auto) from 23 Nov 2026, because the
   earlier one was missing. Payee: the flow sets Payee from Subject, so "Joint Main" is only in the Description.
   Pending: let the flow take Payee from the appointment (needs a flow change, Opus).
+
+## 2026-11-26: inbox run, Kogan screenshot
+
+- `statement_import.py` accepts a statement of kind "Screenshot" (Source Type and line Source Screenshot), so app
+  screenshots go through the same compare and placeholder path as mid-cycle exports instead of hand-written rows.
+  Used for the Kogan app screenshot (no export exists between statements).
+- The Drive connector refused moves for the owner's uploads (`canMoveItemWithinDrive` false), so the files stay in the
+  inbox and the owner moves and renames them.
+- The 23 Nov AMEX "DIRECT DEBIT RECEIVED" +1,000 and the 24 Nov Flex "PAYMENT TO AMERICAN EXPRESS" -1,000 were paired as a
+  transfer by hand: `reconcile.py` did not pair them (another -1,000 Flex line the same day, W Support). Same for a 0.01
+  test transfer between Everyday and Growth Saver on 25 Nov.
+- Pending: `reconcile.py` could pair a card payment when the line descriptions name the card ("AMERICAN EXPRESS") even with
+  a same-amount rival on another payee.

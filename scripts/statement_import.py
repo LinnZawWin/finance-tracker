@@ -7,6 +7,8 @@
 
 Each statement is compared with the lines already in Dataverse (statement_compare.compare), so a re-run or
 a newer Wise export creates only the shortfall. A statement is matched by name and Bank Account.
+A statement whose kind is "Screenshot" (lines typed from the app, written by hand into _statements.json)
+gets Source Type and line Source Screenshot; mark it interim so the PDF statement replaces it.
 Wise: every "Wise*.json" in the folder goes to the Bank Statement "Wise <year>" (1 Jan to 31 Dec).
 Mid-cycle exports (statement_parse.py marks them interim) create a placeholder Bank Statement whose Notes start
 with "Interim". The next export or the final statement whose period overlaps it updates that same record:
@@ -23,7 +25,7 @@ ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
             "NZGo": "ANZ NZ Go"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
-SRC = {"PDF": 2, "CSV": 1}
+SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0}
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
            "next export or the statement arrives; balances are those of the export.")
 sp = os.path.join(LINES, "_statements.json")
@@ -90,7 +92,7 @@ for s in stmts:
         sid = h.get("OData-EntityId", h.get("odata-entityid")).rsplit("(", 1)[1].rstrip(")")
     for line, row in res["update"]:
         dv.patch(f"lzw_bankstatementlines({row['id']})", {"lzw_name": line["description"][:500], "lzw_source": sc.O + 2})
-    src = "PDF" if s["kind"] == "PDF" else "CSV"
+    src = s["kind"] if s["kind"] in SRC else "CSV"
     for line in res["new"]:
         b = sc.line_body(line, aid, sid, src, cur)
         key = b["lzw_duplicatekey"].replace("'", "''")

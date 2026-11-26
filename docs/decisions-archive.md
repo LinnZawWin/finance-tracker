@@ -656,3 +656,16 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   "Taxi from airport to Fortitude Valley" (DiDi 34.64, project MVP Summit 2026 Trip). 11 Apr "Cap for Ultra EDM" 60.00,
   Cash, Entertainment, Payee a friend's friend (by name in Dataverse).
 - Guessed (to confirm): "Taxi from Fortitude Valley to Home" = DiDi 15.31; "Cass 6 packs Charmy" = Charmy 21.24 (10 Apr).
+
+## 2026-11-26: inbox run (mid-cycle to 25 Nov)
+
+- Imported: AMEX 2026-11-14 to 2026-11-25 (12 new, placeholder updated), Everyday, Flex Saver and Growth Saver Transaction
+  Lists 2026-10-31 to 2026-11-25 (4, 10, 9 new; Growth Saver had no placeholder, a new interim statement), Kogan screenshot
+  20 to 25 Nov (2 lines: Yuens Market 18 Nov -113.56, Iceworld 20 Nov -65.00). All balance checks passed, no possible
+  duplicates. AMEX 24 Nov ATO payment -82,434.30 matched to "Income Tax".
+- `reconcile.py --apply`: 10 transfer pairs, 11 matches confirmed. By hand: two transfer pairs (AMEX direct debit 1,000;
+  0.01 test transfer), and "Ice Skate" 65.00 (20 Nov) had Paid From AMEX but the charge is on Kogan: Paid From changed to
+  Kogan and linked with `split_match.py`.
+- Left for the owner (payee differs, not confirmed): Health Insurance / AHM 81.50, YouTube Premium / payment to a person
+  6.60, W Support / ANZ Access Advantage 1,000, Rent / trust account 560, Utility / Altogether Group 122.22 (no Paid From
+  on the transaction), Commute 0.50 (Translink, two candidates).

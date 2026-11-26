@@ -22,6 +22,8 @@ parser reads these names, and the Bank Statement is named after the file (withou
 | Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
 
 Dates are `yyyy-mm-dd` and are the period printed on the statement, not the download date.
+The Drive connector cannot move or rename files it did not create (`canMoveItemWithinDrive` is false on files the
+owner uploads), so the session reports the new names and the owner moves them by hand.
 
 1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
    disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from
@@ -41,6 +43,14 @@ Dates are `yyyy-mm-dd` and are the period printed on the statement, not the down
    file name). `statement_import.py --include-possible` also creates the possible duplicates, after they are
    checked to be separate charges.
    When one statement is supplied in several formats, import one and move all of them.
+   **Kogan app screenshots** (2026-11-26): Kogan has no export between statements, so a screenshot of the app's
+   Transaction history is typed into a lines file (date, description as shown, amount, line number) and an entry in
+   `_statements.json` with `"kind": "Screenshot"` and `"interim": true` (period from the day after the last statement
+   to the screenshot date, opening = the last closing balance, closing = opening + the new lines).
+   `statement_import.py` then creates an Interim placeholder with Source Type and line Source Screenshot, named
+   `KoganMoneyBlackCard_<yyyymmdd start> to <yyyymmdd end>`. Only lines not on an earlier statement are typed (a
+   line dated before the period that the last PDF did not include is new). The next Kogan PDF updates the placeholder
+   and finalises the screenshot lines (rule 6).
 3. **Check the totals** against the statement's opening and closing balance before writing anything.
 4. Before creating Bank Statement Lines, query the existing lines for that account and date range.
 5. A line with the same **Bank Reference** and amount as an existing one is that line, even when its date differs

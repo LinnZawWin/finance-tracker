@@ -2,14 +2,13 @@
 The standard Account table is left alone: its icon is shared with every other app in the environment.
 
 Creates one SVG web resource per icon (type 11, in the solution), sets IconVectorName on each lzw_ table and
-the web resource on the app module. Run after build_ui.py, then publish.
+the web resource on the app module. Table icons use currentColor so they take the theme colour. Run after build_ui.py, then publish.
 """
 import base64
 
 import dv
 
 NAVY = "#001A4D"
-BLUE = "#2B88D8"
 
 # 32x32 glyphs drawn with strokes (inner markup only). Colour is applied by the wrapper.
 GLYPHS = {
@@ -28,10 +27,15 @@ APP_NAME = "lzw_/icons/financetracker_app.svg"
 
 
 def svg(inner, background=None):
-    bg = f'<rect width="32" height="32" rx="4" fill="{background}"/>' if background else ""
-    color = "#FFFFFF" if background else BLUE
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">{bg}'
-            f'<g fill="none" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    """Table icons match the built-in Fluent icons: 20 px, a 1 px line and currentColor, so the app colours them
+    like the standard tables (no hard-coded colour, as Microsoft recommends for IconVectorName)."""
+    if background:  # the app icon keeps its own tile
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">'
+                f'<rect width="32" height="32" rx="4" fill="{background}"/>'
+                f'<g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+                f'{inner}</g></svg>')
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20">'
+            '<g style="fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round">'
             f'{inner}</g></svg>')
 
 

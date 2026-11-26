@@ -122,6 +122,11 @@ give the source. Do this after every reconciliation run, including the one at th
 
 ## Other entry rules
 
+**Translink fares** (owner, 2026-11-26): name them "Public Transport", Payee Translink, Paid From Everyday (card 1793),
+Mine. Translink posts the charge about 3 to 5 days after the trip, so link a fare to the next open Translink line
+after its date, not a line dated before it. A Translink line with no note behind it gets a "Public Transport"
+transaction of its own (Source Import, dated as the line).
+
 **Asset purchases** (for example "Washing Machine from Appliances Online Mykin 8kg ..."): the Finance Transaction
 Description is the item name only ("Washing Machine") and the rest of the note goes to its Notes. Create a
 Finance Asset with the same name (Asset Type, Brand, Model, Notes with the full item text and where it was

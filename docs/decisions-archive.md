@@ -304,6 +304,21 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Two `split_match.py` runs in a row stopped with `Busy` naming another split_match run less than a minute
   old, although nothing else was running here. They wrote nothing and worked on retry.
 
+## 2026-11-26: notes for 24 to 26 Apr 2026 (Sydney Microsoft AI Tour 2026 Trip)
+
+- 32 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none
+  (AMEX unless the note said ANZ). Project Sydney Microsoft AI Tour 2026 Trip on every row except the Powerball bought for a friend
+  (The Lott 6.30, Everyday, Gifts, as the note said Gift). "Cash Withdraw 140" (25 Apr) was already a Cash transfer pair: no transaction.
+- Matched with `reconcile.py --apply`; the four pairs it left to the owner (The Lott / TATTS ONLINE, Eventbrite / "EB *SAT 25
+  APRIL-ANZAC", the two identical Wahlburgers 26.71 lines one each to "Beer" and "Beer Jug") linked with `split_match.py --batch`.
+- The 24 Apr Ivy Heinekens are on Ivy lines of 24 Apr (8.76 x2) and 25 Apr (9.87 x4, 19.73), posted after midnight.
+- Guessed (to confirm): the two 24 Apr DiDi rides with no amount: 13.04 = "Opera house to Club", 11.68 = "club to hotel";
+  "Oyster" = Christies Seafood Glebe 34.41 (Everyday) and "Salmon Sashimi" = Sushi Bar at the Fish 19.96 (AMEX), 26 Apr;
+  LIV Sydney club entry as Entertainment (club entry); Payees "Caffe Lev" (note said "Cafee Lev") and "Don & J Pty Ltd".
+- Not entered, asked: 24 Apr "Mover Van Rental" (62.16, Everyday PAYMENT TO a friend, not in the project) and the two eBike rentals
+  (ARIO 15.69, Lime 16.39): no category rule fits. Lines left open: 24 Apr Hello Bike 2.50, 25 Apr Opal 4.62 and PAYMENT TO
+  8.00, 26 Apr Opal 27.57 and DiDi 34.75.
+
 ## 2026-11-25: notes for 5 to 16 Jun and 24 to 25 Nov 2026
 
 - 60 rows (Source Keep, 12:00 Brisbane then 10 minutes apart in the note's order per day). 49 linked with one
@@ -515,17 +530,28 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Two lines on one row: "Asian groceries" (6 May, A) = both Sunlit Asian Supermarket charges 120.32 + 26.99;
   "Trolley hire" (6 May) Amount 15.00 = Bunnings 115.00 charge less the 100.00 refund the same day, both linked.
 - "Scam Vape" (20 May) is the Everyday PAYMENT TO 100.00 the same day, Other Expense (no scam or loss category).
-- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; the two 16 May DiDi lines
-  14.83 = "Funny Funny to The Met", 18.17 = "club to home"; 6 May notes on the 4 and 5 May lines (Kmart 133.00 =
-  household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair products, ALDI 148.19
-  and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line, Payee KFC (Collins Foods
-  runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as Subscriptions; Pearson VUE exam
-  as Education, not a claim.
-- Not entered, asked: 10 May "Bowling for six" (Strike 296.14) and "Thai Dinner for 7" (Kinn Imm 126.88, credit 8.12)
-  with the four PAYMENT FROM lines of 10 May (50, 67, 84, 100); 9 May "Drinking at Funny Funny" and two "Beer at Funny
-  Funny" (lines 56.35, 40.25, 24.15); "Clubbing YoYo table 130" (no line); 8 May "Club entry for 4 Yenda" (75/25) and
-  "Beer x2" (Vegas Group lines 60.99 and 22.36 of 9 May?); 7 May "Drinks for x3 and snacks" (2/3 / 1/3) and "Drinks"
-  (Felons 79.83 and 41.19); 6 May "Washing machine marketplace 150" (no account).
+- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; 6 May notes on the 4 and 5 May
+  lines (Kmart 133.00 = household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair
+  products, ALDI 148.19 and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line,
+  Payee KFC (Collins Foods runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as
+  Subscriptions; Pearson VUE exam as Education, not a claim; "Club Entry for two friends" as Gifts ("for <someone>").
+- After the owner's answers (2026-11-26), 11 more rows, all linked and Reconciled except the cash washing machine:
+  - DiDi lines of 16 May are both rides of the night of 17 May: 18.17 "Taxi from Funny Funny to The Met" (00:35),
+    14.83 "Taxi from club to home" (03:01); the two rows were swapped and dated with those times.
+  - "Bowling x2 and Escape Room Fun Bundle - group of 6" (10 May, A, Strike 296.14) Amount 46.14: two friends' 50 and
+    100 in full, and 50 of each of the 67 and 84 repayments. "Thai Dinner for 7" (A, Kinn Imm 126.88 with the 8.12
+    credit) Amount 67.76: the other 17 and 34 of those two repayments.
+  - 9 May Funny Funny from the Square receipts in Gmail: 20:55 40.25 (Cass 3+1, sweet potato fries, Milkis) =
+    "Drinking at Funny Funny" (A); 22:11 24.15 (Cass 3+1) and 23:33 56.35 (Cass 7+3) = "Beer at Funny Funny". Items in
+    Notes, times from the receipts.
+  - 8 May "Club entry for 4 Yenda" is the Vegas Group (Fabric Nightclub) 60.99 line, split in halves: "Club Entry for two
+    friends" 30.50 (Mine) and "Club Entry" 30.49 (A); "Beer x2" (A) is the 22.36 line. Payee Fabric Nightclub. Owner:
+    no uneven shares needed.
+  - 7 May Felons Barrel Hall: 79.83 "Drinks for x3 and snacks", 41.19 "Drinks" (both A), receipt items in Notes.
+  - "Washing machine" (6 May, 150.00, Cash, Payee Marketplace, paid to the seller in cash): Finance Asset (Appliance)
+    and Purchase link.
+- Still open: "Clubbing YoYo table 130" (9 May, A, no line); Hotel Beach House 13.24 and Strike 1.02 (10 May),
+  Thai Jing Jing 16.16 (17 May): no notes.
 
 ## 2026-11-25: past work claims from Xero
 
@@ -533,7 +559,9 @@ Created 12 Finance Transactions (Source Keep, Claim Type Employer, Claim Status 
 From or project): 2 Oct 2024 hotel 221.25, taxi 53.82, lunch 22.90 (Road to AI Sales conference); 6 Sep 2025 Air New
 Zealand checked bag 40.00, hotel car parking for a colleague 35.72 (Parking); 7 Sep 2025 DiDi 63.22 and 34.78;
 25-30 Nov 2025 DiDi 31.62, lunch 14.43, dinner 23.61, lunch 14.01, DiDi 48.59. Oct 2026 Claim Amounts corrected to
-16.05, 20.63 and 24.36.
+16.05, 20.63 and 24.36. Projects created and linked: Sydney Microsoft AI Tour 2024 Trip (3 rows), New Zealand
+Palmerston North and Auckland for NZTA and DI Team Event 2026 Trip (4), New Zealand Palmerston North and Wellington
+NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd Hawt Chicken" (as in Xero).
 
 ## 2026-11-25: notes for 28 Apr to 4 May 2026 (Melbourne Estia Health Trip)
 

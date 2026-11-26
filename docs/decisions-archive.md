@@ -590,3 +590,22 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   DiDi 39.57 (A); 4 May "Taxi from BNE airport to home" = the 3 May DiDi 35.46 (A). The "Cirque Du Rave Fixr AMEX refund"
   has no bank line: ignored. 1 May 09:35 "Bernie Dieter's Club Kabarett - Melbourne 2026" (Events, A, Payee
   Bernie Dieter) = the AMEX 156.85 line, Reconciled (2026-11-26).
+
+## 2026-11-26: notes for 17 to 23 Apr and 26 May 2026
+
+- 45 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none
+  (AMEX unless the note or the line said ANZ Plus Everyday). Project Sydney Microsoft AI Tour 2026 Trip on the 20 Apr hotel
+  (Metro Aspire Hotel Sydney, Vio.com 658.66, Wise, A) and the 22 to 23 Apr rows (not the Translink commutes).
+  43 linked with `split_match.py --batch`; the two Cash rows (Cannabis Gummies x2 bag 120.00, Entertainment as the owner
+  said; Pokies win 35.00, Income, Gambling) get their lines from `cash_lines.py`.
+- 18 Apr taxis from the DiDi and Uber receipts in Gmail: DiDi 23.66 (17:33) = "Airbnb to The Star casino", Uber 12.77
+  (18:36) = "The Star casino to Brisbane Showgrounds". The DiDi 31.24 (22:47) has no note.
+- "Yakiniku Birthday Dinner" (21 Apr, A, Shimo Yakiniku 1,181.16) Amount 341.16 = 1,181.16 - 120 x 3 - 480, the four
+  22 Apr PAYMENT FROM lines linked to it.
+- 21 Apr Charmy lines: 21.24 x2 = the two beer packs (Mine), 20.22 = "Two wines" (A); Livewire 20.16 = "Heineken x2" (A),
+  the 22 Apr Livewire 10.00 = "Heineken" (Mine).
+- Guessed (to confirm): Ear plugs x2 (Shokk Merch 51.00) as Shopping; Payee "Royal National Agricultural and Industrial
+  Association" for the RNA Queensland beer lines, "Sunnybank Hotel" for ALH GROUP 8780 SUNNYBANK.
+- No Payee yet: the two Cash rows.
+- Lines left open without notes: 17 Apr Translink 1.00, 18 Apr DiDi 31.24, 19 Apr Charmy 21.24, 20 Apr Woolworths Newstead
+  113.20 and Translink 1.00, 21 Apr DiDi 11.49 and GloBird Energy 34.43, 22 Apr Opal 20.95.

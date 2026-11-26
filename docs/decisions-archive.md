@@ -585,4 +585,5 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   refunded yet: Partly Reconciled, difference -49.80, in "Owed to me". 2 May Beer 6 pack (A) = Port Campbell Hotel 29.41;
   "Dinner Confectionary" was paid by someone else (not entered). 3 May 18:46 "Taxi from Museum of Desire to MEL Airport"
   DiDi 39.57 (A); 4 May "Taxi from BNE airport to home" = the 3 May DiDi 35.46 (A). The "Cirque Du Rave Fixr AMEX refund"
-  has no bank line: ignored. Still open: Bernie Dieter 156.85 (1 May, AMEX), no note.
+  has no bank line: ignored. 1 May 09:35 "Bernie Dieter's Club Kabarett - Melbourne 2026" (Events, A, Payee
+  Bernie Dieter) = the AMEX 156.85 line, Reconciled (2026-11-26).

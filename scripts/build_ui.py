@@ -373,10 +373,8 @@ def sitemap_xml(view_ids):
     for title, items in SITEMAP:
         subs = ""
         for it in items:
-            if it == "BANKS":
-                v = view_ids[("account", "Banks")]
-                url = escape(f"/main.aspx?pagetype=entitylist&etn=account&viewid={{{v}}}&viewtype=1039")
-                subs += (f'<SubArea Id="lzw_ft_banks" Url="{url}" Icon="/_imgs/imagestrips/transparent_spacer.gif">'
+            if it == "BANKS":  # Account, renamed; the app holds only the Banks view, so that view opens
+                subs += ('<SubArea Id="lzw_ft_banks" Entity="account">'
                          '<Titles><Title LCID="1033" Title="Banks" /></Titles></SubArea>')
             else:
                 subs += f'<SubArea Id="lzw_ft_{it.removeprefix("lzw_")}" Entity="{it}" />'

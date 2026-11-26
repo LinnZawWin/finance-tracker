@@ -539,9 +539,13 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - After the owner's answers (2026-11-26), 11 more rows, all linked and Reconciled except the cash washing machine:
   - DiDi lines of 16 May are both rides of the night of 17 May: 18.17 "Taxi from Funny Funny to The Met" (00:35),
     14.83 "Taxi from club to home" (03:01); the two rows were swapped and dated with those times.
-  - "Bowling x2 and Escape Room Fun Bundle - group of 6" (10 May, A, Strike 296.14) Amount 46.14: two friends' 50 and
-    100 in full, and 50 of each of the 67 and 84 repayments. "Thai Dinner for 7" (A, Kinn Imm 126.88 with the 8.12
-    credit) Amount 67.76: the other 17 and 34 of those two repayments.
+  - "Bowling x2 and Escape Room Fun Bundle - group of 6" (10 May, A, Strike 296.14) Amount 96.14: 50 from each of four
+    repayments (a friend's 50 in full, and 50 of the 67, 84 and 100). "Thai Dinner for 7" (A, Kinn Imm 126.88 with the
+    8.12 credit) Amount 17.76: the rest of those repayments (17, 34 and 50). The 100 was first all on the bowling and
+    split at the owner's request.
+  - "Clubbing YoYo table" (9 May, A, Entertainment, Everyday) Amount 130 (65 per person): linked to the 160 PAYMENT TO
+    the friend who booked it in full, so it stays Partly Reconciled with difference -30 (over-transferred, owed back;
+    listed in "Owed to me").
   - 9 May Funny Funny from the Square receipts in Gmail: 20:55 40.25 (Cass 3+1, sweet potato fries, Milkis) =
     "Drinking at Funny Funny" (A); 22:11 24.15 (Cass 3+1) and 23:33 56.35 (Cass 7+3) = "Beer at Funny Funny". Items in
     Notes, times from the receipts.
@@ -551,7 +555,7 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
   - 7 May Felons Barrel Hall: 79.83 "Drinks for x3 and snacks", 41.19 "Drinks" (both A), receipt items in Notes.
   - "Washing machine" (6 May, 150.00, Cash, Payee Marketplace, paid to the seller in cash): Finance Asset (Appliance)
     and Purchase link.
-- Still open: "Clubbing YoYo table 130" (9 May, A, no line); Hotel Beach House 13.24 and Strike 1.02 (10 May),
+- Still open: Hotel Beach House 13.24 and Strike 1.02 (10 May),
   Thai Jing Jing 16.16 (17 May): no notes.
 
 ## 2026-11-25: past work claims from Xero

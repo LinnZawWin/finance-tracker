@@ -651,8 +651,8 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - Owner's answers: "Duty free liquor" = Everyday Lotte Brisbane Airport 99.74, Gifts, no project. 7 Apr Surfers Paradise
   night, all A: "Hotel check in and parking" (Meriton 262.74), "Beer and Food" 66.80 and "Beer" 16.70 (Payee
   "Sandbar Surfers Paradise", was "The Pass - Sandbar"), "Dinner house of brew" 126.47, "Beer" = Bedroom Lounge Bar Pty
-  20.22, "Club entrance" = Iris Envy Pty Ltd 69.02 (Entertainment), the three "Cocktail and beer" = Bedroom Lounge Bar
+  20.22, "Club entrance" = Iris Envy Pty Ltd 69.02 (Entertainment, Payee "The Bedroom"), the three "Cocktail and beer" = Bedroom Lounge Bar
   35.88 x3, "Billiards" = Bedroom Lounge Bar Pty 3.25 (Entertainment, guessed). The 7 Apr rows reordered as the notes.
   "Taxi from airport to Fortitude Valley" (DiDi 34.64, project MVP Summit 2026 Trip). 11 Apr "Cap for Ultra EDM" 60.00,
-  Cash, Entertainment, no Payee.
+  Cash, Entertainment, Payee a friend's friend (by name in Dataverse).
 - Guessed (to confirm): "Taxi from Fortitude Valley to Home" = DiDi 15.31; "Cass 6 packs Charmy" = Charmy 21.24 (10 Apr).

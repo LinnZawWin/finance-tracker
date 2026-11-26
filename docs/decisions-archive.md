@@ -530,17 +530,28 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Two lines on one row: "Asian groceries" (6 May, A) = both Sunlit Asian Supermarket charges 120.32 + 26.99;
   "Trolley hire" (6 May) Amount 15.00 = Bunnings 115.00 charge less the 100.00 refund the same day, both linked.
 - "Scam Vape" (20 May) is the Everyday PAYMENT TO 100.00 the same day, Other Expense (no scam or loss category).
-- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; the two 16 May DiDi lines
-  14.83 = "Funny Funny to The Met", 18.17 = "club to home"; 6 May notes on the 4 and 5 May lines (Kmart 133.00 =
-  household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair products, ALDI 148.19
-  and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line, Payee KFC (Collins Foods
-  runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as Subscriptions; Pearson VUE exam
-  as Education, not a claim.
-- Not entered, asked: 10 May "Bowling for six" (Strike 296.14) and "Thai Dinner for 7" (Kinn Imm 126.88, credit 8.12)
-  with the four PAYMENT FROM lines of 10 May (50, 67, 84, 100); 9 May "Drinking at Funny Funny" and two "Beer at Funny
-  Funny" (lines 56.35, 40.25, 24.15); "Clubbing YoYo table 130" (no line); 8 May "Club entry for 4 Yenda" (75/25) and
-  "Beer x2" (Vegas Group lines 60.99 and 22.36 of 9 May?); 7 May "Drinks for x3 and snacks" (2/3 / 1/3) and "Drinks"
-  (Felons 79.83 and 41.19); 6 May "Washing machine marketplace 150" (no account).
+- Guessed (to confirm): The Met 17 May lines 40.56 = "entry x2", 18.25 = "x2 Corona"; 6 May notes on the 4 and 5 May
+  lines (Kmart 133.00 = household essentials, Bunnings 45.87 = household items, Chemist 25.00 = medicine, 35.97 = hair
+  products, ALDI 148.19 and Woolworths Metro 8.20 = the two groceries); "Ketchup" on the Collins Restaurants 2.40 line,
+  Payee KFC (Collins Foods runs KFC); "Beer and fried chicken" as Food and Soft Drinks; Whisper API (OpenAI) as
+  Subscriptions; Pearson VUE exam as Education, not a claim; "Club Entry for two friends" as Gifts ("for <someone>").
+- After the owner's answers (2026-11-26), 11 more rows, all linked and Reconciled except the cash washing machine:
+  - DiDi lines of 16 May are both rides of the night of 17 May: 18.17 "Taxi from Funny Funny to The Met" (00:35),
+    14.83 "Taxi from club to home" (03:01); the two rows were swapped and dated with those times.
+  - "Bowling x2 and Escape Room Fun Bundle - group of 6" (10 May, A, Strike 296.14) Amount 46.14: two friends' 50 and
+    100 in full, and 50 of each of the 67 and 84 repayments. "Thai Dinner for 7" (A, Kinn Imm 126.88 with the 8.12
+    credit) Amount 67.76: the other 17 and 34 of those two repayments.
+  - 9 May Funny Funny from the Square receipts in Gmail: 20:55 40.25 (Cass 3+1, sweet potato fries, Milkis) =
+    "Drinking at Funny Funny" (A); 22:11 24.15 (Cass 3+1) and 23:33 56.35 (Cass 7+3) = "Beer at Funny Funny". Items in
+    Notes, times from the receipts.
+  - 8 May "Club entry for 4 Yenda" is the Vegas Group (Fabric Nightclub) 60.99 line, split in halves: "Club Entry for two
+    friends" 30.50 (Mine) and "Club Entry" 30.49 (A); "Beer x2" (A) is the 22.36 line. Payee Fabric Nightclub. Owner:
+    no uneven shares needed.
+  - 7 May Felons Barrel Hall: 79.83 "Drinks for x3 and snacks", 41.19 "Drinks" (both A), receipt items in Notes.
+  - "Washing machine" (6 May, 150.00, Cash, Payee Marketplace, paid to the seller in cash): Finance Asset (Appliance)
+    and Purchase link.
+- Still open: "Clubbing YoYo table 130" (9 May, A, no line); Hotel Beach House 13.24 and Strike 1.02 (10 May),
+  Thai Jing Jing 16.16 (17 May): no notes.
 
 ## 2026-11-25: past work claims from Xero
 

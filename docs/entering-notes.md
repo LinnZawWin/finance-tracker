@@ -128,7 +128,7 @@ asset's Total Cost. Assets so far: Washing Machine, Compact Freezer (1 Oct 2026,
 Switch Joy-con x3 (6 Aug, Cash), Men's Snow Drift Gloves (11 Jul, Everyday), Jean Pants x2, Shoes White and Green,
 Shoes Navy Blue Tommy Hilfiger, Underwear three pack x2 (12 Jul, AMEX), Mask Wolf (14 Jul, AMEX), Office Chair
 (12 Jun, Cash, Furniture), Air Fryer (1 Jun, Everyday, Appliance, bought on Marketplace), Small desk (27 May, Everyday, Furniture, bought on Marketplace),
-Vacuum cleaner (28 Apr, Appliance, Marketplace 189.00: two transactions, 175.00 Cash and 14.00 Everyday, both linked).
+Vacuum cleaner (28 Apr, Appliance, Marketplace 189.00: two transactions, 175.00 Cash and 14.00 Everyday, both linked), Washing machine (6 May, Cash 150.00, Appliance, bought on Marketplace; not the 1 Oct one).
 
 Projects: Start Date and End Date are the travel dates from the owner's Google Calendar "Travel" calendar.
 They are a guide only. Flights, hotels and tickets are often bought earlier, and the Keep note says which

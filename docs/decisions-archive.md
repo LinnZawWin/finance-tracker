@@ -543,9 +543,8 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
     repayments (a friend's 50 in full, and 50 of the 67, 84 and 100). "Thai Dinner for 7" (A, Kinn Imm 126.88 with the
     8.12 credit) Amount 17.76: the rest of those repayments (17, 34 and 50). The 100 was first all on the bowling and
     split at the owner's request.
-  - "Clubbing YoYo table" (9 May, A, Entertainment, Everyday) Amount 130 (65 per person): linked to the 160 PAYMENT TO
-    the friend who booked it in full, so it stays Partly Reconciled with difference -30 (over-transferred, owed back;
-    listed in "Owed to me").
+  - "Clubbing YoYo table" (9 May, A, Entertainment, Everyday) Amount 160, linked to the 160 PAYMENT TO the friend who
+    booked it, Reconciled. 65 per person; the extra 30 is the owner's contribution to the table, not owed back.
   - 9 May Funny Funny from the Square receipts in Gmail: 20:55 40.25 (Cass 3+1, sweet potato fries, Milkis) =
     "Drinking at Funny Funny" (A); 22:11 24.15 (Cass 3+1) and 23:33 56.35 (Cass 7+3) = "Beer at Funny Funny". Items in
     Notes, times from the receipts.

@@ -669,3 +669,9 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - Left for the owner (payee differs, not confirmed): Health Insurance / AHM 81.50, YouTube Premium / payment to a person
   6.60, W Support / ANZ Access Advantage 1,000, Rent / trust account 560, Utility / Altogether Group 122.22 (no Paid From
   on the transaction), Commute 0.50 (Translink, two candidates).
+- Owner confirmed (2026-11-26) and linked with `split_match.py --batch`, all Reconciled: Health Insurance / AHM, YouTube
+  Premium / the payment to a person, W Support / ANZ Access Advantage, Rent / the trust account, Utility / Altogether
+  Group (Paid From set to Flex Saver first). Payees written for the 12 linked rows; the 21 Nov EatClub lines (Club Entry
+  x2, Beer x2 x3) are Prohibition (owner, confirmed by the EatClub email that day).
+- Open: Commute 0.50. The only open Translink line is 23 Nov; the Commute rows are 19 and 26 Nov (Translink posts about
+  3 days after travel). Asked the owner which one.

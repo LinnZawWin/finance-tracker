@@ -640,16 +640,19 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 
 ## 2026-11-26: notes for 12 and 18 Mar and 7 to 11 Apr 2026
 
-- 29 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none,
+- 33 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none,
   dated by the note (several lines are one or two days earlier: the 11 Apr Half Time, Yuen's, Payo and 2Apply lines are
-  9 Apr). All linked with `split_match.py --batch`.
+  9 Apr). All linked with `split_match.py --batch` and Reconciled; the Cash row gets its line from `cash_lines.py`.
 - Card 9873: "Grocery" Coles 75.00 (12 Mar) and 32.40 (18 Mar) linked to the card lines. "Special Grocery Gift Card 9873"
-  (11 Mar, Karta 200, Transfer) not created: no SPECIAL.GIFT charge line exists, so its Load stays Unmatched.
+  (11 Mar, Karta 200, Transfer) not created, as for card 7850: the card's Load line (+200.00, 11 Mar) is paired with the
+  AMEX SPECIAL.GIFT charge once the owner uploads that AMEX statement (no -200 line near 11 Mar yet).
 - 8 Apr "Airbnb near Sunnybank" 413.00 (AMEX Airbnb line of 7 Apr), Moving & Relocation, the room in Notes. 11 Apr
   "Background check" 29.95, Payee 2Apply (IRE* 2APPLY), Moving & Relocation.
-- Guessed (to confirm): "Duty free liquor" = Everyday Lotte Brisbane Airport 99.74 (not the 6 Apr Wise Dufry 101.86);
-  it and "Taxi from airport" (DiDi 34.64) in project MVP Summit 2026 Trip; "Taxi from Fortitude Valley to Home" = DiDi
-  15.31; "Sandbar" 66.80 and "Beer" 16.70 = the two The Pass - Sandbar lines (Alcohol); the three "Cocktail and beer"
-  rows = the three Bedroom Lounge Bar 35.88 lines; "Cass 6 packs Charmy" = Charmy 21.24 (10 Apr).
-- Asked, not created: 7 Apr "Beer", "Club entrance", "Billiards" against the open AMEX lines Iris Envy Pty Ltd 69.02,
-  Bedroom Lounge Bar Pty 20.22 and 3.25; 11 Apr "Cash for cap" 60 (Cash): payee and category.
+- Owner's answers: "Duty free liquor" = Everyday Lotte Brisbane Airport 99.74, Gifts, no project. 7 Apr Surfers Paradise
+  night, all A: "Hotel check in and parking" (Meriton 262.74), "Beer and Food" 66.80 and "Beer" 16.70 (Payee
+  "Sandbar Surfers Paradise", was "The Pass - Sandbar"), "Dinner house of brew" 126.47, "Beer" = Bedroom Lounge Bar Pty
+  20.22, "Club entrance" = Iris Envy Pty Ltd 69.02 (Entertainment), the three "Cocktail and beer" = Bedroom Lounge Bar
+  35.88 x3, "Billiards" = Bedroom Lounge Bar Pty 3.25 (Entertainment, guessed). The 7 Apr rows reordered as the notes.
+  "Taxi from airport to Fortitude Valley" (DiDi 34.64, project MVP Summit 2026 Trip). 11 Apr "Cap for Ultra EDM" 60.00,
+  Cash, Entertainment, no Payee.
+- Guessed (to confirm): "Taxi from Fortitude Valley to Home" = DiDi 15.31; "Cass 6 packs Charmy" = Charmy 21.24 (10 Apr).

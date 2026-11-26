@@ -675,3 +675,7 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   x2, Beer x2 x3) are Prohibition (owner, confirmed by the EatClub email that day).
 - Open: Commute 0.50. The only open Translink line is 23 Nov; the Commute rows are 19 and 26 Nov (Translink posts about
   3 days after travel). Asked the owner which one.
+- Translink (owner, 2026-11-26): the 23 Nov line linked to the 19 Nov fare. 22 open Translink lines (12 Apr to 17 Jun
+  2026) had no note: one "Public Transport" transaction each (Source Import, Source Row ID `BL-<line id>`, dated as the
+  line), linked with `split_match.py --batch`. All 83 "Commute" rows renamed "Public Transport". No open Translink line
+  is left; the 26 Nov fare waits for its line (still pending at the bank, not in the interim statement).

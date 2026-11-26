@@ -312,12 +312,13 @@ files listed in [../CLAUDE.md](../CLAUDE.md).
 - Matched with `reconcile.py --apply`; the four pairs it left to the owner (The Lott / TATTS ONLINE, Eventbrite / "EB *SAT 25
   APRIL-ANZAC", the two identical Wahlburgers 26.71 lines one each to "Beer" and "Beer Jug") linked with `split_match.py --batch`.
 - The 24 Apr Ivy Heinekens are on Ivy lines of 24 Apr (8.76 x2) and 25 Apr (9.87 x4, 19.73), posted after midnight.
-- Guessed (to confirm): the two 24 Apr DiDi rides with no amount: 13.04 = "Opera house to Club", 11.68 = "club to hotel";
-  "Oyster" = Christies Seafood Glebe 34.41 (Everyday) and "Salmon Sashimi" = Sushi Bar at the Fish 19.96 (AMEX), 26 Apr;
-  LIV Sydney club entry as Entertainment (club entry); Payees "Caffe Lev" (note said "Cafee Lev") and "Don & J Pty Ltd".
-- Not entered, asked: 24 Apr "Mover Van Rental" (62.16, Everyday PAYMENT TO a friend, not in the project) and the two eBike rentals
-  (ARIO 15.69, Lime 16.39): no category rule fits. Lines left open: 24 Apr Hello Bike 2.50, 25 Apr Opal 4.62 and PAYMENT TO
-  8.00, 26 Apr Opal 27.57 and DiDi 34.75.
+- Owner's answers (2026-11-26): 24 Apr DiDi 11.68 = "Opera house to Club", 13.04 = "club to hotel" (descriptions and
+  times swapped). "Mover Van Rental" (62.16, Everyday PAYMENT TO a friend, no project) in the new category Moving & Relocation.
+  eBike Rental rows for ARIO 15.69, Lime 16.39 and Hello Bike 2.50 (A, Transport). Opal 25 Apr 4.62 and 26 Apr 27.57
+  (Mine, Public Transport, Payee Transport for NSW). "Taxi from Airport to Home" (27 Apr 00:17, DiDi 34.75 line of 26 Apr, A,
+  in the trip project). Line left open: 25 Apr PAYMENT TO a person 8.00.
+- Still guessed: "Oyster" = Christies Seafood Glebe 34.41 (Everyday), "Salmon Sashimi" = Sushi Bar at the Fish 19.96 (AMEX);
+  LIV Sydney club entry as Entertainment; Payees "Caffe Lev" (note said "Cafee Lev") and "Don & J Pty Ltd".
 
 ## 2026-11-25: notes for 5 to 16 Jun and 24 to 25 Nov 2026
 

@@ -76,6 +76,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Annual fee, bank fees | Fees and Charges |
 | Interlock device | Fines |
 | Parking fine, car tow (owner, 2026-11-25) | Parking Fines |
+| Moving house: van or truck rental, removalists (owner, 2026-11-26) | Moving & Relocation |
+| eBike or scooter rental (Lime, ARIO, Hello Bike) | Transport |
 | Fuel | Fuel (Transport) |
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |

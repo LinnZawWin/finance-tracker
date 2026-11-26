@@ -609,3 +609,28 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - No Payee yet: the two Cash rows.
 - Lines left open without notes: 17 Apr Translink 1.00, 18 Apr DiDi 31.24, 19 Apr Charmy 21.24, 20 Apr Woolworths Newstead
   113.20 and Translink 1.00, 21 Apr DiDi 11.49 and GloBird Energy 34.43, 22 Apr Opal 20.95.
+
+## 2026-11-26: notes for 11 to 16 Apr 2026
+
+- 48 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none
+  (AMEX unless the note or the line said otherwise). No project (Ultra Beach Gold Coast 2026 has none). All 48 linked
+  with one `split_match.py --batch`.
+- "Wines for Partner at Liquor Legends Uptown CBD Hotel Beach House" (11 Apr, AA): Amount 9.30 = the 73.20 Hotel Beach
+  House charge - the 24 Jun PAYMENT FROM Partner +63.90 (the "A Return" note had said 11 Jun), both lines linked.
+- 15 Apr Linkt from the Linkt receipts in Gmail: "Pay Outstanding Toll" = 106.36 (invoices 59.56 + 46.80), "Top-up for
+  Transfer Error" = 98.50 (toll invoice transfer 98.15). The 20.07 Linkt line has no note.
+- "Airbnb at Kelvin Grove" (Rent) = the 14 Apr AMEX 199.86 (Airbnb receipt: Kelvin Grove 15 to 17 Apr). The 15 Apr 213.00
+  is the Coopers Plains stay 17 to 19 Apr, no note.
+- 14 Apr beers by the owner's rule (more than one beer A, else Mine): Charmy 24.27 and 21.24 A, Pineapple Hotel 12.23 and
+  Alice Bar 10.18 Mine.
+- Guessed (to confirm): the Ultra GC bar lines (12 Apr): 17.68 x2 = "Drink for Partner" (AA), 12.12 = the drink for a friend
+  and "1 beer for me", 41.93 = "2 beer for Partner one for me and 1 drink for friend" (A), 24.25 x5 = four "2 beer for
+  friend one for me" and one "2 beer for Partner one for me" (A); one of the five "2 beer for friend" notes has no line and
+  was not created. "Japanese dinner and drinks shinobi" = Glad Kitchen 109.70, "Beer x2 at JP" = Glad Kitchen 24.72 (Payee
+  Shinobi). Bedroom Lounge Bar (13 Apr): 26.14 = "Corona and Vodka cider for friend", 13.33 x2 = "1 Corona". "Hot chocolate at
+  the hotel cafe" = Everyday Woodroffe Hotel 6.00; "Katsu curry" = Sushi Time 22.00; "Breakfast at Selah" = Everyday Cafe
+  East Brisbane 15.70; "Japanese lunch at Umami" = Shen Gen Pty Ltd 60.96; Weekday 18.20 (line 12 Apr, note 13 Apr).
+  "Ice from Liquorland" as Groceries; drinks for Partner as Alcohol (not Gifts, as "Drink for HKM").
+- Lines left open without notes: 11 Apr DiDi 22.04; 12 Apr DiDi 22.45 and 15.66; 13 Apr Bedroom Lounge Bar 26.14 and
+  50.55, Agoda 173.66, PAYMENT FROM a friend +40.50; 15 Apr Airbnb 213.00, Linkt 20.07, Prime Video 2.99;
+  16 Apr Everyday PAYMENT TO Madison Heights Trust 1,120.00; the Translink lines.

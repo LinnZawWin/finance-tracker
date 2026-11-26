@@ -576,8 +576,12 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   Izakaya lines 107.65 dinner, 27.25 Sake (AA), 18.20 Udon; 2 May USB cable = Ampol Apollo Bay 25.00; 3 May Fuel before
   car return = 7-Eleven 11.10; Cirque Du Rave (Events, A) = Everyday FIXR.CO 88.00 (note said Stripe); Twelve Apostles
   Motel Payee Agoda (note said Booking.com, the line is Agoda).
-- Not entered, asked: 28 Apr Japanese dinner and 29 Apr Bowling (35.90) and Malay dinner (Ya Hoo Kit 114.60) with the
-  friend's 74.00 out and 100.00 in; 30 Apr City Express Bus (only a +33.60 Skybus credit, no charge); 2 May Dinner
-  Confectionary and Beer 6 pack (Port Campbell Hotel 29.41?); 4 May Taxi BNE airport to home (DiDi 3 May 39.57 or
-  35.46); Cirque Du Rave Fixr AMEX refund (no AMEX line). Lines left open: BTI Pty Ltd Melbourne Airport 83.40 (30 Apr),
-  Bernie Dieter 156.85 (1 May).
+- Added after the owner's answers (2026-11-26): 28 Apr Japanese Dinner 74.00 = the Everyday PAYMENT TO the friend who paid
+  the bill (Mine). 29 Apr Bowling 35.90 + Malay Dinner (with two friends, Payee Ya Hoo Kitchen) 114.60 = 150.50; one friend
+  paid 100.00 for two of the three portions, split in proportion: 23.85 to Bowling (Amount 12.05), 76.15 to the dinner
+  (Amount 38.45), the +100.00 line split between them. 30 Apr "City Express Bus refunded" (Skybus, Public Transport):
+  Amount 0, the BTI Pty Ltd Melbourne Airport -83.40 charge and the +33.60 Skybus refund both linked, so 49.80 is not
+  refunded yet: Partly Reconciled, difference -49.80, in "Owed to me". 2 May Beer 6 pack (A) = Port Campbell Hotel 29.41;
+  "Dinner Confectionary" was paid by someone else (not entered). 3 May 18:46 "Taxi from Museum of Desire to MEL Airport"
+  DiDi 39.57 (A); 4 May "Taxi from BNE airport to home" = the 3 May DiDi 35.46 (A). The "Cirque Du Rave Fixr AMEX refund"
+  has no bank line: ignored. Still open: Bernie Dieter 156.85 (1 May, AMEX), no note.

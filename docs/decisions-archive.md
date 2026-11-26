@@ -637,3 +637,19 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   Sushi Time 22.00; Japanese lunch at Umami = Shen Gen Pty Ltd 60.96; drinks for Partner as Alcohol.
 - Lines left open without notes: 11 Apr DiDi 22.04; 12 Apr DiDi 22.45 and 15.66; 13 Apr Bedroom Lounge Bar 26.14 and
   50.55, Agoda 173.66, PAYMENT FROM a friend +40.50; 15 Apr Linkt 20.07, Prime Video 2.99; the Translink lines.
+
+## 2026-11-26: notes for 12 and 18 Mar and 7 to 11 Apr 2026
+
+- 29 rows (Source Keep) with `create_transactions.py`, amounts and accounts from the bank lines where the note had none,
+  dated by the note (several lines are one or two days earlier: the 11 Apr Half Time, Yuen's, Payo and 2Apply lines are
+  9 Apr). All linked with `split_match.py --batch`.
+- Card 9873: "Grocery" Coles 75.00 (12 Mar) and 32.40 (18 Mar) linked to the card lines. "Special Grocery Gift Card 9873"
+  (11 Mar, Karta 200, Transfer) not created: no SPECIAL.GIFT charge line exists, so its Load stays Unmatched.
+- 8 Apr "Airbnb near Sunnybank" 413.00 (AMEX Airbnb line of 7 Apr), Moving & Relocation, the room in Notes. 11 Apr
+  "Background check" 29.95, Payee 2Apply (IRE* 2APPLY), Moving & Relocation.
+- Guessed (to confirm): "Duty free liquor" = Everyday Lotte Brisbane Airport 99.74 (not the 6 Apr Wise Dufry 101.86);
+  it and "Taxi from airport" (DiDi 34.64) in project MVP Summit 2026 Trip; "Taxi from Fortitude Valley to Home" = DiDi
+  15.31; "Sandbar" 66.80 and "Beer" 16.70 = the two The Pass - Sandbar lines (Alcohol); the three "Cocktail and beer"
+  rows = the three Bedroom Lounge Bar 35.88 lines; "Cass 6 packs Charmy" = Charmy 21.24 (10 Apr).
+- Asked, not created: 7 Apr "Beer", "Club entrance", "Billiards" against the open AMEX lines Iris Envy Pty Ltd 69.02,
+  Bedroom Lounge Bar Pty 20.22 and 3.25; 11 Apr "Cash for cap" 60 (Cash): payee and category.

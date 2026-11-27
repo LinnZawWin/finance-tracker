@@ -16,7 +16,6 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
 | 12 | FY2027 income tax assessment | Owner, then Claude | When it arrives, replace the four estimated `Income Tax - 2026-06..09` lines and the net of their Salary FTs ("Estimated tax" in `statement-import.md`) |
-| 13 | Salary series is on the 5th, payslips are paid about the 25th | Owner to decide | The flow's Salary FT (net 12,557.33, Everyday) will not be within the 1 day `payslip_link.py` looks for, so it would stay beside the payslip's Salary FT. Move the series to the payday, or delete the flow's FT when the payslip is linked |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -113,6 +112,11 @@ FT: the payslip's employer super line and the AustralianSuper fees, insurance, c
 returns are Ignored (closes pending item 11); a voluntary contribution is an Expense FT, Category Investment (owner),
 with its fund line Ignored. The Salary series became the Nov net pay, -12,557.33. The Paxus pay advices (imported the
 same day with the gross rule) were converted the same way.
+
+2026-11-28: **Salary series on payday** (owner): monthly on the 25th from 25 Dec 2026 (was the 5th, which the payslip
+link could not pair with the payday). `payslip_link.py` reuses the flow's Salary FT (Source Recurring, any amount) from
+1 day before to 2 days after the payday, so a weekend 25th paid on the Friday still pairs. The GST and income tax ATO
+lines before the bank history stay Unmatched until those bank statements are imported (owner).
 
 2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
 the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or

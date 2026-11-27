@@ -37,7 +37,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 
 | Series | Amount | Pattern | Paid From | Payment Type | Finance Category |
 |---|---|---|---|---|---|
-| Salary | -12,557.33 (net pay of the Nov 2026 payslip; gross 18,333.33 until 2026-11-27) | Monthly, 5th | Everyday | Auto | Salary and Contract Income |
+| Salary | -12,557.33 (net pay of the Nov 2026 payslip; gross 18,333.33 until 2026-11-27) | Monthly, 25th (payday; the 5th until 2026-11-28, first instance 25 Dec 2026) | Everyday | Auto | Salary and Contract Income |
 | Rent | 560.00 | Weekly, Sunday | Flex | Auto | Rent and Housing |
 | Health Insurance | 81.50 | Weekly, Monday | Flex | Auto | Insurance |
 | Broadband | 71.95 | Monthly, 20th | AMEX | Auto | Utilities |
@@ -84,10 +84,13 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   Madison Heights, Health Insurance = AHM, W Support = Joint Main, Broadband = Rush, Utility (Electricity/Gas) =
   Altogether, YouTube Premium = the person the family share is paid to (as on the Sep and Oct rows). Done for the
   20 to 25 Nov rows.
+- **Salary**: the flow's Salary FT (Paid From Everyday, the series' net) is reused by `payslip_link.py` when the
+  payslip is linked: it moves to the employer account and takes the payslip's net (a 25th on a weekend is paid the
+  Friday before; the script looks 1 day before to 2 days after the payday).
 - **Owed to the ATO** (one-off, 2026-11-27, `contract_link.py`): "GST Payment (for 2026-09 income)" 1,750.00 on
-  28 Feb 2027 (Manual, Flex Saver, Tax) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
-  (Estimated, no Paid From, Tax; correct it when the assessment arrives). Their FTs are linked to the owed lines on the
-  Delta Insights account by hand ("Contract invoices" in `statement-import.md`).
+  28 Feb 2027 (Manual, Flex Saver) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
+  (Estimated, no Paid From; correct it when the assessment arrives). Both have Transfer To Delta Insights and no
+  Category, so the flow creates Transfer FTs ("Contract invoices" in `statement-import.md` says how to pair them).
 - No series for Prime Video (unsubscribed) or GST activity statements (no longer a contractor): owner, 2026-11-26.
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.

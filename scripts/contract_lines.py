@@ -12,10 +12,10 @@ date (totals, blanks, the rate table) are skipped.
 
 The employer account (Delta Insights) is a clearing account. One Bank Statement per invoice month,
 `DeltaInsights_Invoice_<yyyy-mm>`, every line dated Paid On:
-- `Invoice - <yyyy-mm> - <days> days, <net> + GST <gst>` + Total Amount (income incl GST)
-- `GST - <yyyy-mm>` - GST
+- `Invoice - <yyyy-mm> - <days> days, <net> + GST <gst>` + Total Amount (income incl GST), Bank Category "Gross income"
+- `GST - <yyyy-mm>` - GST, Bank Category "GST" (also on the rounding lines)
 - `Income Tax - <yyyy-mm>` - the month's share of the year's tax: the paid amount split by Net Amount (cents on
-  the last month) when the year is in "tax", else the sheet's Est. Tax (owed, not paid yet)
+  the last month) when the year is in "tax", else the sheet's Est. Tax (owed, not paid yet); Bank Category "Income tax"
 - `Paid to bank - <yyyy-mm>` - Total Amount (its Transfer Counterpart is the bank's salary line)
 One Bank Statement per ATO payment, `DeltaInsights_ATO_<yyyy-mm-dd>`:
 - `GST paid - <first>..<last month>` + the sheet's Total GST (whole dollars, as on the BAS) and, when the months'
@@ -83,11 +83,13 @@ def main():
         y, mo = map(int, m.split("-"))
         t, fy = tax.get(m, (r["est"], None))
         tax_note = (f"{fy} income tax, paid amount split by Net Amount" if fy else
-                    "Est. Tax from the sheet: owed, not paid yet")
+                    "Est. Tax from the sheet: owed, not paid yet. The Salary FT's net uses this estimate; replace it "
+                    "with the year's assessment (split by Net Amount) when it arrives")
         lines = [
-            dict(description=f"Invoice - {m} - {r['days']} days, {r['net']:,.2f} + GST {r['gst']:,.2f}", amount=r["total"]),
-            dict(description=f"GST - {m}", amount=-r["gst"]),
-            dict(description=f"Income Tax - {m}", amount=-t, notes=tax_note),
+            dict(description=f"Invoice - {m} - {r['days']} days, {r['net']:,.2f} + GST {r['gst']:,.2f}", amount=r["total"],
+                 bank_category="Gross income"),
+            dict(description=f"GST - {m}", amount=-r["gst"], bank_category="GST"),
+            dict(description=f"Income Tax - {m}", amount=-t, notes=tax_note, bank_category="Income tax"),
             dict(description=f"Paid to bank - {m}", amount=-r["total"]),
         ]
         name = f"{NAME}_Invoice_{m}"
@@ -117,7 +119,7 @@ def main():
         ls.append(dict(description=f"GST paid - {per}", amount=r["qgst"], notes=f"GST for {per}, paid {paid}"))
         if round(gst - r["qgst"], 2):
             ls.append(dict(description=f"GST rounding - {per}", amount=round(gst - r["qgst"], 2),
-                           notes="The BAS is in whole dollars"))
+                           notes="The BAS is in whole dollars", bank_category="GST"))
     for t in pay["tax"]:
         ato.setdefault(t["paid"], []).append(dict(description=f"Income tax paid - {t['fy']}", amount=t["amount"],
                                                   notes=f"{t['fy']} income tax, paid {t['paid']}"))

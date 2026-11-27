@@ -138,6 +138,14 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
   - Line: Description "<Title> - <Description>" (for example "Insurance - Premium - Death",
     "Contribution - Employer - Delta Insights Pty Ltd"), Bank Category = the CSV Category (CONTRIBUTIONS, FEES,
     INSURANCE, GOVERNMENT_TAXES, INVESTMENTS), Notes = a contribution's payment period, Line Number = the order in the file.
+  - Super is locked in the fund until preservation age, so nothing inside the fund is a Finance Transaction (owner,
+    2026-11-27): fees, insurance, contributions tax, tax benefits and returns are Status **Ignored** (set on import),
+    and the fund's money shows only as this account's balance. Leave accounts of type Super and Employer out of any
+    cash forecast or "available money" figure.
+  - A **voluntary contribution** from a bank account: an Expense FT, Category **Investment**, Paid From that account,
+    matched to the bank line; the "Contribution - Personal" line on AustralianSuper is Ignored (linking it too would
+    count the money twice). For a tax deduction set Claim Type Income Tax, Pending. The 6 Feb 2026 $10 contribution is
+    before the bank history: Ignored, no FT.
   - An employer contribution is a transfer from the employer account: Transfer Counterpart = the payslip's
     "Superannuation paid" line (set by hand, the dates are days apart). Fees, insurance, taxes and returns have no
     Finance Transactions yet (owner to decide); they stay Unmatched. Paxus contributions (Dec 2023 to Oct 2024) wait for
@@ -148,14 +156,16 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
 
   | Line | Sign | Linked to |
   |---|---|---|
-  | `Salary & Wages - <item> <hours> x <rate>` (one per earnings item) | + | FT "Salary" (Income, **gross**, Salary and Contract Income, Paid From Delta Insights) |
-  | `Tax - PAYG` | - | FT "Income Tax withheld" (Expense, Tax, Paid From Delta Insights) |
-  | `Superannuation - SGC - AustralianSuper ...` | + | FT "Employer super" (Income, Salary and Contract Income, Paid From Delta Insights) |
+  | `Salary & Wages - <item> <hours> x <rate>` (one per earnings item), Bank Category "Gross income" | + | FT "Salary" (Income, **net pay**, Salary and Contract Income, Paid From Delta Insights) |
+  | `Tax - PAYG`, Bank Category "Income tax" | - | the same Salary FT |
+  | `Superannuation - SGC - AustralianSuper ...`, Bank Category "Employer super" | + | none: Status **Ignored** (the employer's contribution is locked in the fund) |
   | `Superannuation paid - SGC - AustralianSuper ...` | - | Transfer Counterpart: the AustralianSuper "Contribution - Employer" line |
   | `Net pay - <bank account> Salary` | - | Transfer Counterpart: the Everyday "ANZ INTERNET BANKING TRANSFER SALARY DELTA INSIGHTS P" line |
 
-  So the Everyday salary line is a **Transfer**, not matched to a Finance Transaction (linking the Salary FT to both the
-  payslip and the bank line would count it twice in Actual Amount). The payslip date and the bank date are the same day.
+  So the Salary FT is the **net**, like a split bill: Amount = gross less PAYG = Actual Amount (owner, 2026-11-27; there
+  are no "Income Tax withheld" or "Employer super" FTs). The Everyday salary line is a **Transfer**, not matched to a
+  Finance Transaction (linking the Salary FT to both the payslip and the bank line would count it twice in Actual
+  Amount). Gross income and tax come from the Delta Insights lines by Bank Category. The payslip date and the bank date are the same day.
   Payslips processed: Sep, Oct and Nov 2026. The Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" lines
   (8 Apr to 7 Oct 2026) keep their Salary FTs matched to the bank line until their payslips arrive. The Nov payslip's
   "Superannuation paid" line waits for its AustralianSuper contribution (not in the export to 27 Nov); rerun
@@ -176,15 +186,23 @@ ATO**:
 
 | Statement | Line | Sign | Linked to |
 |---|---|---|---|
-| `DeltaInsights_Invoice_<yyyy-mm>` (dated Paid On) | `Invoice - <m> - <days> days, <net> + GST <gst>` | + Total incl GST | FT "Salary" (Income, Salary and Contract Income, Paid From Delta Insights) |
-| | `GST - <m>` | - | the quarter's GST FT |
-| | `Income Tax - <m>` | - | the year's "Income Tax" FT (Notes name the year), or owed (Notes "Est. Tax") |
+| `DeltaInsights_Invoice_<yyyy-mm>` (dated Paid On) | `Invoice - <m> - <days> days, <net> + GST <gst>`, Bank Category "Gross income" | + Total incl GST | FT "Salary" (Income, **net**, Salary and Contract Income, Paid From Delta Insights) |
+| | `GST - <m>`, Bank Category "GST" | - | the month's Salary FT |
+| | `Income Tax - <m>`, Bank Category "Income tax" | - | the month's Salary FT (Notes name the year, or "Est. Tax" while owed) |
 | | `Paid to bank - <m>` | - | Transfer Counterpart: the Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" line (Apr to Oct 2026 only; earlier months stay Unmatched, owner) |
 | `DeltaInsights_ATO_<date>` | `GST paid - <first>..<last month>` | + BAS amount (whole dollars) | Transfer Counterpart: the Flex Saver BPAY TO TAX OFFICE line (Apr 2026 on) |
-| | `GST rounding - <...>` | + cents | the GST FT |
+| | `GST rounding - <...>`, Bank Category "GST" | + cents | the Salary FT of the quarter's last month |
 | | `Income tax paid - <fy>` | + | Transfer Counterpart: the AMEX ATO line (FY2026) |
 
-- Income = Total incl GST; GST and income tax are Expenses (Tax) on their own FTs (owner, 2026-11-27).
+- **Net only** (owner, 2026-11-27): the Salary FT's Amount = Total incl GST less the month's GST and income tax (plus a
+  quarter's GST rounding on its last month), matched to those lines, so Actual Amount = Amount. GST and income tax have
+  no FTs; their totals come from the lines (Bank Category "GST", "Income tax"; gross from "Gross income"). The ATO
+  payments are Transfers into the account. "GST paid" and "Income tax paid" lines before the bank history (to Feb 2026
+  GST, FY2025 tax) have no bank line and stay Unmatched.
+- **Estimated tax** (Jun to Sep 2026): those four Salary FTs are net of the sheet's Est. Tax (33,575.00); their Notes
+  and the `Income Tax - 2026-0x` lines say so. When the FY2027 assessment arrives, replace the four lines with the
+  assessed amount split by Net Amount (cents on the last month), set each Salary FT's Amount to the new net (Invoice +
+  GST + tax lines) and its Notes to final, and recalculate the rollups. No new FT.
 - A year's tax is split over its months by Net Amount (cents on the last month): FY2025 = Sep 2024 to Jun 2025,
   77,415.45 paid 12 Nov 2025 from Flex Saver (no bank line); FY2026 = Jul 2025 to May 2026, 82,434.30
   paid 24 Nov 2026 on AMEX. Jun to Sep 2026 use the sheet's Est. Tax (33,575.00) and are owed.
@@ -192,11 +210,15 @@ ATO**:
   Sep to Nov 2025; Dec 2025 to Feb, Mar to May, Jun to Aug 2026). The six payments before the bank history are FTs
   "GST Payment (for <a> to <b> income)", Paid From Flex Saver, dated from the sheet's "GST Account Transfer Out Total"
   column (the first new date after the quarter). The owner confirmed the rule: the column's 27 Apr 2026 is the day the
-  Dec 2025 to Feb 2026 GST was paid (the Flex line posted 28 Apr; the FT is dated 27 Apr). Sep 2026 GST
-  (1,750.00) is owed.
-- Owed amounts have one-off Planned Transactions (Category Tax): "GST Payment (for 2026-09 income)" 1,750.00, 28 Feb 2027,
-  Manual, Flex Saver; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00, 24 Nov 2027, Estimated, no Paid From.
-  When the flow creates their FTs, link each to its owed lines with `split_match.py` (FT to the `GST - 2026-09` or the
-  four `Income Tax - 2026-0x` lines) and pair the bank payment with a new `DeltaInsights_ATO_<date>` line.
+  Dec 2025 to Feb 2026 GST was paid (the Flex line posted 28 Apr). Sep 2026 GST (1,750.00) is owed. (The GST
+  Payment and Income Tax FTs were deleted on 2026-11-27, net only.)
+- Owed amounts have one-off Planned Transactions with **Transfer To Delta Insights** and no Category: "GST Payment (for
+  2026-09 income)" 1,750.00, 28 Feb 2027, Manual, Flex Saver; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00,
+  24 Nov 2027, Estimated, no Paid From. The flow creates **Transfer** FTs from them (the tax is already off the net
+  Salary FTs, so an Expense would count it twice). Then: add a `DeltaInsights_ATO_<date>` line (`GST paid - 2026-09..2026-09`
+  or `Income tax paid - FY2027`, + the amount paid), match the Transfer FT to the bank payment line (-) with
+  `split_match.py`, and set the ATO line Status Transfer with the bank line as Transfer Counterpart.
 - The Salary FTs that existed (7, from 8 Apr to 7 Oct 2026, entered from the bank line) were moved to the invoice line.
+- `contract_link.py` now links net: the invoice, GST and tax lines to the Salary FT, and pairs each ATO line with its
+  bank payment (an Expense FT entered from a note for that payment, matched only to it, is deleted).
 

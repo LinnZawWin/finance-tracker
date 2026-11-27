@@ -736,3 +736,18 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   confirmed the rule (the Dec 2025 to Feb 2026 GST was paid 27 Apr 2026, as the column says: that FT moved from 28 to
   27 Apr). The FY2025 income tax was paid from Flex Saver (owner): Paid From set, Needs Details cleared.
 
+
+### 2026-11-27: net-only Salary (one-off migration, not a script in the repo)
+
+- 28 Salary FTs set to the net (25 invoice months Sep 2024 to Sep 2026, payslips Sep, Oct, Nov 2026), each matched to
+  its gross, GST and tax lines; Reconciled, Actual Amount = Amount. Examples: Sep 2024 19,250.00 -> 11,528.56; Nov 2026
+  payslip 18,333.33 -> 12,557.33; Jun to Sep 2026 net of Est. Tax (17,325.00, 18,400.00, 12,000.00, 11,200.00).
+  GST rounding 0.50 on the Dec 2024 and May 2026 Salary FTs.
+- Deleted (all matches on Delta Insights only): GST Payment FTs for 2024-09 1,750.00, 2024-10 to 12 7,812.00, 2025-01 to
+  03 6,250.00, 2025-04 to 06 6,875.00, 2025-07 to 08 5,375.00, 2025-09 to 11 6,625.00, "2026 Jun-Aug" 7,500.00, two "GST
+  Activity statement 004" 6,750.00 and 6,437.00; Income Tax FY2025 77,415.45 and FY2026 82,434.30; Income Tax withheld
+  1,348.00, 4,602.00, 5,776.00; Employer super 800.00, 1,900.00, 2,200.00.
+- 87 Delta Insights lines got a Bank Category; the three payslip super lines and 300 AustralianSuper lines (fees,
+  insurance, contributions tax, tax benefits, returns, the 6 Feb 2026 $10 personal contribution) set Ignored.
+- Planned Transactions: the two owed ones got Transfer To Delta Insights and lost Category Tax; the Salary series and its
+  12 open instances -18,333.33 -> -12,557.33. Delta Insights balance unchanged at -35,325.00.

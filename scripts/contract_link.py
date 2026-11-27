@@ -7,19 +7,20 @@ Dry run by default; --apply writes, under the reconciliation lock.
 <payments json> is the file given to contract_lines.py, plus the due dates of what is owed:
     "owed": {"gst": "2027-02-28", "tax": "2027-11-24"}
 
-1. Salary: per invoice, the Income "Salary" FT of Delta Insights on Paid On (+-1 day) with the Total Amount is reused:
-   its match to the bank line is deleted, that bank line becomes the Transfer Counterpart of "Paid to bank", Paid From
-   becomes the employer. Without one, a new Salary FT (Source Import); "Paid to bank" pairs with an unmatched bank
-   line of the same amount within 3 days if there is exactly one, else it stays Unmatched (before the bank history).
-2. GST: per "GST paid" line, the Expense FT of Payee ATO with that amount on that day (+-1) is reused the same way
-   (its Flex Saver BPAY line becomes the Transfer Counterpart); without one, a new "GST Payment (for <months> income)"
-   FT, Paid From Flex Saver, no bank line. Matched: the quarter's "GST - <month>" lines and the rounding line.
-3. Income tax: per "Income tax paid - <fy>" line, the Expense "Income Tax" FT with that amount on that day is reused
-   (its AMEX line becomes the counterpart); without one, a new one (Payee Australian Taxation Office, no Paid From,
-   Needs Details). Matched: the "Income Tax - <month>" lines whose Notes name that year.
-4. Owed: the GST lines no payment covers and the tax lines from Est. Tax get one Planned Transaction each
-   (GST: Manual, Flex Saver; tax: Estimated), Category Tax, due on the "owed" dates. Link them by hand
-   (split_match.py) once the flow has created their Finance Transactions.
+Net only (owner, 2026-11-27): the Salary FT is the net, like a split bill. GST and income tax have no FTs.
+1. Salary: per invoice, the Income "Salary" FT of Delta Insights on Paid On (+-1 day) with the Total Amount or the
+   net is reused: its match to the bank line is deleted, that bank line becomes the Transfer Counterpart of "Paid to
+   bank", Paid From becomes the employer, Amount the net. Without one, a new Salary FT (Source Import); "Paid to bank"
+   pairs with an unmatched bank line of the same amount within 3 days if there is exactly one, else it stays Unmatched
+   (before the bank history). Matched: the month's Invoice (+), GST (-) and Income Tax (-) lines, so Actual Amount =
+   Amount = Total - GST - income tax. A quarter's "GST rounding" line goes to the Salary FT of its last month.
+2. ATO payments: each "GST paid" and "Income tax paid" line pairs as a Transfer with the bank line of the opposite
+   amount within 3 days (Flex Saver BPAY, AMEX) when there is exactly one; an Expense FT matched only to that bank
+   line (entered from a note) is deleted first. Without a bank line it stays Unmatched (before the bank history).
+3. Owed: the GST lines no payment covers and the tax lines from Est. Tax get one Planned Transaction each
+   (GST: Manual, Flex Saver; tax: Estimated), Transfer To Delta Insights, no Category, due on the "owed" dates.
+   The flow makes them Transfer FTs; match each to its bank payment line and pair that line with a new
+   `DeltaInsights_ATO_<date>` line (Status Transfer).
 """
 import datetime as dt
 import json
@@ -67,6 +68,7 @@ class Ctx:
                 l["kind"], _, l["rest"] = l["lzw_name"].partition(" - ")
                 self.lines.append(l)
         self.matches, self.pairs, self.fts = [], [], []  # (line, ft key), (line, bank line id), FTs to finish
+        self.drops = []  # (match id, FT id, name): note FTs for an ATO payment, deleted
 
     def of(self, kind):
         return [l for l in self.lines if l["kind"] == kind]
@@ -112,25 +114,53 @@ def plan_ft(ctx, label, filt, date, amount, new_body, line):
     return ft
 
 
+def bank_payment(ctx, line):
+    """The one bank line paying this ATO line (opposite amount, another account, within 3 days, not a Transfer)."""
+    d = line["lzw_transactiondate"][:10]
+    c = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_status&$filter=lzw_amount eq "
+                   f"{-line['lzw_amount']} and _lzw_bankaccount_value ne {ctx.emp} and statecode eq 0 and lzw_status ne "
+                   f"{L_TRANSFER} and lzw_transactiondate ge {day(d, -3)} and lzw_transactiondate le {day(d, 3)}")
+    if len(c) != 1:
+        return None, []
+    ms = dv.get_all("lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid,_lzw_financetransaction_value&$filter="
+                    f"_lzw_bankstatementline_value eq {c[0]['lzw_bankstatementlineid']}")
+    drop = []
+    for m in ms:  # an Expense FT entered from a note for the payment: deleted when this is its only match
+        fid = m["_lzw_financetransaction_value"]
+        others = dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
+                        f"_lzw_financetransaction_value eq {fid}")["value"]
+        ft = dv.get(f"lzw_financetransactions({fid})?$select=lzw_name,lzw_type,lzw_amount")
+        if len(others) != 1 or ft["lzw_type"] != EXPENSE:
+            print(f"    SKIPPED {line['lzw_name']}: bank line is matched to {ft['lzw_name']} (check by hand)")
+            return None, []
+        drop.append((m["lzw_reconciliationmatchid"], fid, ft["lzw_name"]))
+    return c[0], drop
+
+
 def plan(ctx, pay):
     open_ = lambda l: l["lzw_status"] not in (L_MATCHED, L_TRANSFER)
-    # 1. Salary
+    # 1. Salary (net)
     print("Salary")
     for inv in ctx.of("Invoice"):
-        if not open_(inv):
-            continue
         m = inv["rest"].split(" - ")[0]
+        parts = [inv] + [l for l in ctx.of("GST") + ctx.of("Income Tax") if l["rest"] == m]
+        parts += [l for l in ctx.of("GST rounding") if l["rest"].split("..")[1] == m]  # the quarter's last month
+        todo = [l for l in parts if open_(l)]
+        if not todo:
+            continue
         date, total = inv["lzw_transactiondate"][:10], inv["lzw_amount"]
+        net = round(sum(l["lzw_amount"] for l in parts), 2)
+        est = any((l.get("lzw_notes") or "").startswith("Est. Tax") for l in parts)
         to_bank = next(l for l in ctx.of("Paid to bank") if l["rest"] == m)
-        body = {"lzw_name": "Salary", "lzw_type": INCOME, "lzw_amount": total, "lzw_payee": "Delta Insights",
+        body = {"lzw_name": "Salary", "lzw_type": INCOME, "lzw_amount": net, "lzw_payee": "Delta Insights",
                 "lzw_transactiondate": f"{date}T02:00:00Z", "lzw_source": IMPORT, "category": ctx.c_salary,
-                "paidfrom": ctx.emp, "lzw_notes": f"Contract invoice {m} incl GST (Fiscal Planner sheet). GST and "
-                "income tax are lines on the Delta Insights account; the payment is a Transfer to the bank."}
+                "paidfrom": ctx.emp, "lzw_notes": net_note(m, total, parts, est)}
         ft = plan_ft(ctx, f"{m} Salary", f"lzw_type eq {INCOME} and lzw_name eq 'Salary' and lzw_payee eq "
-                     f"'Delta Insights' and lzw_amount eq {total}", date, total, body, to_bank)
+                     f"'Delta Insights' and (lzw_amount eq {total} or lzw_amount eq {net})", date, net, body,
+                     to_bank if open_(to_bank) else None)
         if ft is None:
             continue
-        ctx.matches.append((inv, ft))
+        ctx.matches += [(l, ft) for l in todo]
         if not ft["old"] and open_(to_bank):
             c = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name&$filter=lzw_amount eq "
                            f"{total} and _lzw_bankaccount_value ne {ctx.emp} and statecode eq 0 and lzw_status eq "
@@ -140,49 +170,27 @@ def plan(ctx, pay):
                 print(f"        Paid to bank <-> {c[0]['lzw_name'][:60]}")
             else:
                 print(f"        Paid to bank: {len(c)} bank lines fit, left Unmatched")
-    # 2. GST
-    print("GST")
+    # 2. ATO payments: Transfers from the bank
+    print("ATO payments")
     gst_lines = {l["rest"]: l for l in ctx.of("GST")}
     covered = set()
-    for paid in ctx.of("GST paid"):
-        per = paid["rest"]
-        a, b = per.split("..")
-        months = [l for k, l in gst_lines.items() if a <= k <= b]
-        covered.update(l["lzw_bankstatementlineid"] for l in months)
-        rounding = [l for l in ctx.of("GST rounding") if l["rest"] == per]
-        targets = [l for l in months + rounding if open_(l)]
-        if not targets and not open_(paid):
+    for paid in ctx.of("GST paid") + ctx.of("Income tax paid"):
+        if paid["kind"] == "GST paid":
+            a, b = paid["rest"].split("..")
+            covered.update(l["lzw_bankstatementlineid"] for k, l in gst_lines.items() if a <= k <= b)
+        if not open_(paid):
             continue
-        date, amt = paid["lzw_transactiondate"][:10], paid["lzw_amount"]
-        body = {"lzw_name": f"GST Payment (for {a if a == b else f'{a} to {b}'} income)", "lzw_type": EXPENSE, "lzw_amount": amt,
-                "lzw_payee": "ATO", "lzw_transactiondate": f"{date}T02:00:00Z", "lzw_source": IMPORT,
-                "category": ctx.c_tax, "paidfrom": ctx.flex,
-                "lzw_notes": f"GST for {a} to {b} (Fiscal Planner sheet). No bank line (before the bank history); "
-                             "the date is from the sheet's GST Account Transfer Out Total column."}
-        ft = plan_ft(ctx, f"GST {per}", f"lzw_type eq {EXPENSE} and lzw_payee eq 'ATO' and lzw_amount eq {amt}",
-                     date, amt, body, paid if open_(paid) else None)
-        if ft:
-            ctx.matches += [(l, ft) for l in targets]
+        bl, drop = bank_payment(ctx, paid)
+        if bl is None:
+            print(f"    {paid['lzw_name']} {paid['lzw_amount']:,.2f}: no single bank line, left Unmatched")
+            continue
+        ctx.pairs.append((paid, bl["lzw_bankstatementlineid"]))
+        ctx.drops += drop
+        print(f"    {paid['lzw_name']} <-> {bl['lzw_name'][:50]}"
+              + "".join(f"; delete FT {n}" for _, _, n in drop))
     owed_gst = [l for l in gst_lines.values() if l["lzw_bankstatementlineid"] not in covered]
-    # 3. Income tax
-    print("Income tax")
-    for paid in ctx.of("Income tax paid"):
-        fy = paid["rest"]
-        months = [l for l in ctx.of("Income Tax") if (l.get("lzw_notes") or "").startswith(f"{fy} ")]
-        targets = [l for l in months if open_(l)]
-        if not targets and not open_(paid):
-            continue
-        date, amt = paid["lzw_transactiondate"][:10], paid["lzw_amount"]
-        body = {"lzw_name": "Income Tax", "lzw_type": EXPENSE, "lzw_amount": amt, "lzw_payee": "Australian Taxation Office",
-                "lzw_transactiondate": f"{date}T02:00:00Z", "lzw_source": IMPORT, "category": ctx.c_tax,
-                "lzw_needsdetails": True, "lzw_notes": f"{fy} income tax (owner). No bank line (before the bank "
-                "history); account not known."}
-        ft = plan_ft(ctx, f"Income tax {fy} ({len(months)} months)", f"lzw_type eq {EXPENSE} and lzw_name eq "
-                     f"'Income Tax' and lzw_amount eq {amt}", date, amt, body, paid if open_(paid) else None)
-        if ft:
-            ctx.matches += [(l, ft) for l in targets]
     owed_tax = [l for l in ctx.of("Income Tax") if (l.get("lzw_notes") or "").startswith("Est. Tax")]
-    # 4. Owed
+    # 3. Owed
     print("Owed (Planned Transactions)")
     appts = []
     for ls, key, subject, ptype, paidfrom in (
@@ -198,12 +206,26 @@ def plan(ctx, pay):
         print(f"    {subj}: {amt:,.2f} due {due}" + (" (exists)" if exists else ""))
         if not exists:
             appts.append(dict(subject=subj, amount=amt, due=due, ptype=ptype, paidfrom=paidfrom,
-                              desc=f"Owed on the Delta Insights account (lines {', '.join(ms)}). "
+                              desc=f"Transfer to the Delta Insights account: owed there (lines {', '.join(ms)}), "
+                                   "already taken off the net Salary FTs. "
                                    + ("Est. Tax from the Fiscal Planner sheet; correct it when the assessment arrives."
                                       if key == "tax" else "From the Fiscal Planner sheet.")))
     print(f"Plan: {sum(1 for f in ctx.fts if not f['id'])} new FTs, {sum(1 for f in ctx.fts if f['id'])} reused, "
-          f"{len(ctx.matches)} matches, {len(ctx.pairs)} transfer pairs, {len(appts)} Planned Transactions")
+          f"{len(ctx.matches)} matches, {len(ctx.pairs)} transfer pairs, {len(ctx.drops)} FTs deleted, "
+          f"{len(appts)} Planned Transactions")
     return appts
+
+
+def net_note(m, total, parts, est):
+    gst = -sum(l["lzw_amount"] for l in parts if l["kind"] in ("GST", "GST rounding"))
+    tax = -sum(l["lzw_amount"] for l in parts if l["kind"] == "Income Tax")
+    note = (f"Contract invoice {m}, net (Fiscal Planner sheet): {total:,.2f} incl GST less GST {gst:,.2f} and income "
+            f"tax {tax:,.2f}, matched to those lines on the Delta Insights account. The payment is a Transfer to the "
+            "bank; the GST and tax payments are Transfers into the Delta Insights account.")
+    if est:
+        note += (" The income tax is the sheet's estimate (Est. Tax) for now; replace it with the year's assessment "
+                 "(split by Net Amount) when it arrives.")
+    return note
 
 
 def has_match(lid):
@@ -219,15 +241,20 @@ def write(ctx, appts):
         for mid, lid, _ in ft["old"]:
             ops += [("DELETE", f"lzw_reconciliationmatchs({mid})", None),
                     ("PATCH", f"lzw_bankstatementlines({lid})", {"lzw_status": L_UNMATCHED})]
+    for mid, fid, _ in ctx.drops:  # note FTs for an ATO payment: the bank line becomes a Transfer in step 4
+        ops += [("DELETE", f"lzw_reconciliationmatchs({mid})", None), ("DELETE", f"lzw_financetransactions({fid})", None)]
     gone = lambda chunk: not dv.exists(next(p for m, p, _ in chunk if m == "DELETE"))
     dv.batch(ops, done=gone)
+    for _, _, n in ctx.drops:
+        print(f"    deleted FT {n}")
     # 2. Finance Transactions: reused Salary FTs move to the employer; new ones are created.
     ops, new = [], []
     for ft in ctx.fts:
         if ft["id"]:
             if ft["body"]["lzw_name"] == "Salary":
                 ops.append(("PATCH", f"lzw_financetransactions({ft['id']})", {
-                    "lzw_PaidFrom@odata.bind": f"/lzw_bankaccounts({ctx.emp})", "lzw_notes": ft["body"]["lzw_notes"]}))
+                    "lzw_PaidFrom@odata.bind": f"/lzw_bankaccounts({ctx.emp})", "lzw_notes": ft["body"]["lzw_notes"],
+                    "lzw_amount": ft["amount"]}))
             continue
         b = {k: v for k, v in ft["body"].items() if k not in ("category", "paidfrom")}
         b["lzw_Category@odata.bind"] = f"/lzw_financecategories({ft['body']['category']})"
@@ -291,8 +318,8 @@ def write(ctx, appts):
     for ap in appts:
         b = {"subject": ap["subject"], "scheduledstart": f"{ap['due']}T02:00:00Z",
              "scheduledend": f"{ap['due']}T02:30:00Z", "lzw_amount": ap["amount"], "lzw_paymenttype": ap["ptype"],
-             "description": ap["desc"], "lzw_FinanceCategory_Appointment@odata.bind":
-                 f"/lzw_financecategories({ctx.c_tax})",
+             "description": ap["desc"],
+             "lzw_TransferTo_Appointment@odata.bind": f"/lzw_bankaccounts({ctx.emp})",
              "transactioncurrencyid@odata.bind": f"/transactioncurrencies({ctx.aud})"}
         if ap["paidfrom"]:
             b["lzw_PaidFrom_Appointment@odata.bind"] = f"/lzw_bankaccounts({ap['paidfrom']})"

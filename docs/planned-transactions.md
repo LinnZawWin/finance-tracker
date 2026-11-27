@@ -23,7 +23,8 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - System view **Current Week Pending Transactions** (Start Time this week, Status Open; created 2026-11-25 by `build_week_view.py`, replaces a personal view that listed the deleted Financial Account column).
 - The scheduled flow takes open or scheduled appointments with Start before tomorrow
   (Brisbane) and creates a Finance Transaction for each: Description and Payee = Subject, Date = Start,
-  Type = Income if Amount < 0 else Expense, Estimated Amount = abs(Amount), Share Type = Mine, Source =
+  Type = Transfer when the appointment (or its series) has **Transfer To** (column added 2026-11-27, FT Transfer To
+  set from it), else Income if Amount < 0 else Expense, Estimated Amount = abs(Amount), Share Type = Mine, Source =
   Recurring, Source Row ID = appointment ID, Paid From and Category from the appointment or else its
   series, Needs Details = Yes when Paid
   From is empty or Payment Type = Estimated, Notes = "Created from Planned Transaction. Payment Type: <x>"
@@ -36,7 +37,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 
 | Series | Amount | Pattern | Paid From | Payment Type | Finance Category |
 |---|---|---|---|---|---|
-| Salary | -18,333.33 | Monthly, 5th | Everyday | Auto | Salary and Contract Income |
+| Salary | -12,557.33 (net pay of the Nov 2026 payslip; gross 18,333.33 until 2026-11-27) | Monthly, 5th | Everyday | Auto | Salary and Contract Income |
 | Rent | 560.00 | Weekly, Sunday | Flex | Auto | Rent and Housing |
 | Health Insurance | 81.50 | Weekly, Monday | Flex | Auto | Insurance |
 | Broadband | 71.95 | Monthly, 20th | AMEX | Auto | Utilities |

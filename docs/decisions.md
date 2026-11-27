@@ -15,7 +15,8 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too; 14 to 19 Aug on 2026-11-23). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
-| 11 | AustralianSuper fees, insurance, contributions tax and returns | Owner to decide | Imported as lines (2026-11-27) and left Unmatched: Finance Transactions per line, Bank Rules, or Status Ignored. Paxus contributions wait for their payslips |
+| 12 | FY2027 income tax assessment | Owner, then Claude | When it arrives, replace the four estimated `Income Tax - 2026-06..09` lines and the net of their Salary FTs ("Estimated tax" in `statement-import.md`) |
+| 13 | Salary series is on the 5th, payslips are paid about the 25th | Owner to decide | The flow's Salary FT (net 12,557.33, Everyday) will not be within the 1 day `payslip_link.py` looks for, so it would stay beside the payslip's Salary FT. Move the series to the payday, or delete the flow's FT when the payslip is linked |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -85,6 +86,22 @@ account, the payment FT is matched to those lines, and the bank or AMEX payment 
 and Jun to Sep 2026 tax), with one-off Planned Transactions on the due dates the owner gave. A year's tax is split by
 Net Amount rather than the sheet's Est. Tax, so the lines add up to what was paid (FY2026 estimate 90,418.75, paid
 82,434.30). Rules: "Contract invoices" in `statement-import.md`.
+
+2026-11-27: **Net-only Salary** (owner). The Salary FT is the net, as a split bill is the cost after friends repay:
+one Salary FT per payslip or invoice matched to the gross line (+) and the GST and tax lines (-) on Delta Insights,
+so Actual Amount = Amount = net. The 11 GST Payment, 2 Income Tax, 3 Income Tax withheld and 3 Employer super FTs were
+deleted (their matches moved to the Salary FTs, or removed for super). Reasoning: the owner reports on money that is
+theirs to spend; gross, GST and tax stay on the clearing account lines, which now carry a Bank Category ("Gross income",
+"GST", "Income tax", "Employer super") so reports can total them. Lost: Tax category totals among FTs. The ATO payments
+stay Transfers into the account, so its balance is still what is owed (35,325.00). A quarter's GST rounding goes to the
+Salary FT of its last month. **Estimated tax**: Jun to Sep 2026 are net of the sheet's Est. Tax; when the FY2027
+assessment arrives the four lines and those Salary FTs are corrected (owner chose this over a separate adjustment FT).
+**Owed payments** become Transfers: new column **Transfer To** on Planned and Recurring Transaction, and the flow
+creates Type Transfer when it is set (an Expense would count the tax twice); the two owed Planned Transactions have
+Transfer To Delta Insights and no Category. **Super**: locked until preservation age, so nothing inside the fund is an
+FT: the payslip's employer super line and the AustralianSuper fees, insurance, contributions tax, tax benefits and
+returns are Ignored (closes pending item 11); a voluntary contribution is an Expense FT, Category Investment (owner),
+with its fund line Ignored. The Salary series became the Nov net pay, -12,557.33.
 
 2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
 the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or

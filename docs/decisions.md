@@ -15,7 +15,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too; 14 to 19 Aug on 2026-11-23). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
-| 11 | AustralianSuper fees, insurance, contributions tax and returns | Owner to decide | Imported as lines (2026-11-27) and left Unmatched: Finance Transactions per line, Bank Rules, or Status Ignored. Paxus contributions wait for their payslips |
+| 11 | AustralianSuper fees, insurance, contributions tax and returns | Owner to decide | Imported as lines (2026-11-27) and left Unmatched: Finance Transactions per line, Bank Rules, or Status Ignored. Paxus contributions are Transfers from the Paxus account (2026-11-28) |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -76,6 +76,16 @@ the payslip line, PAYG tax and employer super get their own FTs, and the bank sa
 **Transfers** from the employer account. This matches the Planned Transaction "Salary", already gross. Option shown and
 not taken: keep super and payslips as files only (no bank line behind super). Rules: "AustralianSuper and payslips"
 in `statement-import.md`.
+
+2026-11-28: **Paxus pay advices Nov 2023 to Sep 2024** (owner asked to import "the payslips from Brisbane City Council";
+the issuer is Paxus, the client Brisbane City Council). Bank Account "Paxus" (Employer), 40 weekly statements, treated
+like the Delta Insights payslips. Paxus paid super monthly, so one contribution covers 2 to 5 pay advices: a Transfer
+Counterpart is one line, so a per-advice "Superannuation paid" line could not pair. Chosen: a monthly
+`Paxus_Super_<yyyy-mm>` statement with one line that pairs 1:1 with the contribution, as the contract invoices'
+`DeltaInsights_ATO_<date>` statements pair the ATO payments; the account balance is then the super not yet paid. The
+per-advice super is the month-to-date increase (exact) rather than the printed, rounded amount, so the months add up.
+Net pay has no bank line (bank history starts 2026) and stays Unmatched. Rules: "Paxus pay advices" in
+`statement-import.md`.
 
 2026-11-27: **Contract invoices Sep 2024 to Sep 2026** (owner) from the Fiscal Planner "Salary" sheet, rows 2 to 24 and
 27 to 30, treated like payslips: income at the invoice total incl GST, GST and income tax as Expenses. The owner wanted the

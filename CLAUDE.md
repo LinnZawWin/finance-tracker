@@ -108,7 +108,7 @@ Unmanaged solution `lzw_FinanceTracker` ("Finance Tracker", publisher prefix `lz
 | Planned Transaction (OOTB Appointment, renamed) | `appointment` |
 | Recurring Transaction (OOTB Recurring Appointment, renamed) | `recurringappointmentmaster` |
 
-Plus `account.lzw_isbank` and the Account view "Banks". Global choice `lzw_sharetype`:
+Plus `account.lzw_isbank` and the Account view "Banks". Employer accounts (clearing accounts for payslips): Delta Insights, Paxus. Global choice `lzw_sharetype`:
 Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 Finance Transaction **Source**: Keep (859130000), Manual, Import, Recurring (859130003).
 Finance Transaction **Type**: Expense (859130000), Income, Transfer (859130002).
@@ -143,7 +143,7 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
-| `super_lines.py <out> <csv> ...`, `payslip_lines.py <out> <pdf> ...` | AustralianSuper CSV exports and payslip PDFs into a lines folder for `statement_import.py` (no writes; see "AustralianSuper and payslips" in `docs/statement-import.md`) |
+| `super_lines.py <out> <csv> ...`, `payslip_lines.py <out> <pdf> ...` | AustralianSuper CSV exports and payslip PDFs (Delta Insights `DeltaInsights_<yyyy-mm>.pdf`, Paxus `Paxus_<payment date>.pdf` plus its monthly `Paxus_Super_<yyyy-mm>` statements) into a lines folder for `statement_import.py` (no writes to Dataverse; see "AustralianSuper and payslips" and "Paxus pay advices" in `docs/statement-import.md`) |
 | `contract_lines.py <out> <csv> <payments json>`, `contract_link.py <payments json> [--apply]` | Contract invoices from the Fiscal Planner "Salary" sheet into Delta Insights statements, then their Salary, GST and Income Tax FTs, transfer pairs and Planned Transactions for what is owed (see "Contract invoices" in `docs/statement-import.md`; link holds the lock, dry run by default) |
 | `payslip_link.py [--apply]` | Link imported payslips: Salary (gross), Income Tax withheld and Employer super FTs, and the transfer pairs net pay <-> bank salary line and super paid <-> super contribution; holds the lock (dry run by default) |
 | `create_transactions.py <notes file> [--apply] [--verbose]` | Create Finance Transactions from a notes file in the fixed format ("Notes file" in `docs/entering-notes.md`): looks up accounts, projects and categories, skips duplicates, sets the order times; writes nothing while any row has a problem (dry run by default) |

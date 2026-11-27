@@ -31,7 +31,8 @@ Matching bank lines to Finance Transactions, cash lines, split bills, refunds an
 5. For **Wise**, match on Original Amount in the original currency, not AUD.
    **Payslips and super**: run `payslip_link.py --apply` after importing payslips (before `reconcile.py`). The bank
    salary line of a payslip is a Transfer from the employer account, not a match to the Salary FT (see "AustralianSuper
-   and payslips" in `statement-import.md`). AustralianSuper lines other than employer contributions stay Unmatched for now.
+   and payslips" in `statement-import.md`). Paxus pays super monthly: its `Paxus_Super_<yyyy-mm>` line is the Transfer
+   Counterpart of the contribution ("Paxus pay advices"). AustralianSuper lines other than employer contributions stay Unmatched for now.
 6. After writing matches, run `python scripts/recalc.py` to recalculate the rollup columns, then update Bank Statement Line Status and Finance Transaction Reconciliation Status.
 7. Then suggest a Payee for every linked Finance Transaction that has none (see "Payee" under Categories).
 

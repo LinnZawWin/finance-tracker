@@ -588,7 +588,9 @@ Owner's request, to use less of the plan allowance:
   screenshots go through the same compare and placeholder path as mid-cycle exports instead of hand-written rows.
   Used for the Kogan app screenshot (no export exists between statements).
 - The Drive connector shows `canEdit` and `canMoveItemWithinDrive` false on every file the owner uploads (also the ones
-  already in Processed); only items it created itself (the Mid-cycle folder) are true. No move was attempted, so the files stay in the
+  already in Processed); only items it created itself (the Mid-cycle folder) are true. A move tried on 2026-11-27 failed for
+  all five files: "The request's OAuth scopes do not allow moving this file." The allow rules in `.claude/settings.json` only
+  skip the prompt; they cannot widen the connector's access. Earlier moves were done by a session with other access, so the files stay in the
   inbox and the owner moves and renames them.
 - The 23 Nov AMEX "DIRECT DEBIT RECEIVED" +1,000 and the 24 Nov Flex "PAYMENT TO AMERICAN EXPRESS" -1,000 were paired as a
   transfer by hand: `reconcile.py` did not pair them (another -1,000 Flex line the same day, W Support). Same for a 0.01

@@ -9,6 +9,7 @@ Each statement is compared with the lines already in Dataverse (statement_compar
 a newer Wise export creates only the shortfall. A statement is matched by name and Bank Account.
 A statement whose kind is "Screenshot" (lines typed from the app, written by hand into _statements.json)
 gets Source Type and line Source Screenshot; mark it interim so the PDF statement replaces it.
+AustralianSuper (super_lines.py) and payslips (payslip_lines.py) write their own _statements.json entries.
 Wise: every "Wise*.json" in the folder goes to the Bank Statement "Wise <year>" (1 Jan to 31 Dec).
 Mid-cycle exports (statement_parse.py marks them interim) create a placeholder Bank Statement whose Notes start
 with "Interim". The next export or the final statement whose period overlaps it updates that same record:
@@ -23,7 +24,7 @@ import statement_compare as sc
 LINES, APPLY, POSSIBLE = sys.argv[1], "--apply" in sys.argv, "--include-possible" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
-            "NZGo": "ANZ NZ Go"}
+            "NZGo": "ANZ NZ Go", "Super": "AustralianSuper", "DeltaInsights": "Delta Insights"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
 SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0}
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
@@ -78,6 +79,12 @@ for s in stmts:
     if s["opening"] is not None:
         body["lzw_openingbalance"], body["lzw_closingbalance"] = s["opening"], s["closing"]
     body["lzw_notes"] = INTERIM.format(file=s["file"], start=s["start"], end=s["end"]) if s.get("interim") else None
+    if s["account"] == "Super" and not s.get("interim"):
+        body["lzw_notes"] = ("AustralianSuper transaction export (CSV) for the financial year. The CSV has no balances: "
+                             "opening = the previous closing, closing = opening + the lines (super_lines.py).")
+    if s["account"] == "DeltaInsights":
+        body["lzw_notes"] = ("Payslip (payslip_lines.py). The employer account is a clearing account: earnings and "
+                             "employer super in, tax, super paid and net pay out, so every payslip nets to 0.")
     if s["account"] == "Wise":
         body["lzw_notes"] = ("Wise transaction export (CSV). Refunded rows and conversions between balances are "
                              "not imported. Amounts are AUD; lines paid from a foreign balance have an estimated AUD "

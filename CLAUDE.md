@@ -15,7 +15,7 @@ This file holds only the rules every session needs. Before a task, read its topi
 | Task | Read |
 |---|---|
 | Entering notes as Finance Transactions (categories, payees, foreign cash, assets, trips, gift cards) | [docs/entering-notes.md](docs/entering-notes.md) |
-| Importing statements from the Drive inbox (ANZ, AMEX, Kogan, ANZ NZ Go, Wise) | [docs/statement-import.md](docs/statement-import.md) |
+| Importing statements from the Drive inbox (ANZ, AMEX, Kogan, ANZ NZ Go, Wise, AustralianSuper, payslips) | [docs/statement-import.md](docs/statement-import.md) |
 | Reconciling, cash lines, split bills, refunds, work claims | [docs/reconciliation.md](docs/reconciliation.md) |
 | Planned / Recurring Transactions and the scheduled flow | [docs/planned-transactions.md](docs/planned-transactions.md) |
 | The web page, the retired Keep sheet | [docs/web-page.md](docs/web-page.md) |
@@ -124,7 +124,7 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 ## Sign convention
 
 - Bank Statement Line **Amount** and Reconciliation Match **Allocated Amount** are signed like the bank:
-  negative = money out. They are AUD except on "ANZ NZ Go", which is NZD (row currency NZD).
+  negative = money out (also on AustralianSuper and the employer clearing account Delta Insights). They are AUD except on "ANZ NZ Go", which is NZD (row currency NZD).
 - Finance Transaction **Estimated Amount** is positive.
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
@@ -143,6 +143,8 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
+| `super_lines.py <out> <csv> ...`, `payslip_lines.py <out> <pdf> ...` | AustralianSuper CSV exports and payslip PDFs into a lines folder for `statement_import.py` (no writes; see "AustralianSuper and payslips" in `docs/statement-import.md`) |
+| `payslip_link.py [--apply]` | Link imported payslips: Salary (gross), Income Tax withheld and Employer super FTs, and the transfer pairs net pay <-> bank salary line and super paid <-> super contribution; holds the lock (dry run by default) |
 | `create_transactions.py <notes file> [--apply] [--verbose]` | Create Finance Transactions from a notes file in the fixed format ("Notes file" in `docs/entering-notes.md`): looks up accounts, projects and categories, skips duplicates, sets the order times; writes nothing while any row has a problem (dry run by default) |
 | `statement_import.py <out> [--apply] [--include-possible] [--reconcile]` | Create the Bank Statements and only the missing lines (dry run by default); a hand-typed screenshot statement (kind "Screenshot", see `docs/statement-import.md`) too. `--reconcile` also runs `reconcile.py --apply` afterwards; normally reconcile once at the end of the session instead |
 | `report.py` | Short output for `reconcile.py` and `cash_lines.py`: counts and the pairs for the owner on screen, every detail in a file outside the repo whose path is printed (`--verbose` prints it all). Read that file only when a detail is needed |

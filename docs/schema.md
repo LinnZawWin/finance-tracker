@@ -21,7 +21,7 @@ Entity set: `lzw_bankaccounts`. Primary column: `lzw_name` (Name, text 200).
 |---|---|---|---|
 | Short Name | `lzw_shortname` | Text (100) |  |
 | Bank | `lzw_bankid` | Lookup to account, Restrict delete (relationship `lzw_bankaccount_BankId`, navigation property `lzw_BankId`) |  |
-| Account Type | `lzw_accounttype` | Choice: Everyday (859130000), Savings (859130001), Credit Card (859130002), Wise (859130003), Other (859130004) |  |
+| Account Type | `lzw_accounttype` | Choice: Everyday (859130000), Savings (859130001), Credit Card (859130002), Wise (859130003), Other (859130004), Super (859130005), Employer (859130006) |  |
 | Account Currency | `lzw_accountcurrency` | Lookup to transactioncurrency, Restrict delete (relationship `lzw_bankaccount_AccountCurrency`, navigation property `lzw_AccountCurrency`) |  |
 | Account Number | `lzw_accountnumber` | Text (50) |  |
 | Statements Imported | `lzw_statementsimported` | Yes/No (default Yes) |  |
@@ -232,7 +232,7 @@ Each table's default "Active ..." view was given useful columns and is used by t
 
 ## Other solution components
 
-- Model-driven app `lzw_FinanceTracker` (Finance Tracker) with site map groups Capture, Reconcile, Statements, Assets and Setup. Setup > Banks is the Account table (titled Banks); the app holds only the Banks view.
+- Model-driven app `lzw_FinanceTracker` (Finance Tracker) with site map groups Capture, Reconcile, Statements, Assets and Setup. Setup > Banks opens Account with the Banks view.
 - Power Apps grid control with editing enabled as the default grid for `lzw_reconciliationmatch` (applies to all of its views, so Match Status can be changed inline in Proposed Matches).
 - Cloud flow "Scheduled: Create Finance Transactions from Planned Transactions" (on). The Keep flow "Finance Tracker - Import Keep Rows" was deleted on 2026-11-20.
 - Environment variable `lzw_KeepInboxSheetId` (text, no value).

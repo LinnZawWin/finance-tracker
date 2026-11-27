@@ -113,3 +113,43 @@ Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a tran
   `TRANSFER-<transaction number>` (or the ID the CSV would give), so the next export finds it and does not
   create it again. 28 Oct 2026 "Money added" +100 (TRANSFER-2457903123) was entered this way; check it
   matches when the next export arrives.
+
+## AustralianSuper and payslips (2026-11-27)
+
+Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (options added 2026-11-27):
+
+- **AustralianSuper** (short name `Super;AustralianSuper`, account key `Super`). Source: the portal's
+  "MemberTransactions" CSV, one per financial year (`AustralianSuper.MemberTransactions.<start>__<end>.<member>.csv`)
+  and one for the year so far (`...Current-statement.<member>.csv`). `scripts/super_lines.py <out> <csv> ...`
+  writes the lines and `_statements.json`; then `statement_import.py` as for a bank.
+  - One Bank Statement per financial year, "AustralianSuper <period end>"; the current year is an Interim placeholder
+    "AustralianSuper <1 Jul> to <last date>", updated by the next Current-statement export and finalised by the year's CSV.
+  - The CSV has no balances: opening = the previous closing (first statement 0, the account opened 7 Nov 2023),
+    closing = opening + the lines. Check every closing against the annual statement (FY24 10,552.34, FY25 19,665.06,
+    FY26 21,686.63, all exact) and the current one against the app: the app's estimated balance also counts
+    **estimated returns**, which are not a transaction until they are credited (at 30 June or a switch), so
+    app estimate = closing + estimated returns (28 Nov 2026: 23,160.78 - 243.95 = 22,916.83).
+  - Line: Description "<Title> - <Description>" (for example "Insurance - Premium - Death",
+    "Contribution - Employer - Delta Insights Pty Ltd"), Bank Category = the CSV Category (CONTRIBUTIONS, FEES,
+    INSURANCE, GOVERNMENT_TAXES, INVESTMENTS), Notes = a contribution's payment period, Line Number = the order in the file.
+  - An employer contribution is a transfer from the employer account: Transfer Counterpart = the payslip's
+    "Superannuation paid" line (set by hand, the dates are days apart). Fees, insurance, taxes and returns have no
+    Finance Transactions yet (owner to decide); they stay Unmatched. Paxus contributions (Dec 2023 to Oct 2024) wait for
+    their payslips.
+- **Delta Insights** (`DeltaInsights`), a clearing account: one Bank Statement per payslip, named after the file
+  (`DeltaInsights_<yyyy-mm>`), opening and closing 0, every line dated the Payment Date.
+  `scripts/payslip_lines.py <out> <pdf> ...` reads the payslip and checks its totals. Lines and their links:
+
+  | Line | Sign | Linked to |
+  |---|---|---|
+  | `Salary & Wages - <item> <hours> x <rate>` (one per earnings item) | + | FT "Salary" (Income, **gross**, Salary and Contract Income, Paid From Delta Insights) |
+  | `Tax - PAYG` | - | FT "Income Tax withheld" (Expense, Tax, Paid From Delta Insights) |
+  | `Superannuation - SGC - AustralianSuper ...` | + | FT "Employer super" (Income, Salary and Contract Income, Paid From Delta Insights) |
+  | `Superannuation paid - SGC - AustralianSuper ...` | - | Transfer Counterpart: the AustralianSuper "Contribution - Employer" line |
+  | `Net pay - <bank account> Salary` | - | Transfer Counterpart: the Everyday "ANZ INTERNET BANKING TRANSFER SALARY DELTA INSIGHTS P" line |
+
+  So the Everyday salary line is a **Transfer**, not matched to a Finance Transaction (linking the Salary FT to both the
+  payslip and the bank line would count it twice in Actual Amount). The payslip date and the bank date are the same day.
+  Payslips processed: Sep and Oct 2026. The Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" lines
+  (8 Apr to 7 Oct 2026) and the 25 Nov salary keep their Salary FTs matched to the bank line until their payslips arrive.
+  In Processed the files keep their names (`DeltaInsights_<yyyy-mm>.pdf`; super CSVs as downloaded).

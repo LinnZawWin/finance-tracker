@@ -15,6 +15,7 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too; 14 to 19 Aug on 2026-11-23). Fuel 85.73 (22 Nov) waits for its bank line |
 | 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
 | 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
+| 11 | AustralianSuper fees, insurance, contributions tax and returns | Owner to decide | Imported as lines (2026-11-27) and left Unmatched: Finance Transactions per line, Bank Rules, or Status Ignored. Paxus contributions wait for their payslips |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -63,6 +64,18 @@ owner's request the flow "Finance Tracker - Import Keep Rows" (off, never run) w
 repo and deleted, so turning it on is no longer pending. `build_flow.py` stays for the helpers that
 `build_recurring_flow.py` imports, but its `main()` only runs with `--recreate`. `verify.py` now checks that
 the Keep flow is gone and that the Planned Transactions flow is on. GitHub Pages was confirmed on.
+
+2026-11-27: **AustralianSuper and payslips imported as statements** (owner). Account Type options Super and Employer
+added. Bank Accounts "AustralianSuper" (Super) and "Delta Insights" (Employer). The super CSV exports (FY24 to FY26 and
+the current year) are 313 lines in four statements; every closing balance matches the annual statement, and the current
+one (23,160.78 at 27 Nov) matches the app's estimate 22,916.83 once its estimated returns (-243.95, not yet credited) are
+counted. Payslips (Sep and Oct 2026; the owner mentioned three, the inbox had two) are statements on the employer
+account, which works as a clearing account (nets to 0 per payslip). Reasoning: the Salary FT cannot be matched to both
+the payslip and the bank line, because Actual Amount sums every confirmed match; so income is recorded at **gross** on
+the payslip line, PAYG tax and employer super get their own FTs, and the bank salary line and the super contribution are
+**Transfers** from the employer account. This matches the Planned Transaction "Salary", already gross. Option shown and
+not taken: keep super and payslips as files only (no bank line behind super). Rules: "AustralianSuper and payslips"
+in `statement-import.md`.
 
 ## Decisions and reasoning
 

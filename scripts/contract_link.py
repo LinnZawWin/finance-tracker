@@ -154,7 +154,7 @@ def plan(ctx, pay):
         if not targets and not open_(paid):
             continue
         date, amt = paid["lzw_transactiondate"][:10], paid["lzw_amount"]
-        body = {"lzw_name": f"GST Payment (for {a} to {b} income)", "lzw_type": EXPENSE, "lzw_amount": amt,
+        body = {"lzw_name": f"GST Payment (for {a if a == b else f'{a} to {b}'} income)", "lzw_type": EXPENSE, "lzw_amount": amt,
                 "lzw_payee": "ATO", "lzw_transactiondate": f"{date}T02:00:00Z", "lzw_source": IMPORT,
                 "category": ctx.c_tax, "paidfrom": ctx.flex,
                 "lzw_notes": f"GST for {a} to {b} (Fiscal Planner sheet). No bank line (before the bank history); "

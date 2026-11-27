@@ -694,3 +694,18 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - Left for the owner: the other Flex to ANZ Access Advantage lines (5,000, 3,000, 5,000) and the AMEX direct debit
   1,462.81 (23 Mar); the AMEX charges paid back by PayID (Megatix, Ardent Leisure, Singapore Air, GloBird 280.16), not
   paired yet at the owner's request; the PayID 602.42 (27 Mar) left alone.
+
+## 2026-11-27: open AMEX, Everyday and Flex lines from the owner's sheet (Apr to Jun 2026)
+
+- 30 transactions from the owner's sheet (`create_transactions.py`): DiDi taxis, groceries, drinks, parking, Opal fare
+  (Sydney Microsoft AI Tour 2026 Trip), motel while finding a house (Moving and Relocation), DoorDash order (AA, Gifts),
+  Gold Coast BBQ hotel, two vapes (one USD 25.12, MVP Summit 2026 Trip, Gifts, A as in the sheet), BCC parking,
+  W Support 5,000 / 3,000 / 5,000 (Flex to ANZ Access Advantage, Joint Main, linked with `split_match.py`). All
+  reconciled by `reconcile.py` except W Support (payee differs) and the Ultra Beach hotel. The Hotel for Ultra Beach Gold Coast
+  (16 Dec 2025, AMEX, 121.50 less a friend's 40.50 = 81.00, A) waits for its AMEX statement; the 13 Apr repayment is linked.
+- Chinese dinner (24 May, Happy Boy): three repayments of 28.75 linked, Amount 115.58 to 29.33.
+- Drying hanger with clips x2 (5 May): Paid From Cash to Everyday, linked to the 4 May payment to a person (-5.00).
+- Paired by hand (Status Transfer, each other's counterpart), no transaction: Singapore Air -914.68 / PayID +914.68 and
+  GloBird -280.16 / PayID +280.16 (AMEX, Partner paid back); Flex -326.87 to Wise and its return +326.87 (13 May).
+- Left open: Uber 35.58 (2 Apr, AMEX, no receipt found in email); PAYMENT FROM a friend 17.00 (31 May, "Thai Food bill
+  split": no Thai bill around that date has a share of 17).

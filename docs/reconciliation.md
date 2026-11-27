@@ -78,6 +78,8 @@ by hand, +24.40 on the bill and -20.88 on the badminton (`split_match.py` cannot
 **A charge on my card spent by Partner and paid back in full** (PayID credit on AMEX): no Finance Transaction.
 The charge and the credit are paired like a transfer (both Status Transfer, each other's Transfer Counterpart,
 set by hand: same account, so `reconcile.py` does not pair them). 9 and 11 Jul 2026, owner's choice 2026-11-24.
+A transfer to Wise that bounced back ("PAYMENT RETURN FROM <own name> WISE" on Flex) is paired the same way with the
+original "PAYMENT TO <own name>" line (29 Apr / 13 May 2026), no Finance Transaction.
 An AMEX Travel Credit is a refund of the booking it paid for (12 Aug Finnair flight: +450 linked, Amount 1,608.60 - 450).
 A refund on another account than the charge is linked too (7 Oct ALDI container refund on Everyday against a
 1 Sep grocery paid with Supermarket Slayer card 7850). Paid back in cash: no bank line, so use the Foreign cash rule (Transfer to the cash

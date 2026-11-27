@@ -607,6 +607,8 @@ Owner's request, to use less of the plan allowance:
   (`update_file` with `parentId` = the Processed folder) and it worked, so the connector's Google access has since narrowed
   (most likely a reconnect). Until the owner reconnects Google Drive with full access, the files stay in the inbox and the
   owner moves them; checked again 2026-11-28 (AustralianSuper CSVs and payslips: `canEdit` and `canMoveItemWithinDrive` false).
+  Decision (owner, 2026-11-27): statement imports run from the Windows desktop session, which renames and moves the
+  files on the mounted `G:\My Drive\Statements` with PowerShell; cloud sessions only report the names.
 - The 23 Nov AMEX "DIRECT DEBIT RECEIVED" +1,000 and the 24 Nov Flex "PAYMENT TO AMERICAN EXPRESS" -1,000 were paired as a
   transfer by hand: `reconcile.py` did not pair them (another -1,000 Flex line the same day, W Support). Same for a 0.01
   test transfer between Everyday and Growth Saver on 25 Nov.

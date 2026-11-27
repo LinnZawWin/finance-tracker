@@ -15,7 +15,7 @@ This file holds only the rules every session needs. Before a task, read its topi
 | Task | Read |
 |---|---|
 | Entering notes as Finance Transactions (categories, payees, foreign cash, assets, trips, gift cards) | [docs/entering-notes.md](docs/entering-notes.md) |
-| Importing statements from the Drive inbox (ANZ, AMEX, Kogan, ANZ NZ Go, Wise, AustralianSuper, payslips) | [docs/statement-import.md](docs/statement-import.md) |
+| Importing statements from the Drive inbox (ANZ, AMEX, Kogan, ANZ NZ Go, Wise, AustralianSuper, payslips); run from the Windows desktop session, which renames and moves the files on `G:` | [docs/statement-import.md](docs/statement-import.md) |
 | Reconciling, cash lines, split bills, refunds, work claims | [docs/reconciliation.md](docs/reconciliation.md) |
 | Planned / Recurring Transactions and the scheduled flow | [docs/planned-transactions.md](docs/planned-transactions.md) |
 | The web page, the retired Keep sheet | [docs/web-page.md](docs/web-page.md) |

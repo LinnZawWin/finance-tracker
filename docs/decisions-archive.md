@@ -679,3 +679,21 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   2026) had no note: one "Public Transport" transaction each (Source Import, Source Row ID `BL-<line id>`, dated as the
   line), linked with `split_match.py --batch`. All 83 "Commute" rows renamed "Public Transport". No open Translink line
   is left; the 26 Nov fare waits for its line (still pending at the bank, not in the interim statement).
+<<<<<<< HEAD
+=======
+
+## 2026-11-26: recurring payments review (March to June lines)
+
+- Open lines that are recurring payments got a transaction each (`create_transactions.py`, then one `split_match.py --batch`,
+  all Reconciled): Rent 560 x5 (4 to 31 May, Everyday, Madison Heights), Broadband 70.95 (20 May, Rush), Prime Video Ad
+  Free 2.99 x3 (15 Mar, Apr, Jun, Amazon), Utility Bill 37.58 and 114.98 (Altogether) and 34.43 (21 Apr, GloBird Energy),
+  YouTube Premium 8.00 (25 Apr) and 6.60 (25 May), Salary x3 (8 Apr, 14 May, 8 Jun, Delta Insights), Toll Road Top-up
+  20.07 x5 (Linkt; two identical rows on 8 May), GST Activity statement 004 6,750 (28 Apr, ATO; the owner named it 004
+  like the Aug one), W Support 1,000 x2 (26 May, 6 Jun, Flex to ANZ Access Advantage, Joint Main).
+- Paired as transfers by hand: Flex to ANZ Access Advantage -7,112.41 (25 May) with the AMEX direct debit +7,112.41
+  (23 May); ANZ NZ Go insurance +2,076.34 / -2,076.34 (27 May).
+- Payees fixed on the six flow-created rows of 20 to 25 Nov; three Utilities rows that were A set to Mine.
+- Left for the owner: the other Flex to ANZ Access Advantage lines (5,000, 3,000, 5,000) and the AMEX direct debit
+  1,462.81 (23 Mar); the AMEX charges paid back by PayID (Megatix, Ardent Leisure, Singapore Air, GloBird 280.16), not
+  paired yet at the owner's request; the PayID 602.42 (27 Mar) left alone.
+>>>>>>> origin/main

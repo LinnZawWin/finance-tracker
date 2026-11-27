@@ -117,7 +117,8 @@ Finance Transaction **Claim Type**: Employer (859130000), Income Tax; **Claim St
 
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
-Estimated), Paid From `lzw_paidfrom` (Bank Account), Finance Category `lzw_financecategory`. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
+Estimated), Paid From `lzw_paidfrom` (Bank Account), Transfer To `lzw_transferto` (Bank Account; set = the flow creates
+a Transfer), Finance Category `lzw_financecategory`. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
 "Planned Transactions" / "Recurring Transactions". Both tables are under Capture in the app. The old lookups
 Financial Account and Transaction Category (to the old MoneyManagement tables) were deleted.
 
@@ -129,8 +130,12 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
 - Finance Transaction Original Amount is positive, like Amount. Transfer: money out of Paid From.
+- **Salary is net** (owner, 2026-11-27): one Salary FT per payslip or invoice, matched to the gross line (+) and the
+  GST and tax lines (-) on the Delta Insights clearing account, like a split bill. No FTs for GST, income tax or
+  employer super; their totals come from the Delta Insights lines by Bank Category ("Gross income", "GST",
+  "Income tax", "Employer super"). Nothing inside the super fund is an FT.
 - Planned and Recurring Transaction **Amount** is the opposite of the bank: positive = expense, negative =
-  income. The open series were converted to this on 2026-11-19.
+  income (with Transfer To set: positive = money out of Paid From). The open series were converted to this on 2026-11-19.
 
 ## Scripts (`scripts/`)
 
@@ -144,8 +149,8 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `statement_parse.py <inbox> <out>` | Parse and check ANZ, ANZ New Zealand, Kogan and AMEX files into lines files (no writes) |
 | `wise_lines.py <csv> <out json>` | Convert the Wise export into AUD lines by the Wise rules below |
 | `super_lines.py <out> <csv> ...`, `payslip_lines.py <out> <pdf> ...` | AustralianSuper CSV exports and payslip PDFs (Delta Insights `DeltaInsights_<yyyy-mm>.pdf`, Paxus `Paxus_<payment date>.pdf` plus its monthly `Paxus_Super_<yyyy-mm>` statements) into a lines folder for `statement_import.py` (no writes to Dataverse; see "AustralianSuper and payslips" and "Paxus pay advices" in `docs/statement-import.md`) |
-| `contract_lines.py <out> <csv> <payments json>`, `contract_link.py <payments json> [--apply]` | Contract invoices from the Fiscal Planner "Salary" sheet into Delta Insights statements, then their Salary, GST and Income Tax FTs, transfer pairs and Planned Transactions for what is owed (see "Contract invoices" in `docs/statement-import.md`; link holds the lock, dry run by default) |
-| `payslip_link.py [--apply]` | Link imported payslips: Salary (gross), Income Tax withheld and Employer super FTs, and the transfer pairs net pay <-> bank salary line and super paid <-> super contribution; holds the lock (dry run by default) |
+| `contract_lines.py <out> <csv> <payments json>`, `contract_link.py <payments json> [--apply]` | Contract invoices from the Fiscal Planner "Salary" sheet into Delta Insights statements, then their net Salary FTs (no GST or tax FTs), the ATO payment transfer pairs and Transfer Planned Transactions for what is owed (see "Contract invoices" in `docs/statement-import.md`; link holds the lock, dry run by default) |
+| `payslip_link.py [--apply]` | Link imported payslips: the net Salary FT (earnings and tax lines; no tax or super FTs, the super line Ignored), and the transfer pairs net pay <-> bank salary line and super paid <-> super contribution; holds the lock (dry run by default) |
 | `create_transactions.py <notes file> [--apply] [--verbose]` | Create Finance Transactions from a notes file in the fixed format ("Notes file" in `docs/entering-notes.md`): looks up accounts, projects and categories, skips duplicates, sets the order times; writes nothing while any row has a problem (dry run by default) |
 | `statement_import.py <out> [--apply] [--include-possible] [--reconcile]` | Create the Bank Statements and only the missing lines (dry run by default); a hand-typed screenshot statement (kind "Screenshot", see `docs/statement-import.md`) too. `--reconcile` also runs `reconcile.py --apply` afterwards; normally reconcile once at the end of the session instead |
 | `report.py` | Short output for `reconcile.py` and `cash_lines.py`: counts and the pairs for the owner on screen, every detail in a file outside the repo whose path is printed (`--verbose` prints it all). Read that file only when a detail is needed |

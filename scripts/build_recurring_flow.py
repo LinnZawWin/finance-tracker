@@ -2,7 +2,8 @@
 
 Created OFF, like the Keep flow. Reuses the lzw_FinanceTrackerDataverse connection reference.
 Appointment Amount convention (after the sign flip of the series): positive = expense, negative = income.
-Finance Transaction gets Amount = abs(Amount) and Type from the sign.
+Finance Transaction gets Amount = abs(Amount) and Type from the sign, or Transfer (with Transfer To) when the
+appointment or its series has Transfer To (2026-11-27).
 A transaction is created once per appointment (Source = Recurring, Source Row ID = appointment ID), so a
 series edit cannot create duplicates. A processed appointment is set to Completed (status reason Completed).
 """
@@ -58,7 +59,8 @@ def definition(sets):
         "item/lzw_name": f"@{item('subject')}",
         "item/lzw_transactiondate": f"@formatDateTime(convertFromUtc({item('scheduledstart')}, '{TZ}'), 'yyyy-MM-dd')",
         "item/lzw_payee": f"@{item('subject')}",
-        "item/lzw_type": f"@if(less({amount}, 0), {O + 1}, {O})",  # Income when negative, else Expense
+        # Transfer when Transfer To is set, else Income when negative, else Expense
+        "item/lzw_type": f"@if(not(empty({lookup('_lzw_transferto_value')})), {O + 2}, if(less({amount}, 0), {O + 1}, {O}))",
         "item/lzw_amount": f"@if(less({amount}, 0), mul({amount}, -1), {amount})",
         "item/lzw_sharetype": O,  # Mine
         "item/lzw_source": RECURRING,
@@ -72,6 +74,7 @@ def definition(sets):
                           f"if(empty({item('description')}), '', concat(decodeUriComponent('%0A'), {item('description')})))",
         "item/lzw_PaidFrom@odata.bind": bind("_lzw_paidfrom_value", sets["lzw_bankaccount"]),
         "item/lzw_Category@odata.bind": bind("_lzw_financecategory_value", sets["lzw_financecategory"]),
+        "item/lzw_TransferTo@odata.bind": bind("_lzw_transferto_value", sets["lzw_bankaccount"]),
         "item/transactioncurrencyid@odata.bind": currency,
     })
     try_scope = {
@@ -84,7 +87,7 @@ def definition(sets):
             # A single appointment has no series: the filter then matches nothing.
             T_SERIES: a("ListRecords", {
                 "entityName": "recurringappointmentmasters", "$top": 1,
-                "$select": "activityid,_lzw_paidfrom_value,_lzw_financecategory_value",
+                "$select": "activityid,_lzw_paidfrom_value,_lzw_financecategory_value,_lzw_transferto_value",
                 "$filter": f"@{{if(empty({item('seriesid')}), 'activityid eq null', "
                            f"concat('activityid eq ', {item('seriesid')}))}}",
             }),
@@ -136,7 +139,7 @@ def definition(sets):
             T_LIST: a("ListRecords", {
                 "entityName": "appointments", "$top": 5000, "$orderby": "scheduledstart asc",
                 "$select": "activityid,seriesid,subject,description,scheduledstart,lzw_amount,lzw_paymenttype,_lzw_paidfrom_value,"
-                           "_lzw_financecategory_value,_transactioncurrencyid_value",
+                           "_lzw_financecategory_value,_lzw_transferto_value,_transactioncurrencyid_value",
                 # Open (0) or Scheduled (3) only: completed (done) and cancelled appointments are read-only.
                 "$filter": f"lzw_amount ne null and (statecode eq 0 or statecode eq 3) "
                            f"and scheduledstart lt @{{outputs('{T_END}')}}",

@@ -5,9 +5,10 @@
 The employer is a Bank Account (Account Type Employer) that works as a clearing account: each payslip is one Bank
 Statement, opening and closing balance 0, named after the file (`<Employer>_<yyyy-mm>`, for example
 `DeltaInsights_2026-10`). Every line is dated the Payment Date. Lines, signed like a bank:
-- one line per earnings item with an amount (`Salary & Wages - Ordinary Hours 136.0000 x $104.1667`), +
-- `Tax - PAYG`, -
-- `Superannuation - <fund line>` + (the employer's contribution earned) and `Superannuation paid - <fund line>` -
+- one line per earnings item with an amount (`Salary & Wages - Ordinary Hours 136.0000 x $104.1667`), +,
+  Bank Category "Gross income"
+- `Tax - PAYG`, -, Bank Category "Income tax"
+- `Superannuation - <fund line>` + (the employer's contribution earned, Bank Category "Employer super") and `Superannuation paid - <fund line>` -
   (paid to the fund; its Transfer Counterpart is the contribution line on the super account)
 - `Net pay - <bank account> <reference>`, - (its Transfer Counterpart is the salary line on the bank account)
 Check: earnings - tax - net pay = 0, and each section total equals the sum of its items. A file that fails stops.
@@ -88,11 +89,11 @@ def parse(path):
         raise SystemExit(f"{path}: earnings {earn} or payments {pay} do not match {gross} / {net}")
     if round(gross - sum(a for _, a in tax) - net, 2) != 0:
         raise SystemExit(f"{path}: gross {gross} - tax {tax} != net {net}")
-    lines = [{"description": f"Salary & Wages - {d}", "amount": a} for d, a in earn]
-    lines += [{"description": f"Tax - {d}", "amount": -a} for d, a in tax if a]
+    lines = [{"description": f"Salary & Wages - {d}", "amount": a, "bank_category": "Gross income"} for d, a in earn]
+    lines += [{"description": f"Tax - {d}", "amount": -a, "bank_category": "Income tax"} for d, a in tax if a]
     for d, a in sup:
         if a:
-            lines += [{"description": f"Superannuation - {d}", "amount": a},
+            lines += [{"description": f"Superannuation - {d}", "amount": a, "bank_category": "Employer super"},
                       {"description": f"Superannuation paid - {d}", "amount": -a}]
     lines += [{"description": f"Net pay - {d}", "amount": -a} for d, a in pay if a]
     for n, l in enumerate(lines, 1):
@@ -129,9 +130,11 @@ def parse_paxus(path):
         raise SystemExit(f"{path}: totals do not add up (items {items}, current {cur.groups()})")
     end = max(i[1] for i in items)
     start = end - dt.timedelta(days=6)
-    lines = [{"description": f"Salary & Wages - {c} {q:.2f} x {r}", "amount": a} for c, _, q, r, a in items]
-    lines += [{"description": "Tax - PAYG", "amount": -tax}] if tax else []
-    lines += [{"description": f"Superannuation - {fund.group(1)}", "amount": sup}] if sup else []
+    lines = [{"description": f"Salary & Wages - {c} {q:.2f} x {r}", "amount": a, "bank_category": "Gross income"}
+             for c, _, q, r, a in items]
+    lines += [{"description": "Tax - PAYG", "amount": -tax, "bank_category": "Income tax"}] if tax else []
+    lines += [{"description": f"Superannuation - {fund.group(1)}", "amount": sup,
+               "bank_category": "Employer super"}] if sup else []
     lines.append({"description": "Net pay - bank", "amount": -net})
     for n, l in enumerate(lines, 1):
         l.update(date=paid.isoformat(), line_number=n, notes=f"Pay period {start} to {end}")

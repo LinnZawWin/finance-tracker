@@ -82,7 +82,7 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Taxi, DiDi, Uber (not Uber Eats) | Rideshare and Taxi (Transport) |
 | Train, metro, commute, Translink | Public Transport (Transport) |
 | Pokies, casino, betting (win or loss) | Gambling (Category Type Both) |
-| KiwiSaver or other retirement / investment contributions | Investment (added 2026-11-24) |
+| KiwiSaver or other retirement / investment contributions, a voluntary super contribution (its AustralianSuper line is Ignored, see "AustralianSuper and payslips" in `statement-import.md`) | Investment (added 2026-11-24) |
 | Attractions and paid activities: ski lift pass, ski gear hire or upgrade, theme park passes (Disney Premier Access), maze, gondola and luge, thermal park, glowworms, hot tubs; also sports tickets (rare, while travelling) | Activities and Attractions (under Entertainment) |
 | National park entry or park use fee | Parking (Transport) |
 | Club entry, cover charge, cat cafe entry, shisha bar, karaoke | Entertainment |

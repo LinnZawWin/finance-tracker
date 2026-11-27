@@ -5,11 +5,12 @@ docs/statement-import.md). Dry run by default; --apply writes, under the reconci
 
 For every payslip statement on an Employer account (lines from payslip_lines.py; not the contract statements
 `<Employer>_Invoice_*` and `<Employer>_ATO_*`, which contract_link.py links) that is not linked yet:
-1. The Salary FT: the existing Income "Salary" FT on the same day as the payment with the net amount (entered from the
-   bank line) is reused: its match to the bank line is deleted, Amount becomes the gross, Paid From the employer.
-   Without one, a new Salary FT is created.
-2. New FTs "Income Tax withheld" (Expense, Tax) and "Employer super" (Income), Paid From the employer, Source Import.
-3. Matches (Manual, Confirmed): earnings lines -> Salary, Tax -> Income Tax withheld, Superannuation -> Employer super.
+1. The Salary FT (net only, owner 2026-11-27): the existing Income "Salary" FT on the same day as the payment with the
+   net or gross amount (entered from the bank line) is reused: its match to the bank line is deleted, Amount becomes
+   the net (gross less tax), Paid From the employer. Without one, a new Salary FT is created.
+2. No FTs for the tax withheld or the employer super: the Tax lines are matched to the Salary FT, so its Actual Amount
+   is the net; the Superannuation line (the employer's contribution, locked in the fund) is set Ignored.
+3. Matches (Manual, Confirmed): earnings lines (+) and Tax lines (-) -> Salary.
 4. Transfer pairs: Net pay <-> the bank line with the opposite amount within 3 days that is not already a Transfer
    (the Everyday salary line; the same amount moved on to a saver the same day is a Transfer already),
    Superannuation paid <-> the super account's employer contribution with the opposite amount within 14 days.
@@ -28,7 +29,7 @@ APPLY = "--apply" in sys.argv
 O = spec.OPT
 INCOME, EXPENSE, IMPORT = O + 1, O, O + 2
 MANUAL, CONFIRMED = O + 3, O + 1
-L_MATCHED, L_TRANSFER, L_UNMATCHED = O + 2, O + 3, O
+L_MATCHED, L_TRANSFER, L_UNMATCHED, L_IGNORED = O + 2, O + 3, O, O + 4
 RECONCILED = O + 2
 EMPLOYER, SUPER = O + 6, O + 5
 
@@ -80,14 +81,18 @@ def link(emp, st, lines, supers, c_salary, c_tax):
     sup_paid = [l for l in lines if kind(l) == "Superannuation paid"]
     net = [l for l in lines if kind(l) == "Net pay"]
     day = lines[0]["lzw_transactiondate"][:10]
-    if all(l["lzw_status"] in (L_MATCHED, L_TRANSFER) for l in lines):
+    if all(l["lzw_status"] in (L_MATCHED, L_TRANSFER, L_IGNORED) for l in lines):
         print(f"{name}: already linked")
         return
     if not earn:  # a monthly super payment statement (Paxus_Super_<yyyy-mm>): only the transfer pair
         return link_pairs(name, eid, sup_paid, net, dt.date.fromisoformat(day), supers)
     gross = round(sum(l["lzw_amount"] for l in earn), 2)
     netamt = round(-sum(l["lzw_amount"] for l in net), 2)
-    print(f"{name}: paid {day}, gross {gross:.2f}, net {netamt:.2f}")
+    taxamt = round(-sum(l["lzw_amount"] for l in tax), 2)
+    if round(gross - taxamt, 2) != netamt:
+        print(f"    SKIPPED {name}: gross {gross:.2f} - tax {taxamt:.2f} != net pay {netamt:.2f}")
+        return
+    print(f"{name}: paid {day}, gross {gross:.2f}, tax {taxamt:.2f}, net {netamt:.2f}")
     # 1. Salary FT
     d0 = dt.date.fromisoformat(day)
     lo, hi = d0 - dt.timedelta(days=1), d0 + dt.timedelta(days=2)
@@ -104,10 +109,10 @@ def link(emp, st, lines, supers, c_salary, c_tax):
         old = dv.get_all("lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid,_lzw_bankstatementline_value,"
                          f"lzw_allocatedamount&$filter=_lzw_financetransaction_value eq {sal['lzw_financetransactionid']}")
         old = [m for m in old if m["_lzw_bankstatementline_value"] not in {l["lzw_bankstatementlineid"] for l in lines}]
-        print(f"    Salary FT {sal['lzw_financetransactionid']} {sal['lzw_amount']:.2f} -> {gross:.2f}, "
+        print(f"    Salary FT {sal['lzw_financetransactionid']} {sal['lzw_amount']:.2f} -> {netamt:.2f}, "
               f"remove {len(old)} match(es) to the bank line")
     else:
-        print(f"    new Salary FT {gross:.2f}")
+        print(f"    new Salary FT {netamt:.2f}")
     # 4. counterparts
     pairs = find_pairs(eid, sup_paid, net, d0, supers)
     if not APPLY:
@@ -120,19 +125,14 @@ def link(emp, st, lines, supers, c_salary, c_tax):
         dv.call("DELETE", f"lzw_reconciliationmatchs({m['lzw_reconciliationmatchid']})")
         lid = m["_lzw_bankstatementline_value"]
         dv.patch(f"lzw_bankstatementlines({lid})", {"lzw_status": L_UNMATCHED})
+    notes = (f"{note} Net pay: gross {gross:,.2f} less PAYG {taxamt:,.2f}, matched to the earnings and tax lines on "
+             f"the {payee} account; the net was paid to the bank (Transfer from the {payee} account).")
     if sal:
         sid = sal["lzw_financetransactionid"]
-        dv.patch(f"lzw_financetransactions({sid})", dict(base, lzw_amount=gross, lzw_notes=f"{note} Gross pay; net "
-                 f"{netamt:,.2f} was paid to the bank (Transfer from the {payee} account)."))
+        dv.patch(f"lzw_financetransactions({sid})", dict(base, lzw_amount=netamt, lzw_notes=notes))
     else:
-        sid = create(dict(base, lzw_name="Salary", lzw_type=INCOME, lzw_amount=gross, lzw_notes=f"{note} Gross pay."), c_salary)
-    fts = [(sid, earn)]
-    for ls, nm, typ, c in ((tax, "Income Tax withheld", EXPENSE, c_tax), (sup, "Employer super", INCOME, c_salary)):
-        amt = round(abs(sum(l["lzw_amount"] for l in ls)), 2)
-        if amt:
-            fid = existing_ft(nm, when, amt, eid) or create(dict(base, lzw_name=nm, lzw_type=typ, lzw_amount=amt,
-                                                                   lzw_notes=note), c)
-            fts.append((fid, ls))
+        sid = create(dict(base, lzw_name="Salary", lzw_type=INCOME, lzw_amount=netamt, lzw_notes=notes), c_salary)
+    fts = [(sid, earn + tax)]
     # Matches, statuses, transfer pairs and rollups in dv.batch requests instead of one request per write.
     ops = []
     for fid, ls in fts:
@@ -146,10 +146,15 @@ def link(emp, st, lines, supers, c_salary, c_tax):
                     "lzw_confirmedon": now, "lzw_aireasoning": f"payslip_link.py: {name}"}))
             ops.append(("PATCH", f"lzw_bankstatementlines({lid})", {"lzw_status": L_MATCHED}))
         ops.append(("PATCH", f"lzw_financetransactions({fid})", {"lzw_reconciliationstatus": RECONCILED}))
+    for l in sup:  # the employer's contribution: locked in the fund, no FT
+        ops.append(("PATCH", f"lzw_bankstatementlines({l['lzw_bankstatementlineid']})", {"lzw_status": L_IGNORED}))
     ops += pair_ops(pairs)
 
     def landed(chunk):
-        lid = next(b for m, _, b in chunk if m == "POST")["lzw_BankStatementLine@odata.bind"].split("(")[1].rstrip(")")
+        post = next((b for m, _, b in chunk if m == "POST"), None)
+        if post is None:  # only PATCHes: sending them again is harmless
+            return False
+        lid = post["lzw_BankStatementLine@odata.bind"].split("(")[1].rstrip(")")
         return bool(dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
                            f"_lzw_bankstatementline_value eq {lid}")["value"])
     dv.batch(ops, done=landed)

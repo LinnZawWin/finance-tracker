@@ -136,7 +136,7 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 
 | Script | Purpose |
 |---|---|
-| `dv.py`, `spec.py` | Web API helper and the schema specification |
+| `dv.py`, `spec.py` | Web API helper and the schema specification. `dv.batch(ops, done=...)` sends writes and reads in `$batch` requests of 25 (one atomic change set each, reads after it); use it for any script that writes more than a few rows |
 | `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` (the retired Keep flow) only provides helpers now |
 | `build_week_view.py` | System view "Current Week Pending Transactions" on Planned Transaction (idempotent) |
 | `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
@@ -178,6 +178,9 @@ Run them with a Python that has `azure-identity` installed, from the repo root, 
   the public repo `microsoft/power-platform-skills` under `plugins/`.
 - The network proxy drops any request that is silent for about 10 seconds, but Dataverse usually still
   completes it. `dv.py` handles this by re-checking before retrying a write. Keep that pattern.
+  Each request takes about a second through the proxy, so write in batches: `dv.batch` (25 operations per request)
+  re-checks a dropped request with its `done(chunk)` callback before resending, as `call()` does. A PATCH to an id that
+  does not exist creates that row (upsert).
 - `.claude/settings.json` (committed) allows the Google Drive tools used for the statement inbox (search,
   metadata, download, move/rename, create folder) without a prompt. Other tools follow the session's mode.
 - Check the real state first with `python scripts/verify.py`. It lists anything missing from the solution.

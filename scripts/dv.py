@@ -112,6 +112,117 @@ def call(method, path, body=None, solution=False, headers=None, retries=4, done=
             continue
 
 
+BATCH_SIZE = 25  # operations per $batch request: small enough to answer well within the proxy's ~10 s
+
+
+def _url(path):
+    return path if path.startswith("http") else API + urllib.parse.quote(path, safe="/()?=&$',@*:;%-._~!")
+
+
+def _batch_body(ops, boundary):
+    """multipart/mixed body: the writes in one change set (atomic), the reads after it."""
+    crlf, parts, cs = "\r\n", [], "changeset_" + boundary
+    writes = [o for o in ops if o[0] != "GET"]
+    if writes:
+        inner = []
+        for n, (method, path, body) in enumerate(writes, 1):
+            req = [f"--{cs}", "Content-Type: application/http", "Content-Transfer-Encoding: binary",
+                   f"Content-ID: {n}", "", f"{method} {_url(path)} HTTP/1.1",
+                   "Content-Type: application/json; charset=utf-8", ""]
+            inner.append(crlf.join(req) + crlf + (json.dumps(body) if body is not None else ""))
+        parts.append(f"--batch_{boundary}{crlf}Content-Type: multipart/mixed; boundary={cs}{crlf}{crlf}"
+                     + crlf.join(inner) + f"{crlf}--{cs}--")
+    for method, path, _ in ops:
+        if method == "GET":
+            parts.append(crlf.join([f"--batch_{boundary}", "Content-Type: application/http",
+                                    "Content-Transfer-Encoding: binary", "", f"GET {_url(path)} HTTP/1.1",
+                                    "Accept: application/json", "", ""]))
+    return (crlf.join(parts) + f"{crlf}--batch_{boundary}--{crlf}").encode()
+
+
+def _batch_parse(raw):
+    """[(status, json or None, headers)] in the order of the responses (writes first, then reads)."""
+    out = []
+    for chunk in raw.split("HTTP/1.1 ")[1:]:
+        head, _, rest = chunk.replace("\r\n", "\n").partition("\n\n")
+        lines = head.split("\n")
+        status = int(lines[0].split()[0])
+        hdrs = dict(l.split(": ", 1) for l in lines[1:] if ": " in l)
+        body = rest.split("\n--", 1)[0].strip()
+        try:
+            data = json.loads(body) if body else None
+        except ValueError:
+            data = None
+        out.append((status, data, hdrs))
+    return out
+
+
+def batch(ops, done=None, size=BATCH_SIZE):
+    """Send many operations in $batch requests of `size`, instead of one request each.
+
+    ops: [(method, path, body)], method GET, POST, PATCH or DELETE. In each request the writes form one change set,
+    which Dataverse applies all or nothing, and the reads (for example CalculateRollupField) follow it, so a read sees
+    the writes of its own request. Returns [(status, json, headers)] in the order of ops; after a dropped request that
+    had landed the entries of that request are (None, None, {}).
+    done(chunk) -> bool: called when the proxy drops a request that contains POST or DELETE, with that request's ops;
+    True = the change set landed (it is atomic, so checking one of its writes is enough). Without done such a drop
+    raises, as call() does; requests of only GET and PATCH are simply resent. An error in a change set raises DvError
+    and nothing of that request is written (requests sent before it stay written).
+    A PATCH to an id that does not exist creates that row (upsert), as with call(): only PATCH ids you have read.
+    """
+    results = []
+    for i in range(0, len(ops), size):
+        chunk = ops[i:i + size]
+        order = [n for n, o in enumerate(chunk) if o[0] != "GET"] + [n for n, o in enumerate(chunk) if o[0] == "GET"]
+        boundary = f"{int(time.time() * 1000)}_{i}"
+        data = _batch_body([chunk[n] for n in order], boundary)
+        resend_ok = all(o[0] in ("GET", "PATCH") for o in chunk)
+        for attempt in range(5):
+            req = urllib.request.Request(API + "$batch", data=data, method="POST", headers={
+                "Authorization": "Bearer " + token(), "Accept": "application/json", "OData-MaxVersion": "4.0",
+                "OData-Version": "4.0", "Content-Type": f"multipart/mixed; boundary=batch_{boundary}"})
+            try:
+                with urllib.request.urlopen(req, timeout=300) as r:
+                    got = _batch_parse(r.read().decode("utf-8", "replace"))
+                break
+            except urllib.error.HTTPError as e:
+                txt = e.read().decode("utf-8", "replace")
+                if e.code in (429, 502, 503, 504) and attempt < 4:
+                    time.sleep(10 * (attempt + 1))
+                    continue
+                bad = [g for g in _batch_parse(txt) if g[0] >= 400]  # a failed change set: show its error
+                raise DvError(bad[0][0] if bad else e.code, json.dumps(bad[0][1]) if bad else txt)
+            except (urllib.error.URLError, TimeoutError, ConnectionError):
+                if attempt >= 4:
+                    raise
+                time.sleep(15 * (attempt + 1))
+                if resend_ok:
+                    continue
+                if done is None:
+                    raise
+                landed = False
+                for _ in range(6):
+                    try:
+                        landed = done(chunk)
+                        break
+                    except DvError:
+                        time.sleep(10)
+                if landed:
+                    got = None
+                    break
+        if got is None:
+            results += [(None, None, {})] * len(chunk)
+            continue
+        errors = [g for g in got if g[0] >= 400]
+        if errors or len(got) != len(chunk):
+            raise DvError(errors[0][0] if errors else 0, json.dumps(errors[0][1] if errors else got)[:600])
+        mapped = [None] * len(chunk)
+        for n, g in zip(order, got):
+            mapped[n] = g
+        results += mapped
+    return results
+
+
 def get(path, **kw):
     return call("GET", path, **kw)[0]
 

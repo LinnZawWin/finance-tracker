@@ -86,6 +86,14 @@ and Jun to Sep 2026 tax), with one-off Planned Transactions on the due dates the
 Net Amount rather than the sheet's Est. Tax, so the lines add up to what was paid (FY2026 estimate 90,418.75, paid
 82,434.30). Rules: "Contract invoices" in `statement-import.md`.
 
+2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
+the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or
+nothing) and the reads (rollup recalculations) after them. A dropped request with a POST or DELETE is checked with the
+caller's `done(chunk)` before it is resent, the same rule as `call()`. Tested against the environment: creates, updates,
+deletes and rollups; a failing change set wrote nothing; `split_match.py --batch --apply` on throwaway rows. 25 keeps each
+request well inside the proxy's 10-second limit. Used by `contract_link.py`, `split_match.py` and `payslip_link.py`;
+the other scripts still write one request at a time.
+
 ## Decisions and reasoning
 
 ### Build method

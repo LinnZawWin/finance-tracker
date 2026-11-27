@@ -6,8 +6,8 @@ and its refund, or one transaction per line in bulk. See "Split bills" in docs/r
 
 A batch file has one transaction per line, in the same form: `<ft id> <line id>[=<amount>] ...`. Blank lines and
 text after `#` are ignored. The whole batch is checked first and nothing is written if any part does not fit; then
-it is written under one lock, which is much faster than one run per transaction (each Web API call takes about a
-second through the proxy, see docs/decisions.md).
+it is written under one lock in dv.batch requests of whole transactions (about 25 operations each), which is much
+faster than one request per write (each Web API call takes about a second through the proxy, see docs/decisions.md).
 
 Each line is allocated its remaining amount, or <amount> (signed like the bank) when only part of it belongs
 to this bill (one repayment covering two bills). A line used by several transactions in one batch is shared out in
@@ -20,7 +20,7 @@ import sys
 
 import dv
 import lock
-from recalc import rollup
+from recalc import rollup, rollup_op
 
 MANUAL, CONFIRMED = 859130003, 859130001
 MATCHED, PARTLY = 859130002, 859130001
@@ -114,37 +114,56 @@ def plan_batch(groups):
 
 
 def write(plans):
+    """dv.batch requests (about 25 operations each) of whole transactions: their matches and status."""
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     amount = {lid: cents(l["lzw_amount"]) for p in plans for lid, l, _ in p["allocs"]}
-    touched = []  # lines with a match written, finished even if a later write fails
-    try:
-        for p in plans:
-            ft_id = p["ft_id"]
+    touched, fts = [], []  # lines and transactions with matches written, finished even if a later request fails
+
+    def has(body):
+        lid = body["lzw_BankStatementLine@odata.bind"].split("(")[1].rstrip(")")
+        fid = body["lzw_FinanceTransaction@odata.bind"].split("(")[1].rstrip(")")
+        return bool(dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
+                           f"_lzw_bankstatementline_value eq {lid} and _lzw_financetransaction_value eq {fid}")["value"])
+
+    def flush(group):
+        ops = []
+        for p in group:
             for lid, l, alloc in p["allocs"]:
                 body = {"lzw_BankStatementLine@odata.bind": f"/lzw_bankstatementlines({lid})",
-                        "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({ft_id})",
+                        "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({p['ft_id']})",
                         "lzw_allocatedamount": alloc / 100, "lzw_matchmethod": MANUAL, "lzw_matchstatus": CONFIRMED,
                         "lzw_confirmedon": now, "lzw_confidence": 1,
                         "lzw_aireasoning": "split_match.py: split bill or refund, from the transaction Notes"}
                 if l["_transactioncurrencyid_value"]:
                     body["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({l['_transactioncurrencyid_value']})"
-                q = (f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter=_lzw_bankstatementline_value"
-                     f" eq {lid} and _lzw_financetransaction_value eq {ft_id}")
-                # The proxy may cut a write that lands: done() checks before a retry.
-                dv.post("lzw_reconciliationmatchs", body, done=lambda q=q: bool(dv.get(q)["value"]))
-                if lid not in touched:
-                    touched.append(lid)
-            rollup("lzw_financetransactions", ft_id, "lzw_actualamount")
-            dv.patch(f"lzw_financetransactions({ft_id})",
-                     {"lzw_reconciliationstatus": RECONCILED if p["diff"] == 0 else PARTREC})
+                ops.append(("POST", "lzw_reconciliationmatchs", body))
+            ops.append(("PATCH", f"lzw_financetransactions({p['ft_id']})",
+                        {"lzw_reconciliationstatus": RECONCILED if p["diff"] == 0 else PARTREC}))
+        # One change set per request: all of it or none. A dropped request is checked by its first match.
+        dv.batch(ops, done=lambda chunk: has(next(b for m, _, b in chunk if m == "POST")), size=len(ops))
+        for p in group:
+            fts.append(p["ft_id"])
+            touched.extend(lid for lid, _, _ in p["allocs"] if lid not in touched)
             print(f"written: {p['t']['lzw_name']}")
+
+    try:
+        group, n = [], 0
+        for p in plans:
+            if group and n + len(p["allocs"]) + 1 > dv.BATCH_SIZE:
+                flush(group)
+                group, n = [], 0
+            group.append(p)
+            n += len(p["allocs"]) + 1
+        if group:
+            flush(group)
     finally:
-        # Each line once, after all its matches (a shared line is not done twice). Runs after a failure too, so the
-        # line's Allocated Amount counts what was written and a rerun cannot allocate it again.
-        for lid in touched:
-            done = rollup("lzw_bankstatementlines", lid, "lzw_allocatedamount")
-            dv.patch(f"lzw_bankstatementlines({lid})",
-                     {"lzw_status": MATCHED if cents(done) == amount[lid] else PARTLY})
+        # Each line once, after all its matches. Runs after a failure too, so the line's Allocated Amount counts
+        # what was written and a rerun cannot allocate it again.
+        res = dv.batch([rollup_op("lzw_bankstatementlines", lid, "lzw_allocatedamount") for lid in touched]
+                       + [rollup_op("lzw_financetransactions", f, "lzw_actualamount") for f in fts])
+        dv.batch([("PATCH", f"lzw_bankstatementlines({lid})",
+                   {"lzw_status": MATCHED if cents(r[1]["lzw_allocatedamount"]) == amount[lid] else PARTLY})
+                  for lid, r in zip(touched, res)])
 
 
 def main():

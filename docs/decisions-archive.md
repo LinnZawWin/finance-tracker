@@ -719,3 +719,18 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - `reconcile.py --apply`: nothing new to pair or match.
 - File stays in the Drive inbox as `PaySlip.pdf`: the connector cannot rename or move owner-uploaded files; the owner
   renames it `DeltaInsights_2026-11.pdf` and moves it to Processed.
+
+### 2026-11-27: contract invoices Sep 2024 to Sep 2026
+
+- From the Fiscal Planner "Salary" sheet, rows 2 to 24 and 27 to 30 (25 invoice months). `contract_lines.py`: 35 statements
+  on Delta Insights (25 `DeltaInsights_Invoice_<yyyy-mm>`, 10 `DeltaInsights_ATO_<date>`), 113 lines; `statement_import.py`
+  (rerun once after a connection reset; no duplicates).
+- `contract_link.py --apply`: 25 new FTs (18 Salary Sep 2024 to Feb 2026; 6 GST payments before the bank history, Paid From
+  Flex Saver; FY2025 Income Tax 77,415.45 on 12 Nov 2025, no Paid From, Needs Details), 11 existing ones reused (7 Salary
+  8 Apr to 7 Oct 2026, GST 28 Apr, 7 Aug and 3 Nov 2026, Income Tax 24 Nov 2026), 72 matches, 11 transfer pairs (7 Everyday
+  salary lines, 3 Flex GST BPAYs, the AMEX ATO payment). All 36 FTs Reconciled.
+- Unmatched by the owner's choice: 18 "Paid to bank" and 6 "GST paid" lines and the FY2025 "Income tax paid" line (before
+  the bank history). Owed: `GST - 2026-09` 1,750.00 and `Income Tax - 2026-06` to `2026-09` 33,575.00 (Delta Insights
+  balance -35,325.00), with Planned Transactions on 28 Feb 2027 and 24 Nov 2027.
+- GST payment dates before Apr 2026 are inferred from the sheet's "GST Account Transfer Out Total" column (owner accepted).
+

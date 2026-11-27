@@ -28,7 +28,7 @@ import sys
 import dv
 import lock
 import spec
-from recalc import rollup
+from recalc import rollup_op
 
 O = spec.OPT
 APPLY = "--apply" in sys.argv
@@ -206,63 +206,101 @@ def plan(ctx, pay):
     return appts
 
 
+def has_match(lid):
+    return bool(dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
+                       f"_lzw_bankstatementline_value eq {lid}")["value"])
+
+
 def write(ctx, appts):
+    """Every step in dv.batch requests (about 25 operations each) instead of one request per write."""
+    # 1. Moved bank matches: delete the match, the bank line becomes Unmatched (then a Transfer in step 4).
+    ops = []
+    for ft in ctx.fts:
+        for mid, lid, _ in ft["old"]:
+            ops += [("DELETE", f"lzw_reconciliationmatchs({mid})", None),
+                    ("PATCH", f"lzw_bankstatementlines({lid})", {"lzw_status": L_UNMATCHED})]
+    gone = lambda chunk: not dv.exists(next(p for m, p, _ in chunk if m == "DELETE"))
+    dv.batch(ops, done=gone)
+    # 2. Finance Transactions: reused Salary FTs move to the employer; new ones are created.
+    ops, new = [], []
     for ft in ctx.fts:
         if ft["id"]:
-            for mid, lid, _ in ft["old"]:
-                dv.call("DELETE", f"lzw_reconciliationmatchs({mid})")
-                dv.patch(f"lzw_bankstatementlines({lid})", {"lzw_status": L_UNMATCHED})
-                rollup("lzw_bankstatementlines", lid, "lzw_allocatedamount")
             if ft["body"]["lzw_name"] == "Salary":
-                dv.patch(f"lzw_financetransactions({ft['id']})", {
-                    "lzw_PaidFrom@odata.bind": f"/lzw_bankaccounts({ctx.emp})", "lzw_notes": ft["body"]["lzw_notes"]})
-        else:
-            b = {k: v for k, v in ft["body"].items() if k not in ("category", "paidfrom")}
-            b["lzw_Category@odata.bind"] = f"/lzw_financecategories({ft['body']['category']})"
-            if ft["body"].get("paidfrom"):
-                b["lzw_PaidFrom@odata.bind"] = f"/lzw_bankaccounts({ft['body']['paidfrom']})"
-            b["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({ctx.aud})"
-            filt = (f"lzw_name eq '{q(b['lzw_name'])}' and lzw_transactiondate eq {b['lzw_transactiondate']} "
-                    f"and lzw_amount eq {b['lzw_amount']}")
-            look = lambda: dv.get(f"lzw_financetransactions?$select=lzw_financetransactionid&$filter={filt}")["value"]
-            _, h = dv.post("lzw_financetransactions", b, done=lambda: bool(look()))
-            ft["id"] = dv.new_id(h) or look()[0]["lzw_financetransactionid"]
-        print(f"    FT {ft['label']}: {ft['id']}", flush=True)
+                ops.append(("PATCH", f"lzw_financetransactions({ft['id']})", {
+                    "lzw_PaidFrom@odata.bind": f"/lzw_bankaccounts({ctx.emp})", "lzw_notes": ft["body"]["lzw_notes"]}))
+            continue
+        b = {k: v for k, v in ft["body"].items() if k not in ("category", "paidfrom")}
+        b["lzw_Category@odata.bind"] = f"/lzw_financecategories({ft['body']['category']})"
+        if ft["body"].get("paidfrom"):
+            b["lzw_PaidFrom@odata.bind"] = f"/lzw_bankaccounts({ft['body']['paidfrom']})"
+        b["transactioncurrencyid@odata.bind"] = f"/transactioncurrencies({ctx.aud})"
+        ft["look"] = (f"lzw_financetransactions?$select=lzw_financetransactionid&$filter=lzw_name eq "
+                      f"'{q(b['lzw_name'])}' and lzw_transactiondate eq {b['lzw_transactiondate']} and "
+                      f"lzw_amount eq {b['lzw_amount']}")
+        ops.append(("POST", "lzw_financetransactions", b))
+        new.append((len(ops) - 1, ft))
+    looks = {id(b): ft["look"] for (_, _, b), (_, ft) in zip([ops[n] for n, _ in new], new)}
+    landed = lambda chunk: bool(dv.get(looks[id(next(b for m, _, b in chunk if m == "POST"))])["value"])
+    res = dv.batch(ops, done=landed)
+    for n, ft in new:
+        ft["id"] = dv.new_id(res[n][2]) or dv.get(ft["look"])["value"][0]["lzw_financetransactionid"]
+    for ft in ctx.fts:
+        print(f"    FT {ft['label']}: {ft['id']}")
+    # 3. Matches (a line that has one already is skipped) and the lines Matched.
+    ops, ids, matched = [], sorted({l["lzw_bankstatementlineid"] for l, _ in ctx.matches}), set()
+    for i in range(0, len(ids), 40):  # the lines that have a match already, 40 per query
+        flt = " or ".join(f"_lzw_bankstatementline_value eq {x}" for x in ids[i:i + 40])
+        matched |= {m["_lzw_bankstatementline_value"] for m in dv.get_all(
+            f"lzw_reconciliationmatchs?$select=_lzw_bankstatementline_value&$filter={flt}")}
     for line, ft in ctx.matches:
         lid = line["lzw_bankstatementlineid"]
-        has = lambda: bool(dv.get("lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
-                                  f"_lzw_bankstatementline_value eq {lid}")["value"])
-        if not has():
-            dv.post("lzw_reconciliationmatchs", {
+        if lid not in matched:
+            ops.append(("POST", "lzw_reconciliationmatchs", {
                 "lzw_BankStatementLine@odata.bind": f"/lzw_bankstatementlines({lid})",
                 "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({ft['id']})",
                 "lzw_allocatedamount": line["lzw_amount"], "lzw_matchmethod": MANUAL, "lzw_matchstatus": CONFIRMED,
-                "lzw_confirmedon": NOW, "lzw_aireasoning": "contract_link.py"}, done=has)
-        dv.patch(f"lzw_bankstatementlines({lid})", {"lzw_status": L_MATCHED})
-        rollup("lzw_bankstatementlines", lid, "lzw_allocatedamount")
+                "lzw_confirmedon": NOW, "lzw_aireasoning": "contract_link.py"}))
+        ops.append(("PATCH", f"lzw_bankstatementlines({lid})", {"lzw_status": L_MATCHED}))
+    first_line = lambda chunk: next(b for m, _, b in chunk if m == "POST")[
+        "lzw_BankStatementLine@odata.bind"].split("(")[1].rstrip(")")
+    dv.batch(ops, done=lambda chunk: has_match(first_line(chunk)))
+    print(f"    {len(ctx.matches)} matches")
+    # 4. Reconciliation status, transfer pairs, then the rollups of every line and FT touched.
+    ops = []
     for ft in ctx.fts:
-        rollup("lzw_financetransactions", ft["id"], "lzw_actualamount")
         tot = round(sum(l["lzw_amount"] for l, f in ctx.matches if f is ft), 2)
+        if not tot:  # nothing new for it in this run
+            continue
         if abs(tot) == round(ft["amount"], 2):
-            dv.patch(f"lzw_financetransactions({ft['id']})", {"lzw_reconciliationstatus": RECONCILED})
+            ops.append(("PATCH", f"lzw_financetransactions({ft['id']})", {"lzw_reconciliationstatus": RECONCILED}))
         else:
             print(f"    NOT RECONCILED {ft['label']}: lines {tot:,.2f} vs {ft['amount']:,.2f}")
     for line, other in ctx.pairs:
         a = line["lzw_bankstatementlineid"]
         for x, y in ((a, other), (other, a)):
-            dv.patch(f"lzw_bankstatementlines({x})", {"lzw_status": L_TRANSFER,
-                     "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"})
+            ops.append(("PATCH", f"lzw_bankstatementlines({x})", {
+                "lzw_status": L_TRANSFER, "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"}))
+    dv.batch(ops)
+    lines = {l["lzw_bankstatementlineid"] for l, _ in ctx.matches} | {o for _, o in ctx.pairs}
+    lines |= {lid for ft in ctx.fts for _, lid, _ in ft["old"]}
+    dv.batch([rollup_op("lzw_bankstatementlines", l, "lzw_allocatedamount") for l in sorted(lines)]
+             + [rollup_op("lzw_financetransactions", ft["id"], "lzw_actualamount") for ft in ctx.fts])
+    print(f"    {len(ctx.pairs)} transfer pairs")
+    # 5. Planned Transactions for what is owed.
+    ops = []
     for ap in appts:
-        start = f"{ap['due']}T02:00:00Z"
-        b = {"subject": ap["subject"], "scheduledstart": start,
+        b = {"subject": ap["subject"], "scheduledstart": f"{ap['due']}T02:00:00Z",
              "scheduledend": f"{ap['due']}T02:30:00Z", "lzw_amount": ap["amount"], "lzw_paymenttype": ap["ptype"],
              "description": ap["desc"], "lzw_FinanceCategory_Appointment@odata.bind":
                  f"/lzw_financecategories({ctx.c_tax})",
              "transactioncurrencyid@odata.bind": f"/transactioncurrencies({ctx.aud})"}
         if ap["paidfrom"]:
             b["lzw_PaidFrom_Appointment@odata.bind"] = f"/lzw_bankaccounts({ap['paidfrom']})"
-        dv.post("appointments", b, done=lambda: bool(dv.get(
-            f"appointments?$select=activityid&$filter=subject eq '{q(ap['subject'])}'")["value"]))
+        ops.append(("POST", "appointments", b))
+    subj = lambda chunk: q(next(b for m, _, b in chunk if m == "POST")["subject"])
+    dv.batch(ops, done=lambda chunk: bool(dv.get(f"appointments?$select=activityid&$filter=subject eq "
+                                                 f"'{subj(chunk)}'")["value"]))
+    for ap in appts:
         print(f"    Planned Transaction {ap['subject']} created")
     print("written")
 

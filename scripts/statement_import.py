@@ -25,7 +25,8 @@ import statement_compare as sc
 LINES, APPLY, POSSIBLE = sys.argv[1], "--apply" in sys.argv, "--include-possible" in sys.argv
 ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037": "ANZ Plus Growth Saver",
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
-            "NZGo": "ANZ NZ Go", "Super": "AustralianSuper", "DeltaInsights": "Delta Insights"}
+            "NZGo": "ANZ NZ Go", "Super": "AustralianSuper", "DeltaInsights": "Delta Insights",
+            "Paxus": "Paxus"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
 SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0, "Sheet": 3}  # statement Source Type; Sheet = Other
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "

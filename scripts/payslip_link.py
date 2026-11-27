@@ -14,6 +14,7 @@ For every payslip statement on an Employer account (lines from payslip_lines.py;
 4. Transfer pairs: Net pay <-> the bank line with the opposite amount within 3 days that is not already a Transfer
    (the Everyday salary line; the same amount moved on to a saver the same day is a Transfer already),
    Superannuation paid <-> the super account's employer contribution with the opposite amount within 14 days.
+A statement without earnings lines (`Paxus_Super_<yyyy-mm>`, the monthly super payment) only gets its transfer pair.
 A part that has no single candidate is reported and left.
 """
 import datetime as dt
@@ -83,6 +84,8 @@ def link(emp, st, lines, supers, c_salary, c_tax):
     if all(l["lzw_status"] in (L_MATCHED, L_TRANSFER, L_IGNORED) for l in lines):
         print(f"{name}: already linked")
         return
+    if not earn:  # a monthly super payment statement (Paxus_Super_<yyyy-mm>): only the transfer pair
+        return link_pairs(name, eid, sup_paid, net, dt.date.fromisoformat(day), supers)
     gross = round(sum(l["lzw_amount"] for l in earn), 2)
     netamt = round(-sum(l["lzw_amount"] for l in net), 2)
     taxamt = round(-sum(l["lzw_amount"] for l in tax), 2)
@@ -111,25 +114,7 @@ def link(emp, st, lines, supers, c_salary, c_tax):
     else:
         print(f"    new Salary FT {netamt:.2f}")
     # 4. counterparts
-    pairs = []
-    for l in net:
-        bank = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_transactiondate&$filter="
-                          f"lzw_amount eq {-l['lzw_amount']} and _lzw_bankaccount_value ne {eid} and statecode eq 0 and "
-                          f"lzw_status ne {L_TRANSFER} and "
-                          f"lzw_transactiondate ge {d0 - dt.timedelta(days=3)} and lzw_transactiondate le {d0 + dt.timedelta(days=3)}")
-        pairs.append((l, bank))
-    for l in sup_paid:
-        acc = " or ".join(f"_lzw_bankaccount_value eq {s}" for s in supers)
-        cont = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_transactiondate&$filter="
-                          f"lzw_amount eq {-l['lzw_amount']} and ({acc}) and statecode eq 0 and "
-                          f"startswith(lzw_name,'Contribution - Employer') and "
-                          f"lzw_transactiondate ge {d0} and lzw_transactiondate le {d0 + dt.timedelta(days=14)}")
-        pairs.append((l, cont))
-    for l, c in pairs:
-        if len(c) == 1:
-            print(f"    transfer {l['lzw_amount']:10.2f} {l['lzw_name'][:40]:40} <-> {c[0]['lzw_transactiondate']} {c[0]['lzw_name'][:60]}")
-        else:
-            print(f"    NO PAIR ({len(c)} candidates) for {l['lzw_name']}")
+    pairs = find_pairs(eid, sup_paid, net, d0, supers)
     if not APPLY:
         return
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -163,13 +148,7 @@ def link(emp, st, lines, supers, c_salary, c_tax):
         ops.append(("PATCH", f"lzw_financetransactions({fid})", {"lzw_reconciliationstatus": RECONCILED}))
     for l in sup:  # the employer's contribution: locked in the fund, no FT
         ops.append(("PATCH", f"lzw_bankstatementlines({l['lzw_bankstatementlineid']})", {"lzw_status": L_IGNORED}))
-    for l, c in pairs:
-        if len(c) != 1:
-            continue
-        a, b = l["lzw_bankstatementlineid"], c[0]["lzw_bankstatementlineid"]
-        for x, y in ((a, b), (b, a)):
-            ops.append(("PATCH", f"lzw_bankstatementlines({x})", {"lzw_status": L_TRANSFER,
-                        "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"}))
+    ops += pair_ops(pairs)
 
     def landed(chunk):
         post = next((b for m, _, b in chunk if m == "POST"), None)
@@ -185,6 +164,50 @@ def link(emp, st, lines, supers, c_salary, c_tax):
                 for _, c in pairs if len(c) == 1]
              + [rollup_op("lzw_financetransactions", fid, "lzw_actualamount") for fid, _ in fts])
     print("    written")
+
+
+def find_pairs(eid, sup_paid, net, d0, supers):
+    pairs = []
+    for l in net:
+        bank = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_transactiondate&$filter="
+                          f"lzw_amount eq {-l['lzw_amount']} and _lzw_bankaccount_value ne {eid} and statecode eq 0 and "
+                          f"lzw_status ne {L_TRANSFER} and "
+                          f"lzw_transactiondate ge {d0 - dt.timedelta(days=3)} and lzw_transactiondate le {d0 + dt.timedelta(days=3)}")
+        pairs.append((l, bank))
+    for l in sup_paid:
+        acc = " or ".join(f"_lzw_bankaccount_value eq {s}" for s in supers)
+        cont = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_transactiondate&$filter="
+                          f"lzw_amount eq {-l['lzw_amount']} and ({acc}) and statecode eq 0 and "
+                          f"startswith(lzw_name,'Contribution - Employer') and "
+                          f"lzw_transactiondate ge {d0} and lzw_transactiondate le {d0 + dt.timedelta(days=14)}")
+        pairs.append((l, cont))
+    for l, c in pairs:
+        if len(c) == 1:
+            print(f"    transfer {l['lzw_amount']:10.2f} {l['lzw_name'][:40]:40} <-> {c[0]['lzw_transactiondate']} {c[0]['lzw_name'][:60]}")
+        else:
+            print(f"    NO PAIR ({len(c)} candidates) for {l['lzw_name']}")
+    return pairs
+
+
+def pair_ops(pairs):
+    ops = []
+    for l, c in pairs:
+        if len(c) != 1:
+            continue
+        a, b = l["lzw_bankstatementlineid"], c[0]["lzw_bankstatementlineid"]
+        for x, y in ((a, b), (b, a)):
+            ops.append(("PATCH", f"lzw_bankstatementlines({x})", {"lzw_status": L_TRANSFER,
+                        "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"}))
+    return ops
+
+
+def link_pairs(name, eid, sup_paid, net, d0, supers):
+    print(f"{name}: dated {d0}, transfer pair(s) only")
+    pairs = find_pairs(eid, sup_paid, net, d0, supers)
+    ops = pair_ops(pairs)
+    if APPLY and ops:
+        dv.batch(ops)
+        print("    written")
 
 
 def existing_ft(name, when, amt, eid):

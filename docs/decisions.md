@@ -78,6 +78,16 @@ the payslip line, PAYG tax and employer super get their own FTs, and the bank sa
 not taken: keep super and payslips as files only (no bank line behind super). Rules: "AustralianSuper and payslips"
 in `statement-import.md`.
 
+2026-11-28: **Paxus pay advices Nov 2023 to Sep 2024** (owner asked to import "the payslips from Brisbane City Council";
+the issuer is Paxus, the client Brisbane City Council). Bank Account "Paxus" (Employer), 40 weekly statements, treated
+like the Delta Insights payslips. Paxus paid super monthly, so one contribution covers 2 to 5 pay advices: a Transfer
+Counterpart is one line, so a per-advice "Superannuation paid" line could not pair. Chosen: a monthly
+`Paxus_Super_<yyyy-mm>` statement with one line that pairs 1:1 with the contribution, as the contract invoices'
+`DeltaInsights_ATO_<date>` statements pair the ATO payments; the account balance is then the super not yet paid. The
+per-advice super is the month-to-date increase (exact) rather than the printed, rounded amount, so the months add up.
+Net pay has no bank line (bank history starts 2026) and stays Unmatched. Rules: "Paxus pay advices" in
+`statement-import.md`.
+
 2026-11-27: **Contract invoices Sep 2024 to Sep 2026** (owner) from the Fiscal Planner "Salary" sheet, rows 2 to 24 and
 27 to 30, treated like payslips: income at the invoice total incl GST, GST and income tax as Expenses. The owner wanted the
 GST and tax payments linked to the months they cover, so each month has GST and tax lines on the Delta Insights clearing

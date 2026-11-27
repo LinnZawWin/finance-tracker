@@ -147,9 +147,8 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
     count the money twice). For a tax deduction set Claim Type Income Tax, Pending. The 6 Feb 2026 $10 contribution is
     before the bank history: Ignored, no FT.
   - An employer contribution is a transfer from the employer account: Transfer Counterpart = the payslip's
-    "Superannuation paid" line (set by hand, the dates are days apart). Fees, insurance, taxes and returns have no
-    Finance Transactions yet (owner to decide); they stay Unmatched. Paxus contributions (Dec 2023 to Oct 2024) wait for
-    their payslips.
+    "Superannuation paid" line (set by hand, the dates are days apart). Paxus contributions (Dec 2023 to Oct 2024) are Transfers from the Paxus account
+    (see "Paxus pay advices").
 - **Delta Insights** (`DeltaInsights`), a clearing account: one Bank Statement per payslip, named after the file
   (`DeltaInsights_<yyyy-mm>`), opening and closing 0, every line dated the Payment Date.
   `scripts/payslip_lines.py <out> <pdf> ...` reads the payslip and checks its totals. Lines and their links:
@@ -171,6 +170,32 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
   "Superannuation paid" line waits for its AustralianSuper contribution (not in the export to 27 Nov); rerun
   `payslip_link.py --apply` after the next super import to pair it.
   In Processed the files keep their names (`DeltaInsights_<yyyy-mm>.pdf`; super CSVs as downloaded).
+
+## Paxus pay advices (Nov 2023 to Sep 2024)
+
+The owner was a Paxus contractor placed at Brisbane City Council; Paxus issued a weekly "Pay Advice" PDF
+(`Payslip - <name> <yyyymm> <dd_mm_yyyy>-<dd_mm_yyyy>.pdf`). Bank Account **Paxus** (Account Type Employer, short name
+`Paxus`, AUD), a clearing account like Delta Insights. Save each download as `Paxus_<payment date yyyy-mm-dd>.pdf`
+(the Payment Date printed on it), then `payslip_lines.py <out> <pdf> ...` and `statement_import.py <out> --apply`
+and `payslip_link.py --apply`.
+
+| Statement | Line | Sign | Linked to |
+|---|---|---|---|
+| `Paxus_<payment date>` (one per pay advice, dated the Payment Date, period = the week to the item date) | `Salary & Wages - Brisbane City Council Standard <hours> x <rate>`, Bank Category "Gross income" | + | FT "Salary" (**net**, as for Delta Insights) |
+| | `Tax - PAYG`, Bank Category "Income tax" | - | the same Salary FT |
+| | `Superannuation - Australian Super`, Bank Category "Employer super" | + | none: Status Ignored |
+| | `Net pay - bank` | - | the bank salary line: none (bank history starts 2026), stays Unmatched |
+| `Paxus_Super_<yyyy-mm>` (dated the AustralianSuper contribution) | `Superannuation paid - Australian Super <yyyy-mm>` | - | Transfer Counterpart: the AustralianSuper "Contribution - Employer - PAXUS AUSTRALIA PTY LIMITED" line whose Notes give that payment period |
+
+- Paxus paid super **monthly**: one contribution for the pay advices paid in a calendar month (the advice's "Period TD"
+  is the month to date). So the pay advices have no "Superannuation paid" line; the month's payment is its own statement.
+- Each advice's super line is the rise in Period TD since the month's previous advice, not the printed Super column,
+  which is rounded (537.50 printed, 537.51 counted; the line Notes say so). Then every month adds up to its
+  contribution exactly; `payslip_lines.py` stops if one does not.
+- Balances are chained in date order (opening = the previous closing), so the account balance is the super earned
+  and not yet paid; it is 0 after the last contribution (22 Oct 2024).
+- 40 pay advices: paid 20 Nov 2023 to 16 Sep 2024. No pay on 8 and 15 Jan, 25 Mar and 1 Apr 2024 (no work those weeks:
+  the month-to-date figures leave no gap).
 
 ## Contract invoices (Delta Insights, Sep 2024 to Sep 2026)
 

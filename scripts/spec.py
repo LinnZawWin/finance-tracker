@@ -66,7 +66,7 @@ TABLES = [
     dict(schema="lzw_BankAccount", display="Bank Account", plural="Bank Accounts", primary="Name", columns=[
         s("Short Name", 100, description="Aliases used in expense notes, separated by semicolons"),
         lookup("Bank", "account", schema="lzw_BankId"),
-        choice("Account Type", ["Everyday", "Savings", "Credit Card", "Wise", "Other"]),
+        choice("Account Type", ["Everyday", "Savings", "Credit Card", "Wise", "Other", "Super", "Employer"]),
         lookup("Account Currency", "transactioncurrency"),
         s("Account Number", 50, description="As written on statements and in transfer descriptions; cards: last digits only"),
         yn("Statements Imported", True),

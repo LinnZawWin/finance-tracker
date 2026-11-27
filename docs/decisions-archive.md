@@ -709,3 +709,13 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   GloBird -280.16 / PayID +280.16 (AMEX, Partner paid back); Flex -326.87 to Wise and its return +326.87 (13 May).
 - Left open: Uber 35.58 (2 Apr, AMEX, no receipt found in email); PAYMENT FROM a friend 17.00 (31 May, "Thai Food bill
   split": no Thai bill around that date has a share of 17).
+
+### 2026-11-27: November payslip
+
+- `DeltaInsights_2026-11` imported (5 lines, paid 25 Nov, gross 18,333.33, PAYG 5,776.00, super 2,200.00, net 12,557.33).
+- `payslip_link.py --apply`: the 25 Nov Salary FT moved from the Everyday salary line to the payslip (Amount 12,557.33 to
+  gross 18,333.33), Income Tax withheld and Employer super created and matched, Net pay paired with the Everyday salary line.
+  "Superannuation paid" left unpaired: its AustralianSuper contribution is not in the export yet.
+- `reconcile.py --apply`: nothing new to pair or match.
+- File stays in the Drive inbox as `PaySlip.pdf`: the connector cannot rename or move owner-uploaded files; the owner
+  renames it `DeltaInsights_2026-11.pdf` and moves it to Processed.

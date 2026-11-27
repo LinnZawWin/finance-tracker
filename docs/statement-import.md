@@ -150,6 +150,8 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
 
   So the Everyday salary line is a **Transfer**, not matched to a Finance Transaction (linking the Salary FT to both the
   payslip and the bank line would count it twice in Actual Amount). The payslip date and the bank date are the same day.
-  Payslips processed: Sep and Oct 2026. The Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" lines
-  (8 Apr to 7 Oct 2026) and the 25 Nov salary keep their Salary FTs matched to the bank line until their payslips arrive.
+  Payslips processed: Sep, Oct and Nov 2026. The Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" lines
+  (8 Apr to 7 Oct 2026) keep their Salary FTs matched to the bank line until their payslips arrive. The Nov payslip's
+  "Superannuation paid" line waits for its AustralianSuper contribution (not in the export to 27 Nov); rerun
+  `payslip_link.py --apply` after the next super import to pair it.
   In Processed the files keep their names (`DeltaInsights_<yyyy-mm>.pdf`; super CSVs as downloaded).

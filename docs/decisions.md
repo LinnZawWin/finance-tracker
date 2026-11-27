@@ -587,7 +587,8 @@ Owner's request, to use less of the plan allowance:
 - `statement_import.py` accepts a statement of kind "Screenshot" (Source Type and line Source Screenshot), so app
   screenshots go through the same compare and placeholder path as mid-cycle exports instead of hand-written rows.
   Used for the Kogan app screenshot (no export exists between statements).
-- The Drive connector refused moves for the owner's uploads (`canMoveItemWithinDrive` false), so the files stay in the
+- The Drive connector shows `canEdit` and `canMoveItemWithinDrive` false on every file the owner uploads (also the ones
+  already in Processed); only items it created itself (the Mid-cycle folder) are true. No move was attempted, so the files stay in the
   inbox and the owner moves and renames them.
 - The 23 Nov AMEX "DIRECT DEBIT RECEIVED" +1,000 and the 24 Nov Flex "PAYMENT TO AMERICAN EXPRESS" -1,000 were paired as a
   transfer by hand: `reconcile.py` did not pair them (another -1,000 Flex line the same day, W Support). Same for a 0.01

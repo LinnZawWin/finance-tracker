@@ -679,6 +679,8 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   2026) had no note: one "Public Transport" transaction each (Source Import, Source Row ID `BL-<line id>`, dated as the
   line), linked with `split_match.py --batch`. All 83 "Commute" rows renamed "Public Transport". No open Translink line
   is left; the 26 Nov fare waits for its line (still pending at the bank, not in the interim statement).
+<<<<<<< HEAD
+=======
 
 ## 2026-11-26: recurring payments review (March to June lines)
 
@@ -694,3 +696,4 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - Left for the owner: the other Flex to ANZ Access Advantage lines (5,000, 3,000, 5,000) and the AMEX direct debit
   1,462.81 (23 Mar); the AMEX charges paid back by PayID (Megatix, Ardent Leisure, Singapore Air, GloBird 280.16), not
   paired yet at the owner's request; the PayID 602.42 (27 Mar) left alone.
+>>>>>>> origin/main

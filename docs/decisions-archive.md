@@ -700,7 +700,8 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 - 30 transactions from the owner's sheet (`create_transactions.py`): DiDi taxis, groceries, drinks, parking, Opal fare
   (Sydney Microsoft AI Tour 2026 Trip), motel while finding a house (Moving and Relocation), DoorDash order (AA, Gifts),
   Gold Coast BBQ hotel, two vapes (one USD 25.12, MVP Summit 2026 Trip, Gifts, A as in the sheet), BCC parking,
-  W Support 5,000 / 3,000 / 5,000 (Flex to ANZ Access Advantage, Joint Main). The Hotel for Ultra Beach Gold Coast
+  W Support 5,000 / 3,000 / 5,000 (Flex to ANZ Access Advantage, Joint Main, linked with `split_match.py`). All
+  reconciled by `reconcile.py` except W Support (payee differs) and the Ultra Beach hotel. The Hotel for Ultra Beach Gold Coast
   (16 Dec 2025, AMEX, 121.50 less a friend's 40.50 = 81.00, A) waits for its AMEX statement; the 13 Apr repayment is linked.
 - Chinese dinner (24 May, Happy Boy): three repayments of 28.75 linked, Amount 115.58 to 29.33.
 - Drying hanger with clips x2 (5 May): Paid From Cash to Everyday, linked to the 4 May payment to a person (-5.00).

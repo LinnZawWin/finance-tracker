@@ -9,7 +9,8 @@ Each statement is compared with the lines already in Dataverse (statement_compar
 a newer Wise export creates only the shortfall. A statement is matched by name and Bank Account.
 A statement whose kind is "Screenshot" (lines typed from the app, written by hand into _statements.json)
 gets Source Type and line Source Screenshot; mark it interim so the PDF statement replaces it.
-AustralianSuper (super_lines.py) and payslips (payslip_lines.py) write their own _statements.json entries.
+AustralianSuper (super_lines.py), payslips (payslip_lines.py) and contract invoices (contract_lines.py, kind "Sheet":
+statement Source Type Other, line Source Generated) write their own _statements.json entries.
 Wise: every "Wise*.json" in the folder goes to the Bank Statement "Wise <year>" (1 Jan to 31 Dec).
 Mid-cycle exports (statement_parse.py marks them interim) create a placeholder Bank Statement whose Notes start
 with "Interim". The next export or the final statement whose period overlaps it updates that same record:
@@ -26,7 +27,7 @@ ACCOUNTS = {"x3029": "ANZ Plus Everyday", "x5149": "ANZ Plus Flex Saver", "x3037
             "AMEX": "AMEX Credit Card", "Kogan": "Kogan Money Black Card", "Wise": "Wise",
             "NZGo": "ANZ NZ Go", "Super": "AustralianSuper", "DeltaInsights": "Delta Insights"}
 CURRENCY = {"NZGo": "NZD"}  # statement and line currency when not AUD
-SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0}
+SRC = {"PDF": 2, "CSV": 1, "Screenshot": 0, "Sheet": 3}  # statement Source Type; Sheet = Other
 INTERIM = ("Interim: placeholder from a mid-cycle export ({file}), covering {start} to {end}. Updated when the "
            "next export or the statement arrives; balances are those of the export.")
 sp = os.path.join(LINES, "_statements.json")
@@ -85,6 +86,8 @@ for s in stmts:
     if s["account"] == "DeltaInsights":
         body["lzw_notes"] = ("Payslip (payslip_lines.py). The employer account is a clearing account: earnings and "
                              "employer super in, tax, super paid and net pay out, so every payslip nets to 0.")
+    if s.get("notes"):  # contract_lines.py writes its own
+        body["lzw_notes"] = s["notes"]
     if s["account"] == "Wise":
         body["lzw_notes"] = ("Wise transaction export (CSV). Refunded rows and conversions between balances are "
                              "not imported. Amounts are AUD; lines paid from a foreign balance have an estimated AUD "
@@ -99,7 +102,7 @@ for s in stmts:
         sid = h.get("OData-EntityId", h.get("odata-entityid")).rsplit("(", 1)[1].rstrip(")")
     for line, row in res["update"]:
         dv.patch(f"lzw_bankstatementlines({row['id']})", {"lzw_name": line["description"][:500], "lzw_source": sc.O + 2})
-    src = s["kind"] if s["kind"] in SRC else "CSV"
+    src = "Generated" if s["kind"] == "Sheet" else s["kind"] if s["kind"] in SRC else "CSV"
     for line in res["new"]:
         b = sc.line_body(line, aid, sid, src, cur)
         key = b["lzw_duplicatekey"].replace("'", "''")

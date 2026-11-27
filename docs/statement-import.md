@@ -161,3 +161,41 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
   "Superannuation paid" line waits for its AustralianSuper contribution (not in the export to 27 Nov); rerun
   `payslip_link.py --apply` after the next super import to pair it.
   In Processed the files keep their names (`DeltaInsights_<yyyy-mm>.pdf`; super CSVs as downloaded).
+
+## Contract invoices (Delta Insights, Sep 2024 to Sep 2026)
+
+Before the payslips (from 25 Sep 2026) the owner invoiced Delta Insights as a contractor. Source: the "Salary" sheet of
+the owner's Fiscal Planner (Google Sheets), one row per invoice month. Download it as CSV (or read it with the Sheets
+connector and write a CSV with the same headers) and write the payments file by hand, both outside the repo:
+`{"gst": {"<quarter's last month>": "<paid date>"}, "tax": [{"fy", "from", "to", "paid", "amount"}],
+"owed": {"gst": "<due>", "tax": "<due>"}}`. Then `contract_lines.py <out> <csv> <payments>`,
+`statement_import.py <out> --apply` and `contract_link.py <payments> --apply`.
+
+The Delta Insights account is the clearing account, as for payslips, but its balance is **what is still owed to the
+ATO**:
+
+| Statement | Line | Sign | Linked to |
+|---|---|---|---|
+| `DeltaInsights_Invoice_<yyyy-mm>` (dated Paid On) | `Invoice - <m> - <days> days, <net> + GST <gst>` | + Total incl GST | FT "Salary" (Income, Salary and Contract Income, Paid From Delta Insights) |
+| | `GST - <m>` | - | the quarter's GST FT |
+| | `Income Tax - <m>` | - | the year's "Income Tax" FT (Notes name the year), or owed (Notes "Est. Tax") |
+| | `Paid to bank - <m>` | - | Transfer Counterpart: the Everyday "ANZ INTERNET BANKING TRANSFER <yyyymm01> DELTA INSIGHTS P" line (Apr to Oct 2026 only; earlier months stay Unmatched, owner) |
+| `DeltaInsights_ATO_<date>` | `GST paid - <first>..<last month>` | + BAS amount (whole dollars) | Transfer Counterpart: the Flex Saver BPAY TO TAX OFFICE line (Apr 2026 on) |
+| | `GST rounding - <...>` | + cents | the GST FT |
+| | `Income tax paid - <fy>` | + | Transfer Counterpart: the AMEX ATO line (FY2026) |
+
+- Income = Total incl GST; GST and income tax are Expenses (Tax) on their own FTs (owner, 2026-11-27).
+- A year's tax is split over its months by Net Amount (cents on the last month): FY2025 = Sep 2024 to Jun 2025,
+  77,415.45 paid 12 Nov 2025 (no bank line, no account: Needs Details); FY2026 = Jul 2025 to May 2026, 82,434.30
+  paid 24 Nov 2026 on AMEX. Jun to Sep 2026 use the sheet's Est. Tax (33,575.00) and are owed.
+- GST quarters follow the sheet's Total GST column (Sep 2024; Oct to Dec 2024; Jan to Mar, Apr to Jun, Jul to Aug,
+  Sep to Nov 2025; Dec 2025 to Feb, Mar to May, Jun to Aug 2026). The six payments before the bank history are FTs
+  "GST Payment (for <a> to <b> income)", Paid From Flex Saver, dated from the sheet's "GST Account Transfer Out Total"
+  column (the first new date after the quarter; it gives 27 Apr 2026 for the quarter paid 28 Apr). Sep 2026 GST
+  (1,750.00) is owed.
+- Owed amounts have one-off Planned Transactions (Category Tax): "GST Payment (for 2026-09 income)" 1,750.00, 28 Feb 2027,
+  Manual, Flex Saver; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00, 24 Nov 2027, Estimated, no Paid From.
+  When the flow creates their FTs, link each to its owed lines with `split_match.py` (FT to the `GST - 2026-09` or the
+  four `Income Tax - 2026-0x` lines) and pair the bank payment with a new `DeltaInsights_ATO_<date>` line.
+- The Salary FTs that existed (7, from 8 Apr to 7 Oct 2026, entered from the bank line) were moved to the invoice line.
+

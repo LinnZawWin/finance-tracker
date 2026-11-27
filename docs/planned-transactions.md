@@ -83,6 +83,10 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   Madison Heights, Health Insurance = AHM, W Support = Joint Main, Broadband = Rush, Utility (Electricity/Gas) =
   Altogether, YouTube Premium = the person the family share is paid to (as on the Sep and Oct rows). Done for the
   20 to 25 Nov rows.
+- **Owed to the ATO** (one-off, 2026-11-27, `contract_link.py`): "GST Payment (for 2026-09 income)" 1,750.00 on
+  28 Feb 2027 (Manual, Flex Saver, Tax) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
+  (Estimated, no Paid From, Tax; correct it when the assessment arrives). Their FTs are linked to the owed lines on the
+  Delta Insights account by hand ("Contract invoices" in `statement-import.md`).
 - No series for Prime Video (unsubscribed) or GST activity statements (no longer a contractor): owner, 2026-11-26.
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.

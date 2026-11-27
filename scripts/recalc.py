@@ -19,6 +19,12 @@ def rollup(entity_set, rid, field):
     return r.get(field)
 
 
+def rollup_op(entity_set, rid, field):
+    """The same recalculation as an operation for dv.batch (the value is in the result's json under field)."""
+    return ("GET", f"CalculateRollupField(Target=@t,FieldName=@f)?@t={{'@odata.id':'{entity_set}({rid})'}}&@f='{field}'",
+            None)
+
+
 def rows(entity_set, select, days):
     flt = "statecode eq 0"
     if days:

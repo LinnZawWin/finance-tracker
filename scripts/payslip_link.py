@@ -3,7 +3,8 @@ docs/statement-import.md). Dry run by default; --apply writes, under the reconci
 
     python scripts/payslip_link.py [--apply]
 
-For every payslip statement on an Employer account (lines from payslip_lines.py) that is not linked yet:
+For every payslip statement on an Employer account (lines from payslip_lines.py; not the contract statements
+`<Employer>_Invoice_*` and `<Employer>_ATO_*`, which contract_link.py links) that is not linked yet:
 1. The Salary FT: the existing Income "Salary" FT on the same day as the payment with the net amount (entered from the
    bank line) is reused: its match to the bank line is deleted, Amount becomes the gross, Paid From the employer.
    Without one, a new Salary FT is created.
@@ -20,7 +21,7 @@ import sys
 import dv
 import lock
 import spec
-from recalc import rollup
+from recalc import rollup, rollup_op
 
 APPLY = "--apply" in sys.argv
 O = spec.OPT
@@ -53,6 +54,8 @@ def main():
     for emp in employers:
         eid = emp["lzw_bankaccountid"]
         for st in dv.get_all(f"lzw_bankstatements?$select=lzw_bankstatementid,lzw_name&$filter=_lzw_bankaccount_value eq {eid}"):
+            if "_Invoice_" in st["lzw_name"] or "_ATO_" in st["lzw_name"]:
+                continue  # contract invoices and ATO payments: contract_link.py
             lines = dv.get_all("lzw_bankstatementlines?$select=lzw_bankstatementlineid,lzw_name,lzw_amount,lzw_transactiondate,"
                                "lzw_status,_lzw_transfercounterpart_value&$filter=_lzw_bankstatement_value eq "
                                f"{st['lzw_bankstatementid']} and statecode eq 0&$orderby=lzw_linenumber")
@@ -145,28 +148,37 @@ def link(emp, st, lines, supers, c_salary, c_tax):
             fid = existing_ft(nm, when, amt, eid) or create(dict(base, lzw_name=nm, lzw_type=typ, lzw_amount=amt,
                                                                    lzw_notes=note), c)
             fts.append((fid, ls))
+    # Matches, statuses, transfer pairs and rollups in dv.batch requests instead of one request per write.
+    ops = []
     for fid, ls in fts:
         for l in ls:
             lid = l["lzw_bankstatementlineid"]
             if not dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter=_lzw_bankstatementline_value eq {lid}")["value"]:
-                body = {"lzw_BankStatementLine@odata.bind": f"/lzw_bankstatementlines({lid})",
-                        "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({fid})",
-                        "lzw_allocatedamount": l["lzw_amount"], "lzw_matchmethod": MANUAL, "lzw_matchstatus": CONFIRMED,
-                        "lzw_confirmedon": now, "lzw_aireasoning": f"payslip_link.py: {name}"}
-                dv.post("lzw_reconciliationmatchs", body, done=lambda: bool(dv.get(
-                    f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter=_lzw_bankstatementline_value eq {lid}")["value"]))
-            dv.patch(f"lzw_bankstatementlines({lid})", {"lzw_status": L_MATCHED})
-            rollup("lzw_bankstatementlines", lid, "lzw_allocatedamount")
-        rollup("lzw_financetransactions", fid, "lzw_actualamount")
-        dv.patch(f"lzw_financetransactions({fid})", {"lzw_reconciliationstatus": RECONCILED})
+                ops.append(("POST", "lzw_reconciliationmatchs", {
+                    "lzw_BankStatementLine@odata.bind": f"/lzw_bankstatementlines({lid})",
+                    "lzw_FinanceTransaction@odata.bind": f"/lzw_financetransactions({fid})",
+                    "lzw_allocatedamount": l["lzw_amount"], "lzw_matchmethod": MANUAL, "lzw_matchstatus": CONFIRMED,
+                    "lzw_confirmedon": now, "lzw_aireasoning": f"payslip_link.py: {name}"}))
+            ops.append(("PATCH", f"lzw_bankstatementlines({lid})", {"lzw_status": L_MATCHED}))
+        ops.append(("PATCH", f"lzw_financetransactions({fid})", {"lzw_reconciliationstatus": RECONCILED}))
     for l, c in pairs:
         if len(c) != 1:
             continue
         a, b = l["lzw_bankstatementlineid"], c[0]["lzw_bankstatementlineid"]
         for x, y in ((a, b), (b, a)):
-            dv.patch(f"lzw_bankstatementlines({x})", {"lzw_status": L_TRANSFER,
-                     "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"})
-        rollup("lzw_bankstatementlines", b, "lzw_allocatedamount")
+            ops.append(("PATCH", f"lzw_bankstatementlines({x})", {"lzw_status": L_TRANSFER,
+                        "lzw_TransferCounterpart@odata.bind": f"/lzw_bankstatementlines({y})"}))
+
+    def landed(chunk):
+        lid = next(b for m, _, b in chunk if m == "POST")["lzw_BankStatementLine@odata.bind"].split("(")[1].rstrip(")")
+        return bool(dv.get(f"lzw_reconciliationmatchs?$select=lzw_reconciliationmatchid&$filter="
+                           f"_lzw_bankstatementline_value eq {lid}")["value"])
+    dv.batch(ops, done=landed)
+    dv.batch([rollup_op("lzw_bankstatementlines", l["lzw_bankstatementlineid"], "lzw_allocatedamount")
+              for _, ls in fts for l in ls]
+             + [rollup_op("lzw_bankstatementlines", c[0]["lzw_bankstatementlineid"], "lzw_allocatedamount")
+                for _, c in pairs if len(c) == 1]
+             + [rollup_op("lzw_financetransactions", fid, "lzw_actualamount") for fid, _ in fts])
     print("    written")
 
 

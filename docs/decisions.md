@@ -77,6 +77,23 @@ the payslip line, PAYG tax and employer super get their own FTs, and the bank sa
 not taken: keep super and payslips as files only (no bank line behind super). Rules: "AustralianSuper and payslips"
 in `statement-import.md`.
 
+2026-11-27: **Contract invoices Sep 2024 to Sep 2026** (owner) from the Fiscal Planner "Salary" sheet, rows 2 to 24 and
+27 to 30, treated like payslips: income at the invoice total incl GST, GST and income tax as Expenses. The owner wanted the
+GST and tax payments linked to the months they cover, so each month has GST and tax lines on the Delta Insights clearing
+account, the payment FT is matched to those lines, and the bank or AMEX payment becomes a Transfer into the account
+(matching the FT to both would count it twice). The account balance is then what is still owed (35,325.00: Sep 2026 GST
+and Jun to Sep 2026 tax), with one-off Planned Transactions on the due dates the owner gave. A year's tax is split by
+Net Amount rather than the sheet's Est. Tax, so the lines add up to what was paid (FY2026 estimate 90,418.75, paid
+82,434.30). Rules: "Contract invoices" in `statement-import.md`.
+
+2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
+the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or
+nothing) and the reads (rollup recalculations) after them. A dropped request with a POST or DELETE is checked with the
+caller's `done(chunk)` before it is resent, the same rule as `call()`. Tested against the environment: creates, updates,
+deletes and rollups; a failing change set wrote nothing; `split_match.py --batch --apply` on throwaway rows. 25 keeps each
+request well inside the proxy's 10-second limit. Used by `contract_link.py`, `split_match.py` and `payslip_link.py`;
+the other scripts still write one request at a time.
+
 ## Decisions and reasoning
 
 ### Build method

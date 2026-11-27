@@ -22,8 +22,14 @@ parser reads these names, and the Bank Statement is named after the file (withou
 | Mid-cycle export (`Mid-cycle` folder) | the same pattern with `<start> to <end>` instead of the period end, for example `AMEX 2026-11-14 to 2026-11-21.xlsx`, `ANZ Plus Flex Saver 2026-10-31 to 2026-11-20 - Flex Saver x5149 Transaction List.pdf` |
 
 Dates are `yyyy-mm-dd` and are the period printed on the statement, not the download date.
-The Drive connector cannot move or rename files it did not create (`canMoveItemWithinDrive` is false on files the
-owner uploads), so the session reports the new names and the owner moves them by hand.
+**Run statement imports from Claude Code on the owner's Windows machine** (owner, 2026-11-27). Google Drive is
+mounted there as `G:\My Drive\Statements`: read the files from `G:\My Drive\Statements\Inbox` and, once a statement is
+imported and its check passes, rename and move it with PowerShell, for example
+`Move-Item -LiteralPath 'G:\My Drive\Statements\Inbox\PaySlip.pdf' -Destination 'G:\My Drive\Statements\Processed\DeltaInsights_2026-11.pdf'`
+(mid-cycle exports to `Processed\Mid-cycle`). Check the target name does not exist first. A cloud session can only
+reach the files through the Drive connector, which cannot move or rename files it did not create
+(`canMoveItemWithinDrive` is false on files the owner uploads): there it imports, reports the new names, and the owner
+moves them.
 
 1. **Get the real file, not its text.** Use the Drive connector's `download_file_content`: it saves the file to
    disk. Parse PDFs by column position (`pdfplumber`), spreadsheets with `openpyxl` or `csv`. Do not import from

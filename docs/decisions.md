@@ -603,8 +603,10 @@ Owner's request, to use less of the plan allowance:
 - The Drive connector shows `canEdit` and `canMoveItemWithinDrive` false on every file the owner uploads (also the ones
   already in Processed); only items it created itself (the Mid-cycle folder) are true. A move tried on 2026-11-27 failed for
   all five files: "The request's OAuth scopes do not allow moving this file." The allow rules in `.claude/settings.json` only
-  skip the prompt; they cannot widen the connector's access. Earlier moves were done by a session with other access, so the files stay in the
-  inbox and the owner moves and renames them.
+  skip the prompt; they cannot widen the connector's access. The 21 Nov cloud session (ANZ NZ Go import) moved its PDF with the same connector call
+  (`update_file` with `parentId` = the Processed folder) and it worked, so the connector's Google access has since narrowed
+  (most likely a reconnect). Until the owner reconnects Google Drive with full access, the files stay in the inbox and the
+  owner moves them; checked again 2026-11-28 (AustralianSuper CSVs and payslips: `canEdit` and `canMoveItemWithinDrive` false).
 - The 23 Nov AMEX "DIRECT DEBIT RECEIVED" +1,000 and the 24 Nov Flex "PAYMENT TO AMERICAN EXPRESS" -1,000 were paired as a
   transfer by hand: `reconcile.py` did not pair them (another -1,000 Flex line the same day, W Support). Same for a 0.01
   test transfer between Everyday and Growth Saver on 25 Nov.

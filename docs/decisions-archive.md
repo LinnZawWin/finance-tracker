@@ -749,5 +749,8 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   1,348.00, 4,602.00, 5,776.00; Employer super 800.00, 1,900.00, 2,200.00.
 - 87 Delta Insights lines got a Bank Category; the three payslip super lines and 300 AustralianSuper lines (fees,
   insurance, contributions tax, tax benefits, returns, the 6 Feb 2026 $10 personal contribution) set Ignored.
+- Paxus (40 pay advices, imported earlier the same day by another session with the gross rule): 40 Salary FTs set to
+  the net pay (for example 3,909.12 -> 2,635.12 on 20 Nov 2023), 40 Income Tax withheld and 40 Employer super FTs
+  deleted, the 40 super lines Ignored, 120 lines given a Bank Category.
 - Planned Transactions: the two owed ones got Transfer To Delta Insights and lost Category Tax; the Salary series and its
   12 open instances -18,333.33 -> -12,557.33. Delta Insights balance unchanged at -35,325.00.

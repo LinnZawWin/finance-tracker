@@ -111,7 +111,8 @@ creates Type Transfer when it is set (an Expense would count the tax twice); the
 Transfer To Delta Insights and no Category. **Super**: locked until preservation age, so nothing inside the fund is an
 FT: the payslip's employer super line and the AustralianSuper fees, insurance, contributions tax, tax benefits and
 returns are Ignored (closes pending item 11); a voluntary contribution is an Expense FT, Category Investment (owner),
-with its fund line Ignored. The Salary series became the Nov net pay, -12,557.33.
+with its fund line Ignored. The Salary series became the Nov net pay, -12,557.33. The Paxus pay advices (imported the
+same day with the gross rule) were converted the same way.
 
 2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
 the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or

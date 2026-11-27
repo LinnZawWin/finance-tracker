@@ -186,12 +186,13 @@ ATO**:
 
 - Income = Total incl GST; GST and income tax are Expenses (Tax) on their own FTs (owner, 2026-11-27).
 - A year's tax is split over its months by Net Amount (cents on the last month): FY2025 = Sep 2024 to Jun 2025,
-  77,415.45 paid 12 Nov 2025 (no bank line, no account: Needs Details); FY2026 = Jul 2025 to May 2026, 82,434.30
+  77,415.45 paid 12 Nov 2025 from Flex Saver (no bank line); FY2026 = Jul 2025 to May 2026, 82,434.30
   paid 24 Nov 2026 on AMEX. Jun to Sep 2026 use the sheet's Est. Tax (33,575.00) and are owed.
 - GST quarters follow the sheet's Total GST column (Sep 2024; Oct to Dec 2024; Jan to Mar, Apr to Jun, Jul to Aug,
   Sep to Nov 2025; Dec 2025 to Feb, Mar to May, Jun to Aug 2026). The six payments before the bank history are FTs
   "GST Payment (for <a> to <b> income)", Paid From Flex Saver, dated from the sheet's "GST Account Transfer Out Total"
-  column (the first new date after the quarter; it gives 27 Apr 2026 for the quarter paid 28 Apr). Sep 2026 GST
+  column (the first new date after the quarter). The owner confirmed the rule: the column's 27 Apr 2026 is the day the
+  Dec 2025 to Feb 2026 GST was paid (the Flex line posted 28 Apr; the FT is dated 27 Apr). Sep 2026 GST
   (1,750.00) is owed.
 - Owed amounts have one-off Planned Transactions (Category Tax): "GST Payment (for 2026-09 income)" 1,750.00, 28 Feb 2027,
   Manual, Flex Saver; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00, 24 Nov 2027, Estimated, no Paid From.

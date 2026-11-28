@@ -23,6 +23,23 @@ Finance Transactions. It has no build step and no dependencies.
   Reconciled (difference 0, or "fully reconciled" ticked) or Partly Reconciled; an estimated transaction
   that is reconciled gets Needs Details = No.
 
+- Fourth tab **Forecast** (owner, 2026-11-28; read only): one line per week, Monday to Sunday (browser local time), for
+  the previous, current and next two weeks, with income, bills, day-to-day spending, trips and one-offs, and net. Click a
+  line to see that week's Planned Transactions (open or done) and Finance Transactions, each tagged with how it counts.
+  - **Day-to-day** = Expense FTs at Amount (before any Partner share) with no Project (trips are saved for separately),
+    not Source Recurring, and not in a planned-bill category (Support Payments, Rent, Utilities, Insurance,
+    Subscriptions, Fees and Charges, Investment, Car Maintenance, Transport, Tax, Salary and Contract Income) or a
+    one-off category (Fines, Parking Fines, Legal and Professional). The lists are `FC.planned` and `FC.oneOff`.
+  - **Allowance** = the average weekly day-to-day spending of the last 13 complete weeks, leaving out weeks with none
+    (trip weeks). Past and current weeks show what was spent of it (left or over); the current week counts the larger of
+    the two; future weeks count the allowance.
+  - **Income** and **bills** = the week's Income FTs and bill FTs plus its open Planned Transactions (a done one already
+    has its FT). Open Planned Transactions with Transfer To (the ATO payments) are added to bills as transfers. FT
+    Transfers between own accounts are listed but not counted.
+  - **Balances**: the closing balance of each account's latest statement that has one (employer accounts and zero
+    balances left out; super shown, not in the total). **AMEX**: the last closed statement (name without "to") less
+    every credit line since, and the latest balance. The AMEX exports have no due date.
+
 - The page is public, so it contains no environment details. On first use it asks for the Dataverse URL,
   tenant ID and app ID and keeps them in the browser. Never put those values in the file.
 - Sign-in is the owner's own Microsoft account (authorization code flow with PKCE) through the app

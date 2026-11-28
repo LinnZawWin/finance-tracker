@@ -69,6 +69,21 @@
   table { border-collapse:collapse; width:100%; font-size:13px; }
   th, td { text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); vertical-align:top; }
   .tablewrap { overflow-x:auto; }
+  .wk { border:1px solid var(--line); border-radius:8px; margin-bottom:6px; background:var(--card); }
+  .wk.now { border-color:var(--accent); }
+  .wk summary { display:grid; grid-template-columns:150px repeat(5, minmax(0, 1fr)); gap:8px; align-items:baseline; padding:9px 12px; cursor:pointer; list-style:none; }
+  .wk summary::-webkit-details-marker { display:none; }
+  .wk summary b { font-weight:600; }
+  .wk summary span { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .wk summary small { display:block; color:var(--muted); font-size:11px; }
+  .wk .body { padding:0 12px 10px; }
+  .wk h4 { font-size:12px; color:var(--muted); margin:10px 0 4px; }
+  .wk table td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tag { font-size:11px; padding:1px 6px; border-radius:9px; border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+  .tag.daily { color:var(--accent); border-color:var(--accent); }
+  .neg { color:var(--bad); }
+  .pos { color:var(--ok); }
+  @media (max-width:760px) { .wk summary { grid-template-columns:1fr 1fr; } .wk summary span { text-align:left; } }
   .hidden { display:none !important; }
   .muted { color:var(--muted); font-size:13px; }
 </style>
@@ -97,6 +112,7 @@
       <button data-tab="create" class="on">Create</button>
       <button data-tab="view">View</button>
       <button data-tab="reconcile">Reconcile</button>
+      <button data-tab="forecast">Forecast</button>
     </div>
 
     <div id="tab-create">
@@ -194,6 +210,19 @@
         <button id="btnRcMatch" class="primary" disabled>Match</button>
         <button id="btnRcClear">Clear</button>
       </div>
+    </div>
+    <div id="tab-forecast" class="hidden">
+      <section class="card">
+        <h2>Weekly forecast (Monday to Sunday)</h2>
+        <p id="fcInfo" class="muted" style="margin:0 0 8px"></p>
+        <div class="row-actions" style="margin-top:0"><button id="btnFcLoad">Reload</button></div>
+      </section>
+      <div id="fcWeeks"></div>
+      <section class="card">
+        <h2>Balances</h2>
+        <div class="tablewrap"><table id="fcBalances"></table></div>
+        <p id="fcAmex" class="muted" style="margin:8px 0 0"></p>
+      </section>
     </div>
   </section>
 </main>
@@ -868,6 +897,143 @@ $("btnRcLoad").onclick = () => rcLoad().catch(e => toast(e.message, true));
 $("rcAccount").onchange = () => rcRender();
 $("rcSearch").oninput = () => rcRender();
 
+
+// ---------------------------------------------------------------- forecast (weekly, Monday to Sunday)
+// Day-to-day spending = Expense FTs at Amount that are not on a trip (Project), not created from a Planned
+// Transaction (Source Recurring), not a planned bill or a one-off category. The allowance is its weekly average over
+// the last FC.weeksBack complete weeks, leaving out weeks with none (trip weeks).
+const FC = { weeksBack: 13, loaded: false, recurring: OPT + 3,
+  planned: new Set(["Support Payments", "Rent", "Utilities", "Insurance", "Subscriptions", "Fees and Charges", "Investment",
+    "Car Maintenance", "Transport", "Tax", "Salary and Contract Income"]),
+  oneOff: new Set(["Fines", "Parking Fines", "Legal and Professional"]) };
+const ACCT = { super: OPT + 5, employer: OPT + 6 };
+const mondayOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+const shortDay = d => d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+const catName = id => ref.categories.find(c => c.id === id)?.plain || "";
+async function getAll(url) {
+  const out = [];
+  while (url) {
+    const j = await api("GET", url);
+    out.push(...j.value);
+    url = j["@odata.nextLink"] ? j["@odata.nextLink"].split("/api/data/v9.2/")[1] : null;
+  }
+  return out;
+}
+function fcKind(t) {
+  if (t.lzw_type === OPT + 2) return "transfer";
+  if (t.lzw_type === OPT + 1) return "income";
+  const cat = catName(t._lzw_category_value);
+  if (t._lzw_project_value) return "trip";
+  if (t.lzw_source === FC.recurring || FC.planned.has(cat)) return "bill";
+  if (FC.oneOff.has(cat)) return "one-off";
+  return "daily";
+}
+async function fcLoad() {
+  $("fcInfo").textContent = "Loading...";
+  const cur = mondayOf(new Date()), start = addDays(cur, -7 * FC.weeksBack), end = addDays(cur, 21);
+  const ftSel = "lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_amount,lzw_source,_lzw_category_value,_lzw_project_value,_lzw_paidfrom_value";
+  const ftFlt = `statecode eq 0 and lzw_transactiondate ge ${start.toISOString()} and lzw_transactiondate lt ${end.toISOString()}`;
+  const apSel = "subject,scheduledstart,lzw_amount,statecode,lzw_payee,_lzw_transferto_value,_lzw_paidfrom_value,_lzw_financecategory_value,_transactioncurrencyid_value";
+  const apFlt = `lzw_amount ne null and statecode ne 2 and scheduledstart ge ${addDays(cur, -7).toISOString()} and scheduledstart lt ${end.toISOString()}`;
+  const [fts, aps, sts, accs] = await Promise.all([
+    getAll(`lzw_financetransactions?$select=${ftSel}&$filter=${encodeURIComponent(ftFlt)}&$orderby=lzw_transactiondate`),
+    getAll(`appointments?$select=${apSel}&$filter=${encodeURIComponent(apFlt)}&$orderby=scheduledstart`),
+    getAll(`lzw_bankstatements?$select=lzw_name,lzw_periodend,lzw_closingbalance,_lzw_bankaccount_value&$filter=${encodeURIComponent("lzw_closingbalance ne null")}&$orderby=lzw_periodend desc`),
+    getAll("lzw_bankaccounts?$select=lzw_name,lzw_shortname,lzw_accounttype&$filter=statecode eq 0"),
+  ]);
+  const weekOf = d => ymd(mondayOf(d));
+  const hist = {};
+  for (const t of fts) {
+    t.when = new Date(t.lzw_transactiondate); t.kind = fcKind(t);
+    if (t.kind === "daily") hist[weekOf(t.when)] = (hist[weekOf(t.when)] || 0) + Number(t.lzw_amount || 0);
+  }
+  const past = [...Array(FC.weeksBack)].map((_, i) => hist[ymd(addDays(start, 7 * i))] || 0);
+  const used = past.filter(v => v > 0);
+  const allowance = used.length ? Math.round(used.reduce((a, b) => a + b, 0) / used.length * 100) / 100 : 0;
+  $("fcInfo").textContent = `Allowance ${money(allowance)} a week: the average day-to-day spending of ${used.length} of the ` +
+    `${FC.weeksBack} weeks ${shortDay(start)} to ${shortDay(addDays(cur, -1))} (weeks with none, such as trip weeks, left out; ` +
+    `lowest ${money(Math.min(...used))}, highest ${money(Math.max(...used))}). Day-to-day leaves out trips, planned bills ` +
+    `and one-offs (${[...FC.oneOff].join(", ")}). Click a week for its transactions.`;
+
+  const box = $("fcWeeks"); box.replaceChildren();
+  const labels = ["Previous week", "This week", "Next week", "Week after"];
+  for (let i = -1; i <= 2; i++) {
+    const w = addDays(cur, 7 * i), wEnd = addDays(w, 7);
+    const wf = fts.filter(t => t.when >= w && t.when < wEnd);
+    const wp = aps.filter(a => { const d = new Date(a.scheduledstart); return d >= w && d < wEnd; });
+    const sum = (arr, f) => arr.reduce((s, x) => s + f(x), 0);
+    const amt = x => Number(x.lzw_amount || 0);
+    const open = wp.filter(a => a.statecode !== 1);
+    const income = sum(wf.filter(t => t.kind === "income"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) < 0), a => -amt(a));
+    const bills = sum(wf.filter(t => t.kind === "bill"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) > 0), amt);
+    const xfer = sum(open.filter(a => a._lzw_transferto_value), amt);
+    const other = sum(wf.filter(t => t.kind === "trip" || t.kind === "one-off"), amt);
+    const spent = sum(wf.filter(t => t.kind === "daily"), amt);
+    const daily = i < 0 ? spent : i === 0 ? Math.max(spent, allowance) : allowance;
+    const net = income - bills - xfer - other - daily;
+    const left = allowance - spent;
+    const dailyCell = i <= 0
+      ? el("span", {}, `${money(spent)} / ${money(allowance)}`, el("small", { class: left >= 0 ? "pos" : "neg", text: left >= 0 ? `${money(left)} left` : `${money(-left)} over` }))
+      : el("span", {}, money(allowance), el("small", { text: "allowance" }));
+    const cell = (v, label) => el("span", {}, money(v), el("small", { text: label }));
+    const det = el("details", { class: "wk" + (i === 0 ? " now" : "") },
+      el("summary", {},
+        el("div", {}, el("b", { text: labels[i + 1] }), el("small", { text: `${shortDay(w)} to ${shortDay(addDays(w, 6))}` })),
+        cell(income, "income"), cell(bills + xfer, xfer ? `bills incl. ${money(xfer)} transfers` : "bills"), dailyCell,
+        cell(other, "trips, one-offs"), el("span", { class: net < 0 ? "neg" : "pos" }, money(net), el("small", { text: "net" }))));
+    const body = el("div", { class: "body" });
+    body.append(el("h4", { text: `Planned Transactions (${wp.length})` }));
+    if (!wp.length) body.append(el("p", { class: "muted", text: "None." }));
+    else body.append(el("div", { class: "tablewrap" }, el("table", {}, ...wp.map(a => el("tr", {},
+      el("td", { text: shortDay(new Date(a.scheduledstart)) }),
+      el("td", {}, el("b", { text: a.subject || "" }), el("div", { class: "muted", text: [a.lzw_payee, a["_lzw_financecategory_value" + FV], a["_lzw_paidfrom_value" + FV]].filter(Boolean).join(" · ") })),
+      el("td", {}, el("span", { class: "tag", text: a._lzw_transferto_value ? "transfer" : amt(a) < 0 ? "income" : "bill" }), " ",
+        el("span", { class: "tag", text: a.statecode === 1 ? "done" : "open" })),
+      el("td", { class: "n", text: `${money(Math.abs(amt(a)))}${a["_transactioncurrencyid_value" + FV] && !/AUD|Australian/.test(a["_transactioncurrencyid_value" + FV]) ? " " + a["_transactioncurrencyid_value" + FV] : ""}` }))))));
+    body.append(el("h4", { text: `Finance Transactions (${wf.length})` }));
+    if (!wf.length) body.append(el("p", { class: "muted", text: "None." }));
+    else body.append(el("div", { class: "tablewrap" }, el("table", {}, ...wf.map(t => el("tr", {},
+      el("td", { text: shortDay(t.when) }),
+      el("td", {}, el("b", { text: t.lzw_name || "" }), el("div", { class: "muted", text: [t.lzw_payee, t["_lzw_category_value" + FV], t["_lzw_paidfrom_value" + FV], t["_lzw_project_value" + FV]].filter(Boolean).join(" · ") })),
+      el("td", {}, el("span", { class: "tag" + (t.kind === "daily" ? " daily" : ""), text: t.kind === "daily" ? "day-to-day" : t.kind })),
+      el("td", { class: "n" + (t.kind === "income" ? " pos" : ""), text: (t.kind === "income" ? "+" : "") + money(t.lzw_amount) }))))));
+    det.append(body);
+    box.append(det);
+  }
+
+  // Balances: the closing balance of each account's latest statement that has one.
+  const acc = Object.fromEntries(accs.map(a => [a.lzw_bankaccountid, a]));
+  const latest = {};
+  for (const s of sts) if (!(s._lzw_bankaccount_value in latest)) latest[s._lzw_bankaccount_value] = s;
+  const rowsB = Object.entries(latest).map(([id, s]) => ({ a: acc[id], s }))
+    .filter(x => x.a && x.a.lzw_accounttype !== ACCT.employer && Number(x.s.lzw_closingbalance) !== 0)
+    .sort((x, y) => x.a.lzw_name.localeCompare(y.a.lzw_name));
+  let total = 0;
+  const tb = $("fcBalances"); tb.replaceChildren(el("tr", {}, el("th", { text: "Account" }), el("th", { text: "As of" }), el("th", { class: "n", text: "Balance" })));
+  for (const x of rowsB) {
+    const v = Number(x.s.lzw_closingbalance), sup = x.a.lzw_accounttype === ACCT.super;
+    if (!sup) total += v;
+    tb.append(el("tr", {}, el("td", { text: x.a.lzw_name + (sup ? " (locked, not in total)" : "") }), el("td", { text: x.s.lzw_periodend }),
+      el("td", { class: "n" + (v < 0 ? " neg" : ""), text: money(v) })));
+  }
+  tb.append(el("tr", {}, el("td", {}, el("b", { text: "Total" })), el("td", {}), el("td", { class: "n" }, el("b", { text: money(total) }))));
+
+  // AMEX: the last closed statement (no "to" in its name) less every credit since; then the running balance.
+  const amex = accs.find(a => (a.lzw_shortname || "").toLowerCase().split(";").map(x => x.trim()).includes("amex"));
+  const closed = amex && sts.find(s => s._lzw_bankaccount_value === amex.lzw_bankaccountid && !/ to /.test(s.lzw_name));
+  if (closed) {
+    const cr = await getAll(`lzw_bankstatementlines?$select=lzw_amount&$filter=${encodeURIComponent(`_lzw_bankaccount_value eq ${amex.lzw_bankaccountid} and lzw_transactiondate gt ${closed.lzw_periodend} and lzw_amount gt 0`)}`);
+    const credits = cr.reduce((s, x) => s + Number(x.lzw_amount), 0);
+    const owed = Math.max(-Number(closed.lzw_closingbalance) - credits, 0);
+    const now = latest[amex.lzw_bankaccountid];
+    $("fcAmex").textContent = `AMEX: the statement to ${closed.lzw_periodend} was ${money(-closed.lzw_closingbalance)}; ` +
+      `payments and credits since ${money(credits)}; still due ${money(owed)}.` +
+      (now && now !== closed ? ` Balance ${money(-now.lzw_closingbalance)} as of ${now.lzw_periodend}, due on the statement that closes on the 13th.` : "");
+  }
+  FC.loaded = true;
+}
+$("btnFcLoad").onclick = () => fcLoad().catch(e => toast(e.message, true));
+
 // ---------------------------------------------------------------- tabs and start-up
 function showTab(tab) {
   for (const x of document.querySelectorAll(".tabs button")) {
@@ -875,6 +1041,7 @@ function showTab(tab) {
     $(`tab-${x.dataset.tab}`).classList.toggle("hidden", x.dataset.tab !== tab);
   }
   if (tab === "reconcile" && !rc.loaded) rcLoad().catch(e => toast(e.message, true));
+  if (tab === "forecast" && !FC.loaded) fcLoad().catch(e => toast(e.message, true));
 }
 for (const b of document.querySelectorAll(".tabs button")) b.onclick = () => showTab(b.dataset.tab);
 (async function start() {

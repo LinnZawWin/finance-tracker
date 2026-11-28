@@ -40,11 +40,13 @@ Finance Transactions. It has no build step and no dependencies.
     Transfers between own accounts are listed but not counted.
   - **Monthly 60/20/20** (owner, 2026-11-28): from April 2026, newest first, each month's income (Income FTs) and the
     share of it spent on Needs and Wants (Expense FTs by their category's **Budget Group**; an expense whose category has
-    none counts as a want), and Savings = income left over (Savings-group expenses such as Investment shown as
+    none counts as a want) at full **Amount**: Partner's share is my expense, spent on Partner, who does not pay it back
+    (owner, 2026-11-28; My Cost and Partner Share are only for information), and Savings = income left over (Savings-group expenses such as Investment shown as
     "invested"). Targets 60 / 20 / 20: green when needs and wants are at or under, savings at or over. Transfers are left out.
   - **Balances**: the closing balance of each account's latest statement that has one (employer accounts and zero
     balances left out; super shown, not in the total). **AMEX**: the last closed statement (name without "to") less
-    every credit line since, and the latest balance. The AMEX exports have no due date.
+    every credit line since, and the latest balance. The AMEX exports have no due date: the bill is paid by direct debit
+    from Flex Saver on the 23rd of each month, the due date is the 27th (owner, 2026-11-28).
 
 - The page is public, so it contains no environment details. On first use it asks for the Dataverse URL,
   tenant ID and app ID and keeps them in the browser. Never put those values in the file.

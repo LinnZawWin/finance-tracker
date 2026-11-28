@@ -135,6 +135,8 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 - Finance Transaction **Estimated Amount** is positive.
 - Finance Transaction **Actual Amount** (rollup of confirmed matches) is signed like the bank. **Actual Cost**
   flips the sign for expenses.
+- **Reports count expenses at full Amount** (owner, 2026-11-28): Partner's share is my expense, spent on Partner, and is
+  not paid back. My Cost and Partner Share are only for information.
 - Finance Transaction Original Amount is positive, like Amount. Transfer: money out of Paid From.
 - **Salary is net** (owner, 2026-11-27): one Salary FT per payslip or invoice, matched to the gross line (+) and the
   GST and tax lines (-) on the Delta Insights clearing account, like a split bill. No FTs for GST, income tax or

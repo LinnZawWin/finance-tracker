@@ -120,8 +120,10 @@ removed the same day at the owner's request): one expandable line per week, Mond
 past FTs, and the past and current week's FTs deducted from it. Trip FTs (Project set) are left out of the allowance because the
 owner saves for holidays separately; weeks with no day-to-day spending (trip weeks) are left out of the average.
 Amount, not My Cost, because the forecast is cash out of the owner's accounts. Read only, no schema change.
-The allowance is the owner's target (585.35 a week, set 2026-11-28 with the savings plan: about 60% bills, 20%
-savings, 20% day-to-day), kept as a constant in the page rather than a Dataverse setting because only the page uses it.
+The allowance (585.35 a week from 2027, set 2026-11-28 with the savings plan: about 60% bills, 20% savings, 20%
+day-to-day) is a Planned Transaction per week with the new Payment Type **Budget**, which the scheduled flow skips. Chosen
+over a constant in the page so the owner can move money between weeks after overspending by editing the next week's row.
+GST Planned Transaction Paid From changed to Growth Saver (the owner holds the 1,750 there from the Jan 2027 pay).
 
 2026-11-28: **Leave in Google Calendar** (owner): the Oct 2026 payslip paid 152 hours, not 176; the owner's Xero
 leave list showed Leave Without Pay 28 to 30 Oct (24 hours) and Annual Leave 26 to 27 Oct (16 hours, the payslip's

@@ -902,8 +902,9 @@ $("rcSearch").oninput = () => rcRender();
 // Day-to-day spending = Expense FTs at Amount that are not on a trip (Project), not created from a Planned
 // Transaction (Source Recurring), not a planned bill or a one-off category. The allowance is its weekly average over
 // the last FC.weeksBack complete weeks, leaving out weeks with none (trip weeks).
-// target: the weekly allowance the owner set (savings plan, 2026-11-28); null = use the past average.
-const FC = { weeksBack: 13, target: 585.35, loaded: false, recurring: OPT + 3,
+// The weekly allowance is the Planned Transaction with Payment Type Budget dated in that week (FC.budget);
+// a week without one falls back to the past average.
+const FC = { weeksBack: 13, budget: OPT + 3, loaded: false, recurring: OPT + 3,
   planned: new Set(["Support Payments", "Rent", "Utilities", "Insurance", "Subscriptions", "Fees and Charges", "Investment",
     "Car Maintenance", "Transport", "Tax", "Salary and Contract Income"]),
   oneOff: new Set(["Fines", "Parking Fines", "Legal and Professional"]) };
@@ -934,7 +935,7 @@ async function fcLoad() {
   const cur = mondayOf(new Date()), start = addDays(cur, -7 * FC.weeksBack), end = addDays(cur, 21);
   const ftSel = "lzw_name,lzw_transactiondate,lzw_type,lzw_payee,lzw_amount,lzw_source,_lzw_category_value,_lzw_project_value,_lzw_paidfrom_value";
   const ftFlt = `statecode eq 0 and lzw_transactiondate ge ${start.toISOString()} and lzw_transactiondate lt ${end.toISOString()}`;
-  const apSel = "subject,scheduledstart,lzw_amount,statecode,lzw_payee,_lzw_transferto_value,_lzw_paidfrom_value,_lzw_financecategory_value,_transactioncurrencyid_value";
+  const apSel = "subject,scheduledstart,lzw_amount,lzw_paymenttype,statecode,lzw_payee,_lzw_transferto_value,_lzw_paidfrom_value,_lzw_financecategory_value,_transactioncurrencyid_value";
   const apFlt = `lzw_amount ne null and statecode ne 2 and scheduledstart ge ${addDays(cur, -7).toISOString()} and scheduledstart lt ${end.toISOString()}`;
   const [fts, aps, sts, accs] = await Promise.all([
     getAll(`lzw_financetransactions?$select=${ftSel}&$filter=${encodeURIComponent(ftFlt)}&$orderby=lzw_transactiondate`),
@@ -951,8 +952,9 @@ async function fcLoad() {
   const past = [...Array(FC.weeksBack)].map((_, i) => hist[ymd(addDays(start, 7 * i))] || 0);
   const used = past.filter(v => v > 0);
   const average = used.length ? Math.round(used.reduce((a, b) => a + b, 0) / used.length * 100) / 100 : 0;
-  const allowance = FC.target ?? average;
-  $("fcInfo").textContent = (FC.target != null ? `Allowance ${money(allowance)} a week (your target). Past average ${money(average)}: ` : `Allowance ${money(allowance)} a week: `) +
+  const isBudget = a => a.lzw_paymenttype === FC.budget;
+  $("fcInfo").textContent = `Each week's allowance is its Planned Transaction with Payment Type Budget (edit it to move money ` +
+    `between weeks); a week without one uses the past average, ${money(average)}: ` +
     `the average day-to-day spending of ${used.length} of the ` +
     `${FC.weeksBack} weeks ${shortDay(start)} to ${shortDay(addDays(cur, -1))} (weeks with none, such as trip weeks, left out; ` +
     `lowest ${money(Math.min(...used))}, highest ${money(Math.max(...used))}). Day-to-day leaves out trips, planned bills ` +
@@ -966,7 +968,9 @@ async function fcLoad() {
     const wp = aps.filter(a => { const d = new Date(a.scheduledstart); return d >= w && d < wEnd; });
     const sum = (arr, f) => arr.reduce((s, x) => s + f(x), 0);
     const amt = x => Number(x.lzw_amount || 0);
-    const open = wp.filter(a => a.statecode !== 1);
+    const budgets = wp.filter(isBudget);
+    const allowance = budgets.length ? sum(budgets, amt) : average;
+    const open = wp.filter(a => a.statecode !== 1 && !isBudget(a));
     const income = sum(wf.filter(t => t.kind === "income"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) < 0), a => -amt(a));
     const bills = sum(wf.filter(t => t.kind === "bill"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) > 0), amt);
     const xfer = sum(open.filter(a => a._lzw_transferto_value), amt);
@@ -977,7 +981,7 @@ async function fcLoad() {
     const left = allowance - spent;
     const dailyCell = i <= 0
       ? el("span", {}, `${money(spent)} / ${money(allowance)}`, el("small", { class: left >= 0 ? "pos" : "neg", text: left >= 0 ? `${money(left)} left` : `${money(-left)} over` }))
-      : el("span", {}, money(allowance), el("small", { text: "allowance" }));
+      : el("span", {}, money(allowance), el("small", { text: budgets.length ? "allowance" : "allowance (average)" }));
     const cell = (v, label) => el("span", {}, money(v), el("small", { text: label }));
     const det = el("details", { class: "wk" + (i === 0 ? " now" : "") },
       el("summary", {},
@@ -990,8 +994,8 @@ async function fcLoad() {
     else body.append(el("div", { class: "tablewrap" }, el("table", {}, ...wp.map(a => el("tr", {},
       el("td", { text: shortDay(new Date(a.scheduledstart)) }),
       el("td", {}, el("b", { text: a.subject || "" }), el("div", { class: "muted", text: [a.lzw_payee, a["_lzw_financecategory_value" + FV], a["_lzw_paidfrom_value" + FV]].filter(Boolean).join(" · ") })),
-      el("td", {}, el("span", { class: "tag", text: a._lzw_transferto_value ? "transfer" : amt(a) < 0 ? "income" : "bill" }), " ",
-        el("span", { class: "tag", text: a.statecode === 1 ? "done" : "open" })),
+      el("td", {}, el("span", { class: "tag" + (isBudget(a) ? " daily" : ""), text: isBudget(a) ? "allowance" : a._lzw_transferto_value ? "transfer" : amt(a) < 0 ? "income" : "bill" }), " ",
+        isBudget(a) ? null : el("span", { class: "tag", text: a.statecode === 1 ? "done" : "open" })),
       el("td", { class: "n", text: `${money(Math.abs(amt(a)))}${a["_transactioncurrencyid_value" + FV] && !/AUD|Australian/.test(a["_transactioncurrencyid_value" + FV]) ? " " + a["_transactioncurrencyid_value" + FV] : ""}` }))))));
     body.append(el("h4", { text: `Finance Transactions (${wf.length})` }));
     if (!wf.length) body.append(el("p", { class: "muted", text: "None." }));

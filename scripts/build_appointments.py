@@ -87,6 +87,19 @@ def link_columns():
         print(f"  recurringappointmentmaster.{cl} linked to appointment.{cl}")
 
 
+PAYMENT_BUDGET = 859130003  # Payment Type "Budget": a weekly spending allowance, never turned into a Finance Transaction
+
+
+def ensure_budget_option():
+    p = "GlobalOptionSetDefinitions(Name='lzw_paymenttype')"
+    has = lambda: any(o["Value"] == PAYMENT_BUDGET for o in dv.get(p)["Options"])
+    if has():
+        return
+    dv.post("InsertOptionValue", {"OptionSetName": "lzw_paymenttype", "Value": PAYMENT_BUDGET,
+                                  "Label": label("Budget"), "SolutionUniqueName": dv.SOLUTION}, done=has)
+    print("  + Payment Type option 'Budget'")
+
+
 def ensure_source_option():
     p = ("EntityDefinitions(LogicalName='lzw_financetransaction')/Attributes(LogicalName='lzw_source')/"
          "Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$expand=OptionSet($select=Options)")
@@ -215,6 +228,7 @@ def main():
         ensure_payee(tl)
     link_columns()
     ensure_source_option()
+    ensure_budget_option()
     add_components()
     for tl in TABLES:
         rename_table(tl)

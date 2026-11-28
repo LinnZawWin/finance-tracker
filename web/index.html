@@ -902,7 +902,8 @@ $("rcSearch").oninput = () => rcRender();
 // Day-to-day spending = Expense FTs at Amount that are not on a trip (Project), not created from a Planned
 // Transaction (Source Recurring), not a planned bill or a one-off category. The allowance is its weekly average over
 // the last FC.weeksBack complete weeks, leaving out weeks with none (trip weeks).
-const FC = { weeksBack: 13, loaded: false, recurring: OPT + 3,
+// target: the weekly allowance the owner set (savings plan, 2026-11-28); null = use the past average.
+const FC = { weeksBack: 13, target: 585.35, loaded: false, recurring: OPT + 3,
   planned: new Set(["Support Payments", "Rent", "Utilities", "Insurance", "Subscriptions", "Fees and Charges", "Investment",
     "Car Maintenance", "Transport", "Tax", "Salary and Contract Income"]),
   oneOff: new Set(["Fines", "Parking Fines", "Legal and Professional"]) };
@@ -949,8 +950,10 @@ async function fcLoad() {
   }
   const past = [...Array(FC.weeksBack)].map((_, i) => hist[ymd(addDays(start, 7 * i))] || 0);
   const used = past.filter(v => v > 0);
-  const allowance = used.length ? Math.round(used.reduce((a, b) => a + b, 0) / used.length * 100) / 100 : 0;
-  $("fcInfo").textContent = `Allowance ${money(allowance)} a week: the average day-to-day spending of ${used.length} of the ` +
+  const average = used.length ? Math.round(used.reduce((a, b) => a + b, 0) / used.length * 100) / 100 : 0;
+  const allowance = FC.target ?? average;
+  $("fcInfo").textContent = (FC.target != null ? `Allowance ${money(allowance)} a week (your target). Past average ${money(average)}: ` : `Allowance ${money(allowance)} a week: `) +
+    `the average day-to-day spending of ${used.length} of the ` +
     `${FC.weeksBack} weeks ${shortDay(start)} to ${shortDay(addDays(cur, -1))} (weeks with none, such as trip weeks, left out; ` +
     `lowest ${money(Math.min(...used))}, highest ${money(Math.max(...used))}). Day-to-day leaves out trips, planned bills ` +
     `and one-offs (${[...FC.oneOff].join(", ")}). Click a week for its transactions.`;

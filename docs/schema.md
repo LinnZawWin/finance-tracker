@@ -142,6 +142,7 @@ Entity set: `lzw_financecategories`. Primary column: `lzw_name` (Name, text 200)
 |---|---|---|---|
 | Parent Category | `lzw_parentcategory` | Lookup to lzw_financecategory, Restrict delete (relationship `lzw_financecategory_ParentCategory`, navigation property `lzw_ParentCategory`) |  |
 | Category Type | `lzw_categorytype` | Choice: Expense (859130000), Income (859130001), Both (859130002) |  |
+| Budget Group | `lzw_budgetgroup` | Choice: Needs (859130000), Wants (859130001), Savings (859130002) |  |
 
 ### Finance Project (`lzw_financeproject`)
 

@@ -251,7 +251,7 @@ ATO**:
   Dec 2025 to Feb 2026 GST was paid (the Flex line posted 28 Apr). Sep 2026 GST (1,750.00) is owed. (The GST
   Payment and Income Tax FTs were deleted on 2026-11-27, net only.)
 - Owed amounts have one-off Planned Transactions with **Transfer To Delta Insights** and no Category: "GST Payment (for
-  2026-09 income)" 1,750.00, 28 Feb 2027, Manual, Growth Saver; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00,
+  2026-09 income)" 1,750.00, 28 Feb 2027, Manual, AMEX; "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00,
   24 Nov 2027, Estimated, no Paid From. The flow creates **Transfer** FTs from them (the tax is already off the net
   Salary FTs, so an Expense would count it twice). Then: add a `DeltaInsights_ATO_<date>` line (`GST paid - 2026-09..2026-09`
   or `Income tax paid - FY2027`, + the amount paid), match the Transfer FT to the bank payment line (-) with

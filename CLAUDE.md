@@ -112,6 +112,10 @@ Plus `account.lzw_isbank` and the Account view "Banks". Employer accounts (clear
 Mine, Shared with Partner (A), All for Partner (AA), Paid for Others.
 Finance Transaction **Source**: Keep (859130000), Manual, Import, Recurring (859130003).
 Finance Transaction **Type**: Expense (859130000), Income, Transfer (859130002).
+Finance Category **Budget Group** `lzw_budgetgroup` (Needs 859130000, Wants, Savings) for the 60/20/20 plan: Needs =
+Rent, Utilities, Groceries, Insurance, Support Payments, Health, Public Transport, Fuel, Car Maintenance, Transport,
+Tolls, Parking, Tax, Fees and Charges, Legal and Professional, Education, Moving and Relocation, Pets, Home and Hardware;
+Savings = Investment; every other expense category is Wants; income categories and Cash Withdrawal have none.
 Finance Transaction **Claim Type**: Employer (859130000), Income Tax; **Claim Status**: Pending (859130000), Claimed;
 **Claim Amount** (money, empty = the whole Amount). Views "Owed to me" and "Claims".
 

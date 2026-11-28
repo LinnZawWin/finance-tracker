@@ -123,7 +123,12 @@ Amount, not My Cost, because the forecast is cash out of the owner's accounts. R
 The allowance (585.35 a week from 2027, set 2026-11-28 with the savings plan: about 60% bills, 20% savings, 20%
 day-to-day) is a Planned Transaction per week with the new Payment Type **Budget**, which the scheduled flow skips. Chosen
 over a constant in the page so the owner can move money between weeks after overspending by editing the next week's row.
-GST Planned Transaction Paid From changed to Growth Saver (the owner holds the 1,750 there from the Jan 2027 pay).
+Then (owner, same day) GST Paid From set to AMEX, the AMEX bill being paid from Flex Saver. The December allowances
+were recalculated from the AMEX bill and the money kept for the rest of that week.
+**Budget Group** on Finance Category (Needs, Wants, Savings) for the 60/20/20 plan, shown per month on the Forecast tab.
+A column on the category rather than a list in the page so the app and reports can use it. Fines, Personal Care,
+Subscriptions and Taxi were put under Wants and Home and Hardware, Pets and Education under Needs (Claude's choice,
+owner to correct in the app).
 
 2026-11-28: **Leave in Google Calendar** (owner): the Oct 2026 payslip paid 152 hours, not 176; the owner's Xero
 leave list showed Leave Without Pay 28 to 30 Oct (24 hours) and Annual Leave 26 to 27 Oct (16 hours, the payslip's

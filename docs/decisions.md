@@ -711,3 +711,6 @@ Owner's request, to use less of the plan allowance:
     column definition). Re-patching each series' Payee then filled all its open instances (W Support 53, Rent 53,
     Health Insurance 52, Broadband 14, Utility 15, YouTube Premium 14). The lookups (Paid From, Finance Category,
     Transfer To) are not linked; the flow still reads them from the series.
+  - Paid From, Finance Category and Transfer To were linked the same way (owner). Before the change every open
+    instance had them empty (none had its own value), so each of the 16 series was re-saved with its lookups: every
+    open instance now matches its series. The flow keeps its fallback to the series.

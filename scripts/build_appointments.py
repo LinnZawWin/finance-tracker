@@ -2,7 +2,8 @@
 
 Amount and Payment Type on these tables come from an older solution. Its lookups to the old account and
 category tables were removed on 2026-11-19 (one-off, not part of this script). This script adds:
-- Paid From (-> Bank Account) and Finance Category (-> Finance Category) on both tables.
+- Paid From (-> Bank Account), Transfer To (-> Bank Account, 2026-11-27: the flow then creates a Transfer) and
+  Finance Category (-> Finance Category) on both tables.
 - Payee (text 200) on both tables (2026-11-28): the flow takes the Finance Transaction's Payee from it.
   "Finance Category" rather than "Category" because Appointment already has an OOTB Category column.
 - The 'Recurring' option on Finance Transaction Source.
@@ -24,7 +25,9 @@ TABLES = ("appointment", "recurringappointmentmaster")
 FORMS = {"appointment": "Planned Transaction", "recurringappointmentmaster": "Recurring Transaction"}
 VIEWS = {"appointment": "Planned Transactions", "recurringappointmentmaster": "Recurring Transactions"}
 LEGACY = ("lzw_amount", "lzw_paymenttype")  # existing columns that belong in this solution
-LOOKUPS = (("Paid From", "lzw_bankaccount"), ("Finance Category", "lzw_financecategory"))
+LOOKUPS = (("Paid From", "lzw_bankaccount"), ("Finance Category", "lzw_financecategory"),
+           ("Transfer To", "lzw_bankaccount"))
+NEW = ("lzw_paidfrom", "lzw_financecategory", "lzw_transferto")
 SOURCE_RECURRING = 859130003
 LOOKUP_CLASS = "{270BD3DB-D9AF-4782-9025-509E298DEC0A}"
 TEXT_CLASS = "{4273EDBD-AC1D-40d3-9FB2-095C621B552D}"
@@ -79,13 +82,13 @@ def add_components():
         mid = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=MetadataId")["MetadataId"]
         dv.post("AddSolutionComponent", {"ComponentId": mid, "ComponentType": 1, "SolutionUniqueName": dv.SOLUTION,
                                          "AddRequiredComponents": False, "DoNotIncludeSubcomponents": True})
-        for cl in LEGACY + ("lzw_paidfrom", "lzw_financecategory", "lzw_payee"):
+        for cl in LEGACY + NEW + ("lzw_payee",):
             aid = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')?$select=MetadataId")
             dv.add_to_solution(aid["MetadataId"], 2)
         rels = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=LogicalName&$expand=ManyToOneRelationships"
                       "($select=MetadataId,ReferencingAttribute)")["ManyToOneRelationships"]
         for r in rels:
-            if r["ReferencingAttribute"] in ("lzw_paidfrom", "lzw_financecategory"):
+            if r["ReferencingAttribute"] in NEW:
                 dv.add_to_solution(r["MetadataId"], 10)
         dv.add_to_solution(form_id(tl), 60)
         dv.add_to_solution(view(tl)["savedqueryid"], 26)
@@ -115,17 +118,22 @@ def update_form(tl):
     xml = dv.get(f"systemforms({fid})?$select=formxml")["formxml"]
     rows, added = "", []
     if 'datafieldname="lzw_paidfrom"' not in xml:
-        rows += (f"<row>{cell('lzw_paidfrom', 'Paid From', LOOKUP_CLASS)}"
-                 f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>")
+        # New rows go after the row that holds Amount.
+        m = re.search(r'datafieldname="lzw_amount".*?</row>', xml, re.S)
+        rows = (f"<row>{cell('lzw_paidfrom', 'Paid From', LOOKUP_CLASS)}"
+                f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>")
+        xml = xml[:m.end()] + rows + xml[m.end():]
         added += ["Paid From", "Finance Category"]
+    if 'datafieldname="lzw_transferto"' not in xml:
+        m = re.search(r'datafieldname="lzw_paidfrom".*?</row>', xml, re.S)
+        xml = xml[:m.end()] + f"<row>{cell('lzw_transferto', 'Transfer To', LOOKUP_CLASS)}</row>" + xml[m.end():]
+        added.append("Transfer To")
     if 'datafieldname="lzw_payee"' not in xml:
-        rows += f"<row>{cell('lzw_payee', 'Payee', TEXT_CLASS)}</row>"
+        m = re.search(r'datafieldname="lzw_amount".*?</row>', xml, re.S)
+        xml = xml[:m.end()] + f"<row>{cell('lzw_payee', 'Payee', TEXT_CLASS)}</row>" + xml[m.end():]
         added.append("Payee")
-    if not rows:
+    if not added:
         return
-    # New rows go after the row that holds Amount.
-    m = re.search(r'datafieldname="lzw_amount".*?</row>', xml, re.S)
-    xml = xml[:m.end()] + rows + xml[m.end():]
     dv.patch(f"systemforms({fid})", {"formxml": xml})
     print(f"  form {FORMS[tl]}: added {', '.join(added)}")
 
@@ -133,7 +141,7 @@ def update_form(tl):
 def update_view(tl):
     v = view(tl)
     lay, fx = v["layoutxml"], v["fetchxml"]
-    cols = [c for c in ("lzw_payee", "lzw_paidfrom", "lzw_financecategory") if f'name="{c}"' not in lay]
+    cols = [c for c in ("lzw_payee",) + NEW if f'name="{c}"' not in lay]
     if not cols:
         return
     lay = lay.replace("</row>", "".join(f'<cell name="{c}" width="150"/>' for c in cols) + "</row>")

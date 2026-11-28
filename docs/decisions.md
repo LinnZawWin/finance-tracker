@@ -11,8 +11,9 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now. Pasted Keep entries get no Category, by design (owner, 2026-11-28) |
 | 8 | Notes waiting for bank lines | Owner, then Claude | Notes before 9 Oct are entered. New rows are reconciled at the end of the next session once their lines are imported |
 | 9 | Guessed categories | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol |
-| 12 | Bank Rules for unmatched lines | Owner to decide | 28 lines fit a rule (2026-11-28), all from 30 Dec 2025 to 2 Apr 2026 |
-| 13 | Card payment pairing | Claude | `reconcile.py` could pair a card payment when the description names the card even with a same-amount rival |
+| 14 | Bank Rules for unmatched lines | Owner to decide | 28 lines fit a rule (2026-11-28), all from 30 Dec 2025 to 2 Apr 2026 |
+| 15 | Card payment pairing | Claude | `reconcile.py` could pair a card payment when the description names the card even with a same-amount rival |
+| 12 | FY2027 income tax assessment | Owner, then Claude | When it arrives, replace the four estimated `Income Tax - 2026-06..09` lines and the net of their Salary FTs ("Estimated tax" in `statement-import.md`) |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -92,6 +93,28 @@ account, the payment FT is matched to those lines, and the bank or AMEX payment 
 and Jun to Sep 2026 tax), with one-off Planned Transactions on the due dates the owner gave. A year's tax is split by
 Net Amount rather than the sheet's Est. Tax, so the lines add up to what was paid (FY2026 estimate 90,418.75, paid
 82,434.30). Rules: "Contract invoices" in `statement-import.md`.
+
+2026-11-27: **Net-only Salary** (owner). The Salary FT is the net, as a split bill is the cost after friends repay:
+one Salary FT per payslip or invoice matched to the gross line (+) and the GST and tax lines (-) on Delta Insights,
+so Actual Amount = Amount = net. The 11 GST Payment, 2 Income Tax, 3 Income Tax withheld and 3 Employer super FTs were
+deleted (their matches moved to the Salary FTs, or removed for super). Reasoning: the owner reports on money that is
+theirs to spend; gross, GST and tax stay on the clearing account lines, which now carry a Bank Category ("Gross income",
+"GST", "Income tax", "Employer super") so reports can total them. Lost: Tax category totals among FTs. The ATO payments
+stay Transfers into the account, so its balance is still what is owed (35,325.00). A quarter's GST rounding goes to the
+Salary FT of its last month. **Estimated tax**: Jun to Sep 2026 are net of the sheet's Est. Tax; when the FY2027
+assessment arrives the four lines and those Salary FTs are corrected (owner chose this over a separate adjustment FT).
+**Owed payments** become Transfers: new column **Transfer To** on Planned and Recurring Transaction, and the flow
+creates Type Transfer when it is set (an Expense would count the tax twice); the two owed Planned Transactions have
+Transfer To Delta Insights and no Category. **Super**: locked until preservation age, so nothing inside the fund is an
+FT: the payslip's employer super line and the AustralianSuper fees, insurance, contributions tax, tax benefits and
+returns are Ignored (closes pending item 11); a voluntary contribution is an Expense FT, Category Investment (owner),
+with its fund line Ignored. The Salary series became the Nov net pay, -12,557.33. The Paxus pay advices (imported the
+same day with the gross rule) were converted the same way.
+
+2026-11-28: **Salary series on payday** (owner): monthly on the 25th from 25 Dec 2026 (was the 5th, which the payslip
+link could not pair with the payday). `payslip_link.py` reuses the flow's Salary FT (Source Recurring, any amount) from
+1 day before to 2 days after the payday, so a weekend 25th paid on the Friday still pairs. The GST and income tax ATO
+lines before the bank history stay Unmatched until those bank statements are imported (owner).
 
 2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
 the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or

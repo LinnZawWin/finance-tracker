@@ -130,6 +130,10 @@ A column on the category rather than a list in the page so the app and reports c
 Subscriptions and Taxi were put under Wants and Home and Hardware, Pets and Education under Needs (Claude's choice,
 owner to correct in the app).
 
+2026-11-28: **Card annual fee is Travel** (owner): the AMEX annual fee (1,450.00, 13 Nov 2026) is not essential; the card is
+kept for lounge access and the travel and dining credits, so it is a Want, not Fees and Charges (Needs). The FT was
+moved to Travel and the Bank Rule "Annual Card Fee" now defaults to Travel. Bank fees stay Fees and Charges.
+
 2026-11-28: **Leave in Google Calendar** (owner): the Oct 2026 payslip paid 152 hours, not 176; the owner's Xero
 leave list showed Leave Without Pay 28 to 30 Oct (24 hours) and Annual Leave 26 to 27 Oct (16 hours, the payslip's
 Annual Leave line), so it was right. Salary is annual / 12 (Nov 2026 paid 176 hours with 21 weekdays). The owner chose

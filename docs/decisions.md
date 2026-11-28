@@ -130,6 +130,13 @@ A column on the category rather than a list in the page so the app and reports c
 Subscriptions and Taxi were put under Wants and Home and Hardware, Pets and Education under Needs (Claude's choice,
 owner to correct in the app).
 
+2026-11-28: **Partner's share is my expense** (owner): Partner does not pay back Partner's share, so every report counts
+expenses at full Amount (the Forecast tab and its Monthly 60/20/20 already did; their text now says so). My Cost and
+Partner Share stay as columns, for information only. Over 20 Apr to 28 Nov 2026 that puts Partner's share (20,996.22) in
+the totals: 17,874.54 of it in Wants, 3,121.68 in Needs.
+**AMEX payment** (owner): direct debit from Flex Saver on the 23rd of each month; the due date is the 27th. No Planned
+Transaction for it (a payment between own accounts is not a Finance Transaction); the Forecast tab's AMEX line says it.
+
 2026-11-28: **Card annual fee is Travel** (owner): the AMEX annual fee (1,450.00, 13 Nov 2026) is not essential; the card is
 kept for lounge access and the travel and dining credits, so it is a Want, not Fees and Charges (Needs). The FT was
 moved to Travel and the Bank Rule "Annual Card Fee" now defaults to Travel. Bank fees stay Fees and Charges.

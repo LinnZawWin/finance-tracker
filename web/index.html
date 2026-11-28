@@ -224,7 +224,7 @@
       <section class="card">
         <h2>Monthly 60/20/20 (needs / wants / savings)</h2>
         <p class="muted" style="margin:0 0 8px">Share of each month's income. Needs and wants are expense transactions by their
-          category's Budget Group (trips count by category); savings is what is left. Transfers are left out.</p>
+          category's Budget Group at full Amount: Partner's share counts as spent (it is not paid back). Trips count by category; savings is what is left. Transfers are left out.</p>
         <div class="tablewrap"><table id="fcMonths"></table></div>
       </section>
       <section class="card">
@@ -1041,7 +1041,7 @@ async function fcLoad() {
     const owed = Math.max(-Number(closed.lzw_closingbalance) - credits, 0);
     const now = latest[amex.lzw_bankaccountid];
     $("fcAmex").textContent = `AMEX: the statement to ${closed.lzw_periodend} was ${money(-closed.lzw_closingbalance)}; ` +
-      `payments and credits since ${money(credits)}; still due ${money(owed)}.` +
+      `payments and credits since ${money(credits)}; still due ${money(owed)}, direct debit from Flex Saver on the 23rd (due date the 27th).` +
       (now && now !== closed ? ` Balance ${money(-now.lzw_closingbalance)} as of ${now.lzw_periodend}, due on the statement that closes on the 13th.` : "");
   }
   await fcMonthly();

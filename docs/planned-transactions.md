@@ -99,7 +99,7 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   rewrites its open instances, so redo these afterwards. Set: 25 Dec 2026 = -11,231.34 (24 hours, 16 to 18 Dec; gross
   15,833.34 and PAYG 4,602.00 as on the Oct 2026 payslip).
 - **Owed to the ATO** (one-off, 2026-11-27, `contract_link.py`): "GST Payment (for 2026-09 income)" 1,750.00 on
-  28 Feb 2027 (Manual, Paid From AMEX; the AMEX bill is paid from Flex Saver) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
+  28 Feb 2027 (Manual, Paid From AMEX; the AMEX bill is a direct debit from Flex Saver on the 23rd, due the 27th) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
   (Estimated, no Paid From; correct it when the assessment arrives). Both have Transfer To Delta Insights and no
   Category, so the flow creates Transfer FTs ("Contract invoices" in `statement-import.md` says how to pair them).
 - No series for Prime Video (unsubscribed) or GST activity statements (no longer a contractor): owner, 2026-11-26.

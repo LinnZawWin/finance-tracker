@@ -165,6 +165,7 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `split_match.py <ft id> <line id>[=<amount>] ... [--apply]`, `split_match.py --batch <file> [--apply]` | Link one Finance Transaction to several bank lines (split bill or refund, see "Split bills and refunds"): Method Manual, Confirmed; sets line and transaction status; holds the lock (dry run by default). `--batch`: one `<ft id> <line id>[=<amount>] ...` per line (`#` starts a comment), checked as a whole (nothing written if any part does not fit), written under one lock. **Use `--batch` whenever there is more than one transaction**: about 5 calls per transaction instead of 15 (27 rows: about 2.5 minutes instead of 13) |
 | `cash_lines.py [--apply]` | Generate the cash lines (see "Cash lines"); `reconcile.py` runs it first, under the lock (dry run by default) |
 | `recalc.py` | Recalculate the rollup columns on demand |
+| `forecast.py [--history-weeks 13] [--today YYYY-MM-DD]` | Weekly cash forecast, Monday to Sunday (read only): the Planned Transactions of the previous, current and next two weeks, a day-to-day spending allowance (average of the last 13 weeks with any), what the past and current week already spent of it, the latest balance of each account and what is still due on AMEX (see "Weekly forecast" in `docs/planned-transactions.md`) |
 
 The five formula columns (Unallocated Amount, Actual Cost, Partner Share, My Cost, Net Cost) are Power Fx
 **Formula** columns, created by `build_formulas.py` (Decimal, 2 places, formulas in `spec.py`). Do not create

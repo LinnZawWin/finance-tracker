@@ -99,14 +99,25 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   rewrites its open instances, so redo these afterwards. Set: 25 Dec 2026 = -11,231.34 (24 hours, 16 to 18 Dec; gross
   15,833.34 and PAYG 4,602.00 as on the Oct 2026 payslip).
 - **Owed to the ATO** (one-off, 2026-11-27, `contract_link.py`): "GST Payment (for 2026-09 income)" 1,750.00 on
-  28 Feb 2027 (Manual, Flex Saver) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
+  28 Feb 2027 (Manual, Growth Saver, where the owner holds it from the Jan 2027 pay) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
   (Estimated, no Paid From; correct it when the assessment arrives). Both have Transfer To Delta Insights and no
   Category, so the flow creates Transfer FTs ("Contract invoices" in `statement-import.md` says how to pair them).
 - No series for Prime Video (unsubscribed) or GST activity statements (no longer a contractor): owner, 2026-11-26.
 - Past planned transactions (before 2026-11-19) were deleted. 20 past appointments without an Amount are
   real meetings: leave them.
 
-## Weekly forecast
+## Weekly forecast and allowance
 
 The web page's **Forecast** tab ("Forecast tab" in `web-page.md`) shows the previous, current and next two weeks with a
 day-to-day spending allowance, the balances and what is due on AMEX.
+
+**Allowance** (owner, 2026-11-28): Planned Transactions with Subject "Allowance" and **Payment Type Budget**, one per
+week dated the Monday, no Paid From or Category. The scheduled flow skips Payment Type Budget (its filter), so they never
+become Finance Transactions and stay open; the Forecast tab reads them as that week's allowance. To move money between
+weeks (overspent this week), edit the next week's Allowance amount.
+- One-offs: 30 Nov, 7 Dec and 14 Dec 2026 = 1,395.96 each (Flex Saver 94,427.14 less AMEX 84,248.81 less 5,990.45 of
+  Planned Transactions to 20 Dec, over 3 weeks); 21 and 28 Dec 2026 = 1,135.79 each (allowance plus the weekly savings,
+  as savings start in January).
+- Series "Allowance": weekly, Monday, from 4 Jan 2027, 585.35 (savings plan: net pay 12,557.33 less average planned bills
+  7,635.55 less 2,385.25 a month of savings, as a weekly amount). Editing the series rewrites its open instances, so
+  change single weeks only after any series edit.

@@ -18,6 +18,7 @@ import spec
 FLOW_NAME = "Scheduled: Create Finance Transactions from Planned Transactions"
 O = spec.OPT
 RECURRING = O + 3
+BUDGET = O + 3     # Payment Type Budget: skipped
 ESTIMATED = O + 2  # Payment Type (global choice lzw_paymenttype): Auto, Manual, Estimated
 TZ = bf.TZ
 DV = bf.DV_API
@@ -143,7 +144,9 @@ def definition(sets):
                 "$select": "activityid,seriesid,subject,description,scheduledstart,lzw_amount,lzw_paymenttype,lzw_payee,"
                            "_lzw_paidfrom_value,_lzw_financecategory_value,_lzw_transferto_value,_transactioncurrencyid_value",
                 # Open (0) or Scheduled (3) only: completed (done) and cancelled appointments are read-only.
+                # Payment Type Budget (a weekly allowance, read by the web page) never becomes a Finance Transaction.
                 "$filter": f"lzw_amount ne null and (statecode eq 0 or statecode eq 3) "
+                           f"and (lzw_paymenttype eq null or lzw_paymenttype ne {BUDGET}) "
                            f"and scheduledstart lt @{{outputs('{T_END}')}}",
             }, {T_END: ["Succeeded"], T_AUD: ["Succeeded"]}),
             "Condition:_Appointments_Found": {

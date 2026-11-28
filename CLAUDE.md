@@ -117,7 +117,7 @@ Finance Transaction **Claim Type**: Employer (859130000), Income Tax; **Claim St
 
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
-Estimated), Paid From `lzw_paidfrom` (Bank Account), Transfer To `lzw_transferto` (Bank Account; set = the flow creates
+Estimated, Budget 859130003 = a weekly spending allowance the flow never turns into an FT), Paid From `lzw_paidfrom` (Bank Account), Transfer To `lzw_transferto` (Bank Account; set = the flow creates
 a Transfer), Finance Category `lzw_financecategory`, Payee `lzw_payee` (text; the flow's Payee, else the series', else
 Subject). On Recurring Transaction all custom columns are linked (LinkedAttributeId) to the Planned Transaction ones, so
 a series copies them to its instances. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views

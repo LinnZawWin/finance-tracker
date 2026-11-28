@@ -30,8 +30,9 @@ Finance Transactions. It has no build step and no dependencies.
     not Source Recurring, and not in a planned-bill category (Support Payments, Rent, Utilities, Insurance,
     Subscriptions, Fees and Charges, Investment, Car Maintenance, Transport, Tax, Salary and Contract Income) or a
     one-off category (Fines, Parking Fines, Legal and Professional). The lists are `FC.planned` and `FC.oneOff`.
-  - **Allowance** = the average weekly day-to-day spending of the last 13 complete weeks, leaving out weeks with none
-    (trip weeks). Past and current weeks show what was spent of it (left or over); the current week counts the larger of
+  - **Allowance** = the owner's target, `FC.target` (585.35 a week from 2026-11-28: net pay less the average planned
+    bills and 2,385.25 a month of savings); `null` falls back to the average weekly day-to-day spending of the last 13
+    complete weeks, leaving out weeks with none (trip weeks). The average is always shown next to the target. Past and current weeks show what was spent of it (left or over); the current week counts the larger of
     the two; future weeks count the allowance.
   - **Income** and **bills** = the week's Income FTs and bill FTs plus its open Planned Transactions (a done one already
     has its FT). Open Planned Transactions with Transfer To (the ATO payments) are added to bills as transfers. FT

@@ -108,17 +108,5 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 
 ## Weekly forecast
 
-`python scripts/forecast.py` (read only, owner 2026-11-28) prints the previous, current and next two weeks (Monday to
-Sunday, Brisbane):
-- each week's Planned Transactions (open, and completed ones in past days; Transfers such as the ATO payments apart);
-- the **allowance**: average weekly day-to-day spending of the last 13 complete weeks, leaving out weeks with none
-  (a trip week). Day-to-day = Expense FTs at Amount (before any Partner share), not Source Recurring, no Project (trips
-  are saved for separately), and not in a planned-bill category (Support Payments, Rent, Utilities, Insurance,
-  Subscriptions, Fees and Charges, Investment, Car Maintenance, Transport, Tax) or a one-off category (Fines, Parking
-  Fines, Legal and Professional). The lists are `PLANNED_CATEGORIES` and `ONE_OFF_CATEGORIES` in the script;
-- for the previous and current week, the day-to-day FTs taken off the allowance (left or over, and the five largest);
-- the closing balance of each account's latest statement (super shown, not in the total);
-- AMEX: the last closed statement (period ending the 13th) less every credit since, and the current balance. The due
-  date is not in the AMEX exports.
-It is only as current as the notes entered and statements imported.
-
+The web page's **Forecast** tab ("Forecast tab" in `web-page.md`) shows the previous, current and next two weeks with a
+day-to-day spending allowance, the balances and what is due on AMEX.

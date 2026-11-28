@@ -115,8 +115,9 @@ link could not pair with the payday). `payslip_link.py` reuses the flow's Salary
 1 day before to 2 days after the payday, so a weekend 25th paid on the Friday still pairs. The GST and income tax ATO
 lines before the bank history stay Unmatched until those bank statements are imported (owner).
 
-2026-11-28: **Weekly forecast** (owner): `forecast.py` prints weekly, Monday to Sunday, with an allowance from past FTs
-and deducts the past and current week's FTs from it. Trip FTs (Project set) are left out of the allowance because the
+2026-11-28: **Weekly forecast** (owner): a **Forecast** tab on the web page, not a script (`forecast.py` was added and
+removed the same day at the owner's request): one expandable line per week, Monday to Sunday, with an allowance from
+past FTs, and the past and current week's FTs deducted from it. Trip FTs (Project set) are left out of the allowance because the
 owner saves for holidays separately; weeks with no day-to-day spending (trip weeks) are left out of the average.
 Amount, not My Cost, because the forecast is cash out of the owner's accounts. Read only, no schema change.
 

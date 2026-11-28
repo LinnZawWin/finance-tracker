@@ -175,6 +175,8 @@ TABLES = [
     dict(schema="lzw_FinanceCategory", display="Finance Category", plural="Finance Categories", primary="Name", columns=[
         lookup("Parent Category", "lzw_financecategory"),
         choice("Category Type", ["Expense", "Income", "Both"]),
+        # 60/20/20 plan (owner, 2026-11-28): which part of take-home pay an expense category belongs to.
+        choice("Budget Group", ["Needs", "Wants", "Savings"]),
     ]),
     dict(schema="lzw_FinanceProject", display="Finance Project", plural="Finance Projects", primary="Name", columns=[
         choice("Project Type", ["Trip", "Event", "Home", "Other"]),

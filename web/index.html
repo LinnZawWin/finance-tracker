@@ -84,6 +84,9 @@
   .neg { color:var(--bad); }
   .pos { color:var(--ok); }
   @media (max-width:760px) { .wk summary { grid-template-columns:1fr 1fr; } .wk summary span { text-align:left; } }
+  .bar { display:flex; height:8px; border-radius:4px; overflow:hidden; background:var(--line); min-width:120px; }
+  .bar i { display:block; height:100%; }
+  .bar .n { background:#2b6cb0; } .bar .w { background:#d97706; } .bar .s { background:#067647; }
   .hidden { display:none !important; }
   .muted { color:var(--muted); font-size:13px; }
 </style>
@@ -219,6 +222,12 @@
       </section>
       <div id="fcWeeks"></div>
       <section class="card">
+        <h2>Monthly 60/20/20 (needs / wants / savings)</h2>
+        <p class="muted" style="margin:0 0 8px">Share of each month's income. Needs and wants are expense transactions by their
+          category's Budget Group (trips count by category); savings is what is left. Transfers are left out.</p>
+        <div class="tablewrap"><table id="fcMonths"></table></div>
+      </section>
+      <section class="card">
         <h2>Balances</h2>
         <div class="tablewrap"><table id="fcBalances"></table></div>
         <p id="fcAmex" class="muted" style="margin:8px 0 0"></p>
@@ -343,7 +352,7 @@ const ref = { accounts: [], categories: [], projects: [], aud: null };
 async function loadReference() {
   const [a, c, p, cur, me] = await Promise.all([
     api("GET", "lzw_bankaccounts?$select=lzw_name,lzw_shortname&$filter=statecode eq 0&$orderby=lzw_name"),
-    api("GET", "lzw_financecategories?$select=lzw_name,lzw_categorytype,_lzw_parentcategory_value&$filter=statecode eq 0&$orderby=lzw_name"),
+    api("GET", "lzw_financecategories?$select=lzw_name,lzw_categorytype,lzw_budgetgroup,_lzw_parentcategory_value&$filter=statecode eq 0&$orderby=lzw_name"),
     api("GET", "lzw_financeprojects?$select=lzw_name&$filter=statecode eq 0&$orderby=lzw_name"),
     api("GET", "transactioncurrencies?$select=isocurrencycode&$filter=isocurrencycode eq 'AUD'"),
     api("GET", "WhoAmI"),
@@ -352,7 +361,7 @@ async function loadReference() {
   const byId = Object.fromEntries(c.value.map(x => [x.lzw_financecategoryid, x.lzw_name]));
   ref.categories = c.value.map(x => ({ id: x.lzw_financecategoryid,
     name: x._lzw_parentcategory_value ? `${byId[x._lzw_parentcategory_value] || ""} / ${x.lzw_name}` : x.lzw_name,
-    plain: x.lzw_name })).sort((x, y) => x.name.localeCompare(y.name));
+    plain: x.lzw_name, group: x.lzw_budgetgroup })).sort((x, y) => x.name.localeCompare(y.name));
   ref.projects = p.value.map(x => ({ id: x.lzw_financeprojectid, name: x.lzw_name }));
   ref.aud = cur.value[0]?.transactioncurrencyid || null;
   try { const u = await api("GET", `systemusers(${me.UserId})?$select=fullname`); $("who").textContent = u.fullname || ""; } catch { /* optional */ }
@@ -1037,7 +1046,44 @@ async function fcLoad() {
       `payments and credits since ${money(credits)}; still due ${money(owed)}.` +
       (now && now !== closed ? ` Balance ${money(-now.lzw_closingbalance)} as of ${now.lzw_periodend}, due on the statement that closes on the 13th.` : "");
   }
+  await fcMonthly();
   FC.loaded = true;
+}
+
+// Monthly 60/20/20 from 1 April 2026: needs and wants by the category's Budget Group, savings = income left over.
+const GROUP = { needs: OPT, wants: OPT + 1, savings: OPT + 2 };
+async function fcMonthly() {
+  const from = new Date(2026, 3, 1);
+  const flt = `statecode eq 0 and lzw_type ne ${OPT + 2} and lzw_transactiondate ge ${from.toISOString()}`;
+  const fts = await getAll(`lzw_financetransactions?$select=lzw_transactiondate,lzw_type,lzw_amount,_lzw_category_value&$filter=${encodeURIComponent(flt)}`);
+  const months = {};
+  for (const t of fts) {
+    const d = new Date(t.lzw_transactiondate), k = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+    const m = months[k] ||= { income: 0, needs: 0, wants: 0, saved: 0, other: 0 };
+    const v = Number(t.lzw_amount || 0);
+    if (t.lzw_type === OPT + 1) { m.income += v; continue; }
+    const g = ref.categories.find(c => c.id === t._lzw_category_value)?.group;
+    if (g === GROUP.needs) m.needs += v; else if (g === GROUP.wants) m.wants += v; else if (g === GROUP.savings) m.saved += v; else m.other += v;
+  }
+  const pct = (v, inc) => inc > 0 ? `${Math.round(v / inc * 100)}%` : "";
+  const tb = $("fcMonths");
+  tb.replaceChildren(el("tr", {}, el("th", { text: "Month" }), el("th", { class: "n", text: "Income" }),
+    el("th", { class: "n", text: "Needs (60%)" }), el("th", { class: "n", text: "Wants (20%)" }), el("th", { class: "n", text: "Savings (20%)" }), el("th", { text: "" })));
+  for (const k of Object.keys(months).sort().reverse()) {
+    const m = months[k], spent = m.needs + m.wants + m.other, savings = m.income - spent;
+    const cellP = (v, target, good) => el("td", { class: "n" }, money(v),
+      el("div", { class: "muted " + (m.income > 0 ? (good(v / m.income * 100, target) ? "pos" : "neg") : ""), text: pct(v, m.income) }));
+    const w = v => `${Math.max(0, Math.min(100, m.income > 0 ? v / m.income * 100 : 0))}%`;
+    tb.append(el("tr", {},
+      el("td", { text: new Date(k + "-01T00:00").toLocaleDateString("en-AU", { month: "short", year: "numeric" }) }),
+      el("td", { class: "n", text: money(m.income) }),
+      cellP(m.needs, 60, (p, t) => p <= t), cellP(m.wants + m.other, 20, (p, t) => p <= t),
+      el("td", { class: "n" }, money(savings), el("div", { class: "muted " + (m.income > 0 ? (savings / m.income * 100 >= 20 ? "pos" : "neg") : ""),
+        text: pct(savings, m.income) + (m.saved ? ` (invested ${money(m.saved)})` : "") })),
+      el("td", {}, el("div", { class: "bar", title: "needs / wants / savings" },
+        el("i", { class: "n", style: `width:${w(m.needs)}` }), el("i", { class: "w", style: `width:${w(m.wants + m.other)}` }),
+        el("i", { class: "s", style: `width:${w(Math.max(savings, 0))}` })))));
+  }
 }
 $("btnFcLoad").onclick = () => fcLoad().catch(e => toast(e.message, true));
 

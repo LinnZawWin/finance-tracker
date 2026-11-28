@@ -37,6 +37,10 @@ Finance Transactions. It has no build step and no dependencies.
   - **Income** and **bills** = the week's Income FTs and bill FTs plus its open Planned Transactions (a done one already
     has its FT). Open Planned Transactions with Transfer To (the ATO payments) are added to bills as transfers. FT
     Transfers between own accounts are listed but not counted.
+  - **Monthly 60/20/20** (owner, 2026-11-28): from April 2026, newest first, each month's income (Income FTs) and the
+    share of it spent on Needs and Wants (Expense FTs by their category's **Budget Group**; an expense whose category has
+    none counts as a want), and Savings = income left over (Savings-group expenses such as Investment shown as
+    "invested"). Targets 60 / 20 / 20: green when needs and wants are at or under, savings at or over. Transfers are left out.
   - **Balances**: the closing balance of each account's latest statement that has one (employer accounts and zero
     balances left out; super shown, not in the total). **AMEX**: the last closed statement (name without "to") less
     every credit line since, and the latest balance. The AMEX exports have no due date.

@@ -34,7 +34,7 @@ DEFAULT_COLS = {
                                  ("lzw_confidence", 100)], ("lzw_name", True)),
     "lzw_bankrule": ([("lzw_name", 200), ("lzw_matchtext", 180), ("lzw_matchtype", 110), ("lzw_bankaccount", 150),
                       ("lzw_defaultcategory", 150), ("lzw_priority", 90)], ("lzw_priority", False)),
-    "lzw_financecategory": ([("lzw_name", 220), ("lzw_parentcategory", 180), ("lzw_categorytype", 120)], ("lzw_name", False)),
+    "lzw_financecategory": ([("lzw_name", 220), ("lzw_parentcategory", 180), ("lzw_categorytype", 120), ("lzw_budgetgroup", 120)], ("lzw_name", False)),
     "lzw_financeproject": ([("lzw_name", 220), ("lzw_projecttype", 120), ("lzw_startdate", 110), ("lzw_enddate", 110)], ("lzw_name", False)),
     "lzw_financeasset": ([("lzw_name", 220), ("lzw_assettype", 120), ("lzw_brand", 120), ("lzw_model", 120),
                           ("lzw_status", 100), ("lzw_totalcost", 120), ("lzw_netcost", 120)], ("lzw_name", False)),
@@ -146,7 +146,7 @@ FORMS = {
                       "ownerid"]),
     ])],
     "lzw_financecategory": [("General", [
-        ("Category", ["lzw_name", "lzw_parentcategory", "lzw_categorytype", "statecode", "ownerid"]),
+        ("Category", ["lzw_name", "lzw_parentcategory", "lzw_categorytype", "lzw_budgetgroup", "statecode", "ownerid"]),
     ])],
     "lzw_financeproject": [("General", [
         ("Project", ["lzw_name", "lzw_projecttype", "lzw_startdate", "lzw_enddate", "statecode", "ownerid"]),

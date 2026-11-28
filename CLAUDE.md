@@ -119,7 +119,8 @@ Planned and Recurring Transaction are in the solution as shells: only these comp
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
 Estimated), Paid From `lzw_paidfrom` (Bank Account), Transfer To `lzw_transferto` (Bank Account; set = the flow creates
 a Transfer), Finance Category `lzw_financecategory`, Payee `lzw_payee` (text; the flow's Payee, else the series', else
-Subject). The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
+Subject). On Recurring Transaction all custom columns are linked (LinkedAttributeId) to the Planned Transaction ones, so
+a series copies them to its instances. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
 "Planned Transactions" / "Recurring Transactions". Both tables are under Capture in the app. The old lookups
 Financial Account and Transaction Category (to the old MoneyManagement tables) were deleted.
 

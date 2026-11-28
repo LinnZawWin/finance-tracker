@@ -5,7 +5,8 @@ category tables were removed on 2026-11-19 (one-off, not part of this script). T
 - Paid From (-> Bank Account), Transfer To (-> Bank Account, 2026-11-27: the flow then creates a Transfer) and
   Finance Category (-> Finance Category) on both tables.
 - Payee (text 200) on both tables (2026-11-28): the flow takes the Finance Transaction's Payee from it. The series
-  column is linked to the instance column (LinkedAttributeId), so the platform copies it to the instances.
+  columns Payee, Paid From, Finance Category and Transfer To are linked to the instance columns (LinkedAttributeId),
+  so the platform copies them to the instances.
   "Finance Category" rather than "Category" because Appointment already has an OOTB Category column.
 - The 'Recurring' option on Finance Transaction Source.
 - Those columns, Amount, Payment Type (and its global choice), the Planned / Recurring Transaction forms
@@ -65,21 +66,25 @@ def ensure_payee(tl):
     print(f"  + text {tl}.lzw_payee")
 
 
-def link_payee():
-    """Series Payee copies to its instances when it is linked (AttributeMetadata.LinkedAttributeId on the series
-    column, as Amount and Payment Type already are). The platform copies it each time the series is expanded."""
-    target = dv.get("EntityDefinitions(LogicalName='appointment')/Attributes(LogicalName='lzw_payee')?$select=MetadataId")
-    path = ("EntityDefinitions(LogicalName='recurringappointmentmaster')/Attributes(LogicalName='lzw_payee')/"
-            "Microsoft.Dynamics.CRM.StringAttributeMetadata")
-    md = dv.get(path)
-    if (md.get("LinkedAttributeId") or "").lower() == target["MetadataId"].lower():
-        return
-    md["LinkedAttributeId"] = target["MetadataId"]
-    md = {k: v for k, v in md.items() if not k.startswith("@odata.") or k == "@odata.type"}
-    md["@odata.type"] = "Microsoft.Dynamics.CRM.StringAttributeMetadata"
-    dv.call("PUT", "EntityDefinitions(LogicalName='recurringappointmentmaster')/Attributes(LogicalName='lzw_payee')", md,
-            solution=True, headers={"MSCRM.MergeLabels": "true"})
-    print("  recurringappointmentmaster.lzw_payee linked to appointment.lzw_payee")
+LINKED = (("lzw_payee", "StringAttributeMetadata"), ("lzw_paidfrom", "LookupAttributeMetadata"),
+          ("lzw_financecategory", "LookupAttributeMetadata"), ("lzw_transferto", "LookupAttributeMetadata"))
+
+
+def link_columns():
+    """A series column copies to its instances only when it is linked (AttributeMetadata.LinkedAttributeId on the
+    series column = the instance column's MetadataId), as Amount and Payment Type already are. The platform copies it
+    each time the series is expanded or updated."""
+    for cl, kind in LINKED:
+        target = dv.get(f"EntityDefinitions(LogicalName='appointment')/Attributes(LogicalName='{cl}')?$select=MetadataId")
+        path = f"EntityDefinitions(LogicalName='recurringappointmentmaster')/Attributes(LogicalName='{cl}')"
+        md = dv.get(f"{path}/Microsoft.Dynamics.CRM.{kind}")
+        if (md.get("LinkedAttributeId") or "").lower() == target["MetadataId"].lower():
+            continue
+        md = {k: v for k, v in md.items() if not k.startswith("@odata.")}
+        md["@odata.type"] = f"Microsoft.Dynamics.CRM.{kind}"
+        md["LinkedAttributeId"] = target["MetadataId"]
+        dv.call("PUT", path, md, solution=True, headers={"MSCRM.MergeLabels": "true"})
+        print(f"  recurringappointmentmaster.{cl} linked to appointment.{cl}")
 
 
 def ensure_source_option():
@@ -208,7 +213,7 @@ def main():
         for display, target in LOOKUPS:
             ensure_lookup(tl, display, target)
         ensure_payee(tl)
-    link_payee()
+    link_columns()
     ensure_source_option()
     add_components()
     for tl in TABLES:

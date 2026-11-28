@@ -70,12 +70,12 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - Platform behaviour, tested:
   - Updating a series rewrites the same columns on **all its open instances**, past and future. Completed
     and cancelled appointments are read-only and keep their values.
-  - Amount, Payment Type, Payee, Description and currency are copied from a series to its instances (on create
-    and on update). A custom column is copied only when the series column's `LinkedAttributeId` points to the
+  - Amount, Payment Type, Payee, Paid From, Finance Category, Transfer To, Description and currency are copied
+    from a series to its instances (on create and on update). A custom column is copied only when the series column's `LinkedAttributeId` points to the
     instance column ([Microsoft Learn](https://learn.microsoft.com/power-apps/developer/data-platform/link-custom-attributes-recurring-master-appointment-entities));
-    Amount and Payment Type were linked by the older solution, Payee by `build_appointments.py` (2026-11-28).
-    **Paid From, Finance Category and Transfer To are not linked** (tested 2026-11-19: empty on every instance),
-    so the flow reads them from the series (`seriesid`) when the instance has none. Set them on the series.
+    Amount and Payment Type were linked by the older solution; Payee, Paid From, Finance Category and Transfer To by
+    `build_appointments.py` (2026-11-28; before that the lookups were empty on every instance). Set them on the
+    series. The flow still falls back to the series (`seriesid`) when an instance has none.
   - Deleting every instance of a series deletes the series too.
 - **Creating a series by API:** set `utcconversiontimezonecode` = 260 (as the other series) and use the same start
   style as Health Insurance (`starttime` Monday 14:00Z, `patternstartdate` 2026-11-18T14:00Z, mask 2 = Monday).

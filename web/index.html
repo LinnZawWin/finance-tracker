@@ -71,7 +71,7 @@
   .tablewrap { overflow-x:auto; }
   .wk { border:1px solid var(--line); border-radius:8px; margin-bottom:6px; background:var(--card); }
   .wk.now { border-color:var(--accent); }
-  .wk summary { display:grid; grid-template-columns:150px repeat(5, minmax(0, 1fr)); gap:8px; align-items:baseline; padding:9px 12px; cursor:pointer; list-style:none; }
+  .wk summary { display:grid; grid-template-columns:150px repeat(3, minmax(0, 1fr)); gap:8px; align-items:baseline; padding:9px 12px; cursor:pointer; list-style:none; }
   .wk summary::-webkit-details-marker { display:none; }
   .wk summary b { font-weight:600; }
   .wk summary span { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
@@ -980,13 +980,11 @@ async function fcLoad() {
     const budgets = wp.filter(isBudget);
     const allowance = budgets.length ? sum(budgets, amt) : average;
     const open = wp.filter(a => a.statecode !== 1 && !isBudget(a));
-    const income = sum(wf.filter(t => t.kind === "income"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) < 0), a => -amt(a));
     const bills = sum(wf.filter(t => t.kind === "bill"), amt) + sum(open.filter(a => !a._lzw_transferto_value && amt(a) > 0), amt);
     const xfer = sum(open.filter(a => a._lzw_transferto_value), amt);
     const other = sum(wf.filter(t => t.kind === "trip" || t.kind === "one-off"), amt);
     const spent = sum(wf.filter(t => t.kind === "daily"), amt);
     const daily = i < 0 ? spent : i === 0 ? Math.max(spent, allowance) : allowance;
-    const net = income - bills - xfer - other - daily;
     const left = allowance - spent;
     const dailyCell = i <= 0
       ? el("span", {}, `${money(spent)} / ${money(allowance)}`, el("small", { class: left >= 0 ? "pos" : "neg", text: left >= 0 ? `${money(left)} left` : `${money(-left)} over` }))
@@ -995,8 +993,8 @@ async function fcLoad() {
     const det = el("details", { class: "wk" + (i === 0 ? " now" : "") },
       el("summary", {},
         el("div", {}, el("b", { text: labels[i + 1] }), el("small", { text: `${shortDay(w)} to ${shortDay(addDays(w, 6))}` })),
-        cell(income, "income"), cell(bills + xfer, xfer ? `bills incl. ${money(xfer)} transfers` : "bills"), dailyCell,
-        cell(other, "trips, one-offs"), el("span", { class: net < 0 ? "neg" : "pos" }, money(net), el("small", { text: "net" }))));
+        cell(bills + xfer, xfer ? `bills incl. ${money(xfer)} transfers` : "bills"), dailyCell,
+        cell(other, "trips, one-offs")));
     const body = el("div", { class: "body" });
     body.append(el("h4", { text: `Planned Transactions (${wp.length})` }));
     if (!wp.length) body.append(el("p", { class: "muted", text: "None." }));

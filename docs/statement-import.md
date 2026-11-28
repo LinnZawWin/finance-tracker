@@ -172,6 +172,16 @@ Two Bank Accounts that are not banks, Account Type **Super** and **Employer** (o
   "Superannuation paid" line waits for its AustralianSuper contribution (not in the export to 27 Nov); rerun
   `payslip_link.py --apply` after the next super import to pair it.
   In Processed the files keep their names (`DeltaInsights_<yyyy-mm>.pdf`; super CSVs as downloaded).
+- **Leave check** (owner, 2026-11-28): before linking a Delta Insights payslip, read the owner's Google Calendar
+  **"Leave"** (find its id with `list_calendars`; do not commit it) for the pay period. One all-day event per Xero leave
+  request, titled `<Leave Type> - <Description>` as in Xero ("Annual Leave - China Trip", "Leave Without Pay - Thailand
+  Trip"); the end date is exclusive. Salary is annual / 12: a full month is **176 hours** whatever its weekdays, at
+  $104.1667 an hour (220,000 a year). Then check:
+  - paid hours (Ordinary + every leave item) = 176 - 8 x each weekday of "Leave Without Pay" in the period;
+  - the payslip's Annual Leave hours = 8 x the weekdays of "Annual Leave" events in the period;
+  - gross = paid hours x 104.1667, rounded to the cent (Oct 2026: 152 x 104.1667 = 15,833.34).
+  Raise any mismatch with the owner in that session before `payslip_link.py --apply`; do not link it until they answer.
+  A month the owner started or left part way (Sep 2026: 64 hours) is pro-rated and not checked this way.
 
 ## Paxus pay advices (Nov 2023 to Sep 2024)
 

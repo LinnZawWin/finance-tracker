@@ -91,6 +91,13 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - **Salary**: the flow's Salary FT (Paid From Everyday, the series' net) is reused by `payslip_link.py` when the
   payslip is linked: it moves to the employer account and takes the payslip's net (a 25th on a weekend is paid the
   Friday before; the script looks 1 day before to 2 days after the payday).
+- **Leave without pay** (owner, 2026-11-28): when a "Leave Without Pay" event is added to the Google Calendar "Leave"
+  ("Leave check" in `statement-import.md`), set that month's Salary instance to the estimated net: gross = (176 - 8 x
+  its weekdays) x 104.1667, less PAYG from an earlier payslip with the same gross, else the ATO monthly withholding
+  ([tax withheld calculator](https://www.ato.gov.au/calculators-and-tools/tax-withheld-calculator)). Put the working in
+  its Description after "Delta Insights - " (the flow copies the Description to the FT Notes). An edit to the series
+  rewrites its open instances, so redo these afterwards. Set: 25 Dec 2026 = -11,231.34 (24 hours, 16 to 18 Dec; gross
+  15,833.34 and PAYG 4,602.00 as on the Oct 2026 payslip).
 - **Owed to the ATO** (one-off, 2026-11-27, `contract_link.py`): "GST Payment (for 2026-09 income)" 1,750.00 on
   28 Feb 2027 (Manual, Flex Saver) and "Income Tax (for 2026-06 to 2026-09 income)" 33,575.00 on 24 Nov 2027
   (Estimated, no Paid From; correct it when the assessment arrives). Both have Transfer To Delta Insights and no

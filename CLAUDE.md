@@ -135,6 +135,9 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
   GST and tax lines (-) on the Delta Insights clearing account, like a split bill. No FTs for GST, income tax or
   employer super; their totals come from the Delta Insights lines by Bank Category ("Gross income", "GST",
   "Income tax", "Employer super"). Nothing inside the super fund is an FT.
+- **Leave** is kept in the owner's Google Calendar "Leave" (one all-day event per Xero request). Salary is annual / 12
+  (176 hours a month); each payslip import checks the hours against it and each Leave Without Pay lowers that month's
+  Salary Planned Transaction ("Leave check" in `docs/statement-import.md`).
 - Planned and Recurring Transaction **Amount** is the opposite of the bank: positive = expense, negative =
   income (with Transfer To set: positive = money out of Paid From). The open series were converted to this on 2026-11-19.
 

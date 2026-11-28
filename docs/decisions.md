@@ -115,6 +115,15 @@ link could not pair with the payday). `payslip_link.py` reuses the flow's Salary
 1 day before to 2 days after the payday, so a weekend 25th paid on the Friday still pairs. The GST and income tax ATO
 lines before the bank history stay Unmatched until those bank statements are imported (owner).
 
+2026-11-28: **Leave in Google Calendar** (owner): the Oct 2026 payslip paid 152 hours, not 176; the owner's Xero
+leave list showed Leave Without Pay 28 to 30 Oct (24 hours) and Annual Leave 26 to 27 Oct (16 hours, the payslip's
+Annual Leave line), so it was right. Salary is annual / 12 (Nov 2026 paid 176 hours with 21 weekdays). The owner chose
+a Google Calendar "Leave" over a Dataverse table `lzw_leave` (shown, not taken): the leave is entered once, where they
+already plan, and the payslip import session reads it through the Calendar connector. The connector cannot create a
+calendar, so the owner created it. Raised in the import session, not as a notification. Rules: "Leave check" in
+`statement-import.md`, "Leave without pay" in `planned-transactions.md`. Editing one Salary instance is untested
+against later series edits.
+
 2026-11-27: **`dv.batch`** (owner): the contract link run made about 400 single requests (about a second each through
 the proxy, 10 to 15 minutes). `dv.batch` sends 25 operations per `$batch` request, the writes as one change set (all or
 nothing) and the reads (rollup recalculations) after them. A dropped request with a POST or DELETE is checked with the

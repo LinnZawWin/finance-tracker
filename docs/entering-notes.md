@@ -73,7 +73,8 @@ description says nothing). Transfers have none. The first rule that fits wins; w
 | Insurance | Insurance |
 | Utility, broadband, electricity, water, mobile | Utilities |
 | YouTube, Claude Pro, Prime Video, Crunchyroll, Spotify, Duolingo, DiDi Pass | Subscriptions |
-| Annual fee, bank fees | Fees and Charges |
+| Credit card annual fee (AMEX: kept for lounge access and the travel and dining credits; Bank Rule "Annual Card Fee"; owner, 2026-11-28) | Travel |
+| Bank fees | Fees and Charges |
 | Interlock device | Fines |
 | Parking fine, car tow (owner, 2026-11-25) | Parking Fines |
 | Moving house: van or truck rental, removalists (owner, 2026-11-26) | Moving & Relocation |

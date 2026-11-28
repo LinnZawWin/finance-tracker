@@ -136,6 +136,9 @@ Partner Share stay as columns, for information only. Over 20 Apr to 28 Nov 2026 
 the totals: 17,874.54 of it in Wants, 3,121.68 in Needs.
 **AMEX payment** (owner): direct debit from Flex Saver on the 23rd of each month; the due date is the 27th. No Planned
 Transaction for it (a payment between own accounts is not a Finance Transaction); the Forecast tab's AMEX line says it.
+Why Flex Saver: Growth Saver pays its bonus interest only in a month its balance grows by 100 or more, so the money for
+the AMEX bill is moved to Flex Saver before the 23rd. The debit moves to Growth Saver only once it can still grow by 100
+a month after paying the bill (a condition, not a savings target).
 
 2026-11-28: **Card annual fee is Travel** (owner): the AMEX annual fee (1,450.00, 13 Nov 2026) is not essential; the card is
 kept for lounge access and the travel and dining credits, so it is a Want, not Fees and Charges (Needs). The FT was

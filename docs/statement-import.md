@@ -223,7 +223,8 @@ ATO**:
   quarter's GST rounding on its last month), matched to those lines, so Actual Amount = Amount. GST and income tax have
   no FTs; their totals come from the lines (Bank Category "GST", "Income tax"; gross from "Gross income"). The ATO
   payments are Transfers into the account. "GST paid" and "Income tax paid" lines before the bank history (to Feb 2026
-  GST, FY2025 tax) have no bank line and stay Unmatched.
+  GST, FY2025 tax) have no bank line and stay Unmatched until those bank statements are imported (owner, 2026-11-28);
+  then rerun `contract_link.py <payments> --apply`, which pairs each with its bank payment.
 - **Estimated tax** (Jun to Sep 2026): those four Salary FTs are net of the sheet's Est. Tax (33,575.00); their Notes
   and the `Income Tax - 2026-0x` lines say so. When the FY2027 assessment arrives, replace the four lines with the
   assessed amount split by Net Amount (cents on the last month), set each Salary FT's Amount to the new net (Invoice +

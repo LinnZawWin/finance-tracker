@@ -5,8 +5,9 @@ docs/statement-import.md). Dry run by default; --apply writes, under the reconci
 
 For every payslip statement on an Employer account (lines from payslip_lines.py; not the contract statements
 `<Employer>_Invoice_*` and `<Employer>_ATO_*`, which contract_link.py links) that is not linked yet:
-1. The Salary FT (net only, owner 2026-11-27): the existing Income "Salary" FT on the same day as the payment with the
-   net or gross amount (entered from the bank line) is reused: its match to the bank line is deleted, Amount becomes
+1. The Salary FT (net only, owner 2026-11-27): the existing Income "Salary" FT from 1 day before to 2 days after the
+   payment with the net or gross amount (entered from the bank line), or the one the scheduled flow created from the
+   Salary series (Source Recurring, any amount), is reused: its match to the bank line is deleted, Amount becomes
    the net (gross less tax), Paid From the employer. Without one, a new Salary FT is created.
 2. No FTs for the tax withheld or the employer super: the Tax lines are matched to the Salary FT, so its Actual Amount
    is the net; the Superannuation line (the employer's contribution, locked in the fund) is set Ignored.
@@ -27,7 +28,7 @@ from recalc import rollup, rollup_op
 
 APPLY = "--apply" in sys.argv
 O = spec.OPT
-INCOME, EXPENSE, IMPORT = O + 1, O, O + 2
+INCOME, EXPENSE, IMPORT, RECURRING = O + 1, O, O + 2, O + 3
 MANUAL, CONFIRMED = O + 3, O + 1
 L_MATCHED, L_TRANSFER, L_UNMATCHED, L_IGNORED = O + 2, O + 3, O, O + 4
 RECONCILED = O + 2
@@ -95,10 +96,12 @@ def link(emp, st, lines, supers, c_salary, c_tax):
     print(f"{name}: paid {day}, gross {gross:.2f}, tax {taxamt:.2f}, net {netamt:.2f}")
     # 1. Salary FT
     d0 = dt.date.fromisoformat(day)
-    lo, hi = d0 - dt.timedelta(days=1), d0 + dt.timedelta(days=2)
+    # +2 days: the Salary series is on the 25th; a 25th on a weekend is paid the Friday before.
+    lo, hi = d0 - dt.timedelta(days=1), d0 + dt.timedelta(days=3)
     cands = dv.get_all("lzw_financetransactions?$select=lzw_financetransactionid,lzw_amount,lzw_transactiondate&$filter="
                        f"lzw_type eq {INCOME} and lzw_name eq 'Salary' and lzw_transactiondate ge {lo} and "
-                       f"lzw_transactiondate lt {hi} and (lzw_amount eq {netamt} or lzw_amount eq {gross})")
+                       f"lzw_transactiondate lt {hi} and (lzw_amount eq {netamt} or lzw_amount eq {gross} or "
+                       f"lzw_source eq {RECURRING})")
     if len(cands) > 1:
         print(f"    SKIPPED: {len(cands)} Salary transactions fit")
         return

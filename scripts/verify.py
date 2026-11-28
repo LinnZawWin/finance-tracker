@@ -205,13 +205,15 @@ def main():
     check(bool(fl) and fl[0]["statecode"] == 1, "Planned Transactions flow is ON")
     check(bool(fl) and "lzw_FinanceTrackerDataverse" in fl[0]["clientdata"],
           "Planned Transactions flow uses the Dataverse connection reference")
-    ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid,defaultvalue&$filter=schemaname eq 'lzw_KeepInboxSheetId'")["value"]
-    check(bool(ev) and ev[0]["environmentvariabledefinitionid"].lower() in in_sol and not ev[0].get("defaultvalue"),
-          "environment variable lzw_KeepInboxSheetId (empty) in solution")
+    # The Keep flow's environment variable and Google Sheets connection reference were deleted on 2026-11-28.
+    ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid&$filter=schemaname eq 'lzw_KeepInboxSheetId'")["value"]
+    check(not ev, "environment variable lzw_KeepInboxSheetId is deleted")
+    r = dv.get("connectionreferences?$select=connectionreferenceid&$filter=connectionreferencelogicalname eq 'lzw_FinanceTrackerGoogleSheets'")["value"]
+    check(not r, "connection reference lzw_FinanceTrackerGoogleSheets is deleted")
     ev = dv.get("environmentvariabledefinitions?$select=environmentvariabledefinitionid&$filter=schemaname eq 'lzw_ReconcileLock'")["value"]
     check(bool(ev) and ev[0]["environmentvariabledefinitionid"].lower() in in_sol,
           "environment variable lzw_ReconcileLock (reconciliation lock) in solution")
-    for cr in ("lzw_FinanceTrackerDataverse", "lzw_FinanceTrackerGoogleSheets"):
+    for cr in ("lzw_FinanceTrackerDataverse",):
         r = dv.get(f"connectionreferences?$select=connectionreferenceid&$filter=connectionreferencelogicalname eq '{cr}'")["value"]
         check(bool(r) and r[0]["connectionreferenceid"].lower() in in_sol, f"connection reference {cr} in solution")
 
@@ -227,9 +229,10 @@ def main():
             "(applies to all of its views, so Match Status can be changed inline in Proposed Matches).",
             "- Cloud flow \"Scheduled: Create Finance Transactions from Planned Transactions\" (on). The Keep "
             "flow \"Finance Tracker - Import Keep Rows\" was deleted on 2026-11-20.",
-            "- Environment variable `lzw_KeepInboxSheetId` (text, no value).",
-            "- Connection references `lzw_FinanceTrackerDataverse` (Microsoft Dataverse) and "
-            "`lzw_FinanceTrackerGoogleSheets` (Google Sheets, standard connector).",
+            "- Environment variable `lzw_ReconcileLock` (the reconciliation lock).",
+            "- Connection reference `lzw_FinanceTrackerDataverse` (Microsoft Dataverse). The Keep flow's environment "
+            "variable `lzw_KeepInboxSheetId` and connection reference `lzw_FinanceTrackerGoogleSheets` were deleted "
+            "on 2026-11-28.",
             "- The platform added `transactioncurrency` and `account` to the solution as references only "
             "(no changes to Currency).", ""]
     print(f"\n{ok} checks passed, {len(problems)} problems")

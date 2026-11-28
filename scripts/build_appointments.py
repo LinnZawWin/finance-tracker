@@ -3,6 +3,7 @@
 Amount and Payment Type on these tables come from an older solution. Its lookups to the old account and
 category tables were removed on 2026-11-19 (one-off, not part of this script). This script adds:
 - Paid From (-> Bank Account) and Finance Category (-> Finance Category) on both tables.
+- Payee (text 200) on both tables (2026-11-28): the flow takes the Finance Transaction's Payee from it.
   "Finance Category" rather than "Category" because Appointment already has an OOTB Category column.
 - The 'Recurring' option on Finance Transaction Source.
 - Those columns, Amount, Payment Type (and its global choice), the Planned / Recurring Transaction forms
@@ -26,6 +27,7 @@ LEGACY = ("lzw_amount", "lzw_paymenttype")  # existing columns that belong in th
 LOOKUPS = (("Paid From", "lzw_bankaccount"), ("Finance Category", "lzw_financecategory"))
 SOURCE_RECURRING = 859130003
 LOOKUP_CLASS = "{270BD3DB-D9AF-4782-9025-509E298DEC0A}"
+TEXT_CLASS = "{4273EDBD-AC1D-40d3-9FB2-095C621B552D}"
 AUDIT = {"Value": True, "CanBeChanged": True, "ManagedPropertyLogicalName": "canmodifyauditsettings"}
 
 
@@ -47,6 +49,18 @@ def ensure_lookup(tl, display, target):
     print(f"  + lookup {tl}.{cl} -> {target}")
 
 
+def ensure_payee(tl):
+    if bs.existing_attr(tl, "lzw_payee"):
+        return
+    dv.post(f"EntityDefinitions(LogicalName='{tl}')/Attributes", {
+        "@odata.type": "Microsoft.Dynamics.CRM.StringAttributeMetadata", "SchemaName": "lzw_Payee",
+        "DisplayName": label("Payee"), "RequiredLevel": {"Value": "None"}, "MaxLength": 200,
+        "FormatName": {"Value": "Text"}, "IsAuditEnabled": AUDIT,
+        "Description": label("Payee of the Finance Transaction the flow creates (the Subject when empty)."),
+    }, solution=True, done=lambda: bs.existing_attr(tl, "lzw_payee") is not None)
+    print(f"  + text {tl}.lzw_payee")
+
+
 def ensure_source_option():
     p = ("EntityDefinitions(LogicalName='lzw_financetransaction')/Attributes(LogicalName='lzw_source')/"
          "Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$expand=OptionSet($select=Options)")
@@ -65,7 +79,7 @@ def add_components():
         mid = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=MetadataId")["MetadataId"]
         dv.post("AddSolutionComponent", {"ComponentId": mid, "ComponentType": 1, "SolutionUniqueName": dv.SOLUTION,
                                          "AddRequiredComponents": False, "DoNotIncludeSubcomponents": True})
-        for cl in LEGACY + ("lzw_paidfrom", "lzw_financecategory"):
+        for cl in LEGACY + ("lzw_paidfrom", "lzw_financecategory", "lzw_payee"):
             aid = dv.get(f"EntityDefinitions(LogicalName='{tl}')/Attributes(LogicalName='{cl}')?$select=MetadataId")
             dv.add_to_solution(aid["MetadataId"], 2)
         rels = dv.get(f"EntityDefinitions(LogicalName='{tl}')?$select=LogicalName&$expand=ManyToOneRelationships"
@@ -99,23 +113,29 @@ def cell(field, text, classid):
 def update_form(tl):
     fid = form_id(tl)
     xml = dv.get(f"systemforms({fid})?$select=formxml")["formxml"]
-    if 'datafieldname="lzw_paidfrom"' in xml:
+    rows, added = "", []
+    if 'datafieldname="lzw_paidfrom"' not in xml:
+        rows += (f"<row>{cell('lzw_paidfrom', 'Paid From', LOOKUP_CLASS)}"
+                 f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>")
+        added += ["Paid From", "Finance Category"]
+    if 'datafieldname="lzw_payee"' not in xml:
+        rows += f"<row>{cell('lzw_payee', 'Payee', TEXT_CLASS)}</row>"
+        added.append("Payee")
+    if not rows:
         return
     # New rows go after the row that holds Amount.
     m = re.search(r'datafieldname="lzw_amount".*?</row>', xml, re.S)
-    rows = (f"<row>{cell('lzw_paidfrom', 'Paid From', LOOKUP_CLASS)}"
-            f"{cell('lzw_financecategory', 'Finance Category', LOOKUP_CLASS)}</row>")
     xml = xml[:m.end()] + rows + xml[m.end():]
     dv.patch(f"systemforms({fid})", {"formxml": xml})
-    print(f"  form {FORMS[tl]}: added Paid From, Finance Category")
+    print(f"  form {FORMS[tl]}: added {', '.join(added)}")
 
 
 def update_view(tl):
     v = view(tl)
     lay, fx = v["layoutxml"], v["fetchxml"]
-    if 'name="lzw_paidfrom"' in lay:
+    cols = [c for c in ("lzw_payee", "lzw_paidfrom", "lzw_financecategory") if f'name="{c}"' not in lay]
+    if not cols:
         return
-    cols = ["lzw_paidfrom", "lzw_financecategory"]
     lay = lay.replace("</row>", "".join(f'<cell name="{c}" width="150"/>' for c in cols) + "</row>")
     fx = fx.replace("</entity>", "".join(f'<attribute name="{c}"/>' for c in cols) + "</entity>")
     dv.patch(f"savedqueries({v['savedqueryid']})", {"layoutxml": lay, "fetchxml": fx})
@@ -161,6 +181,7 @@ def main():
     for tl in TABLES:
         for display, target in LOOKUPS:
             ensure_lookup(tl, display, target)
+        ensure_payee(tl)
     ensure_source_option()
     add_components()
     for tl in TABLES:

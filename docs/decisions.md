@@ -7,15 +7,12 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 
 | # | Item | Who | Notes |
 |---|---|---|---|
-| 6 | Delete `lzw_KeepInboxSheetId` and `lzw_FinanceTrackerGoogleSheets`? | Owner | Used only by the deleted Keep flow. Kept until the owner decides |
-| 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` was added on 2026-11-15 and has never run. Comment `@claude` on an issue and check the run, including the Azure sign-in |
-| 3 | Test `statement_compare.py --apply` with real rows | Claude | `recalc.py` and the formula columns were checked on real rows on 2026-11-21 (Reconciliation Difference 0, My Cost 0 for Transfers) |
-| 5 | Add the Reconciliation Match editable grid setting to the solution | Claude | The setting is active, but `AddSolutionComponent` fails with 0x80048536. Only matters for a solution export |
-| 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now |
-| 8 | Notes before 9 Oct 2026 | Owner, then Claude | Finance Transactions start on 9 Oct (9 to 20 Oct entered 2026-11-22; 5 and 18 to 26 Sep too; 14 to 19 Aug on 2026-11-23). Fuel 85.73 (22 Nov) waits for its bank line |
-| 9 | Guessed categories and one project | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol. "Taxi from Home to Airport" (24 Oct) has no project |
-| 10 | `reconcile.py` refinements | Owner to decide | Identical same-day lines (rounds of drinks) could pair either way, as transfers already do |
-| 11 | AustralianSuper fees, insurance, contributions tax and returns | Owner to decide | Imported as lines (2026-11-27) and left Unmatched: Finance Transactions per line, Bank Rules, or Status Ignored. Paxus contributions are Transfers from the Paxus account (2026-11-28) |
+| 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` (added 2026-11-15) ran once on 15 Nov from an `issues` event and succeeded, including the Azure sign-in; the `@claude` comment run was skipped. Owner to confirm |
+| 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now. Pasted Keep entries get no Category, by design (owner, 2026-11-28) |
+| 8 | Notes waiting for bank lines | Owner, then Claude | Notes before 9 Oct are entered. New rows are reconciled at the end of the next session once their lines are imported |
+| 9 | Guessed categories | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol |
+| 12 | Bank Rules for unmatched lines | Owner to decide | 28 lines fit a rule (2026-11-28), all from 30 Dec 2025 to 2 Apr 2026 |
+| 13 | Card payment pairing | Claude | `reconcile.py` could pair a card payment when the description names the card even with a same-amount rival |
 
 Done on 2026-11-15: the five formula columns were created and put on forms and views; base currency
 verified as AUD; `lzw_KeepInboxSheetId` verified against the sheet URL; both connection references
@@ -641,3 +638,29 @@ Owner's request, to use less of the plan allowance:
   test transfer between Everyday and Growth Saver on 25 Nov.
 - Pending: `reconcile.py` could pair a card payment when the line descriptions name the card ("AMERICAN EXPRESS") even with
   a same-amount rival on another payee.
+
+## 2026-11-28: outstanding items reviewed with the owner
+
+- **Keep components deleted** (owner): the Keep-to-Dataverse flow idea is abandoned, the web page replaced it. The
+  environment variable `lzw_KeepInboxSheetId` (with its value) and the connection reference
+  `lzw_FinanceTrackerGoogleSheets` were deleted after checking that no flow used them. The Google Sheets connection
+  itself (in Power Automate, not a solution component) is left. `build_flow.py` now holds only the helpers that
+  `build_recurring_flow.py` uses; `verify.py` checks the two are gone.
+- **Payee on Planned / Recurring Transactions** (flow change): text column `lzw_payee` (Payee, 200) on `appointment`
+  and `recurringappointmentmaster`, on both forms and views, in the solution (`build_appointments.py`). The flow sets
+  Finance Transaction Payee = the appointment's Payee, else its series' Payee, else the Subject
+  (`build_recurring_flow.py --update-on`). Like the lookups, the platform does not copy Payee from a series to its
+  existing instances (checked after patching six series), so the flow reads the series. Series Payees set from the
+  owner's 26 Nov list: Rent, Health Insurance, W Support, Broadband, Utility (Electricity/Gas), YouTube Premium.
+- **`statement_compare.py --apply` removed**: every import writes through `statement_import.py`, which uses the same
+  `compare()` and `line_body()` and has run on real rows many times, so the second write path (one POST per line, AUD
+  only) was not needed. The CLI only prints the comparison.
+- **Editable grid in the solution** dropped (owner rarely edits in the app).
+- **AustralianSuper lines**: all 313 are handled (300 Ignored, 13 Transfer), so the old pending item was removed.
+- **Identical same-day lines**: `reconcile.py` already treats identical lines and transactions as interchangeable
+  (transfers and transaction-to-line pairs), so that item was removed.
+- **"Income Tax 82,434.30 AMEX"** (25 Nov note): not a single row; it is spread over the contract payments of that
+  financial year to show net income (owner).
+- `reconcile.py` now lists each line a Bank Rule fits in its details file (`rule:` with the rule, payee and category).
+- Reminders (scheduled tasks in the cloud session): 5 Dec 2026, chase the third Duolingo repayment; 4 Jan 2027, import
+  the Wise export after the Thailand trip.

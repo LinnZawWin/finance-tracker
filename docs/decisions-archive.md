@@ -736,3 +736,7 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   confirmed the rule (the Dec 2025 to Feb 2026 GST was paid 27 Apr 2026, as the column says: that FT moved from 28 to
   27 Apr). The FY2025 income tax was paid from Flex Saver (owner): Paid From set, Needs Details cleared.
 
+
+### Owner answers of 2026-11-28
+- "Taxi from Home to Airport" (24 Oct, DiDi 29.35): not part of a trip. It was sending Partner home, so Share Type set
+  to All for Partner (AA) and the project China Yunnan Trip removed.

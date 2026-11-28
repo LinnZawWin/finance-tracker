@@ -98,7 +98,8 @@ show_l = lambda l: f"{l['day']} {acct(l['_lzw_bankaccount_value'])[:22]:22} {l['
 show_t = lambda t: f"{t['day']} {acct(t['_lzw_paidfrom_value'])[:22]:22} {t['want'] / 100:>10.2f}  {t['lzw_name']} ({t['lzw_payee']})"
 
 # Bank Rules: a line that fits one is an expense or income, never a transfer (for example ANZ Access Advantage)
-rules = dv.get_all("lzw_bankrules?$select=lzw_matchtext,lzw_matchtype,lzw_priority,_lzw_bankaccount_value"
+rules = dv.get_all("lzw_bankrules?$select=lzw_name,lzw_matchtext,lzw_matchtype,lzw_priority,_lzw_bankaccount_value,"
+                   "lzw_defaultpayee,lzw_defaultdescription,lzw_defaultsharetype,_lzw_defaultcategory_value"
                    "&$filter=statecode eq 0&$orderby=lzw_priority")
 
 
@@ -240,6 +241,12 @@ for t in fts:
 left = [l for l in open_lines if l["lzw_bankstatementlineid"] not in uL]
 ruled = [l for l in left if rule_for(l)]
 print(f"3. Bank Rules: {len(ruled)} of the {len(left)} lines left fit a rule (not created; needs the owner's go-ahead)")
+cat_names = {c["lzw_financecategoryid"]: c["lzw_name"] for c in
+             (dv.get_all("lzw_financecategories?$select=lzw_name") if ruled else [])}
+for l in ruled:
+    r = rule_for(l)
+    report.detail("   rule:    " + show_l(l) + f" [{r['lzw_name']}: payee {r['lzw_defaultpayee']}, "
+                  f"{cat_names.get(r['_lzw_defaultcategory_value'], 'no category')}]")
 
 if not APPLY:
     print("(dry run)")

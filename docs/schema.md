@@ -235,7 +235,7 @@ Each table's default "Active ..." view was given useful columns and is used by t
 - Model-driven app `lzw_FinanceTracker` (Finance Tracker) with site map groups Capture, Reconcile, Statements, Assets and Setup. Setup > Banks opens Account with the Banks view.
 - Power Apps grid control with editing enabled as the default grid for `lzw_reconciliationmatch` (applies to all of its views, so Match Status can be changed inline in Proposed Matches).
 - Cloud flow "Scheduled: Create Finance Transactions from Planned Transactions" (on). The Keep flow "Finance Tracker - Import Keep Rows" was deleted on 2026-11-20.
-- Environment variable `lzw_KeepInboxSheetId` (text, no value).
-- Connection references `lzw_FinanceTrackerDataverse` (Microsoft Dataverse) and `lzw_FinanceTrackerGoogleSheets` (Google Sheets, standard connector).
+- Environment variable `lzw_ReconcileLock` (the reconciliation lock).
+- Connection reference `lzw_FinanceTrackerDataverse` (Microsoft Dataverse). The Keep flow's environment variable `lzw_KeepInboxSheetId` and connection reference `lzw_FinanceTrackerGoogleSheets` were deleted on 2026-11-28.
 - The platform added `transactioncurrency` and `account` to the solution as references only (no changes to Currency).
 

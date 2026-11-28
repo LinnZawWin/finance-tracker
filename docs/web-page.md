@@ -47,9 +47,10 @@ Finance Transactions. It has no build step and no dependencies.
 ## Keep Inbox sheet
 
 **Retired on 2026-11-20.** The web page replaces the sheet and its flow. The flow "Finance Tracker - Import
-Keep Rows" was deleted (backup outside the repo); `build_flow.py` refuses to recreate it without
-`--recreate`. The environment variable `lzw_KeepInboxSheetId` and the connection reference
-`lzw_FinanceTrackerGoogleSheets` were used only by that flow and still exist (owner to decide).
+Keep Rows" was deleted (backup outside the repo).
+The environment variable `lzw_KeepInboxSheetId` and the connection reference
+`lzw_FinanceTrackerGoogleSheets`, used only by that flow, were deleted on 2026-11-28 (owner: the web page replaces
+the idea). Pasted Keep entries get no Category, by design.
 
 The layout below is kept because the web page's bulk entry accepts rows pasted from the sheet as they are.
 

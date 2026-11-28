@@ -115,6 +115,11 @@ link could not pair with the payday). `payslip_link.py` reuses the flow's Salary
 1 day before to 2 days after the payday, so a weekend 25th paid on the Friday still pairs. The GST and income tax ATO
 lines before the bank history stay Unmatched until those bank statements are imported (owner).
 
+2026-11-28: **Weekly forecast** (owner): `forecast.py` prints weekly, Monday to Sunday, with an allowance from past FTs
+and deducts the past and current week's FTs from it. Trip FTs (Project set) are left out of the allowance because the
+owner saves for holidays separately; weeks with no day-to-day spending (trip weeks) are left out of the average.
+Amount, not My Cost, because the forecast is cash out of the owner's accounts. Read only, no schema change.
+
 2026-11-28: **Leave in Google Calendar** (owner): the Oct 2026 payslip paid 152 hours, not 176; the owner's Xero
 leave list showed Leave Without Pay 28 to 30 Oct (24 hours) and Annual Leave 26 to 27 Oct (16 hours, the payslip's
 Annual Leave line), so it was right. Salary is annual / 12 (Nov 2026 paid 176 hours with 21 weekdays). The owner chose

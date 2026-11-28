@@ -50,7 +50,8 @@ Finance Transactions. It has no build step and no dependencies.
 Keep Rows" was deleted (backup outside the repo).
 The environment variable `lzw_KeepInboxSheetId` and the connection reference
 `lzw_FinanceTrackerGoogleSheets`, used only by that flow, were deleted on 2026-11-28 (owner: the web page replaces
-the idea). Pasted Keep entries get no Category, by design.
+the idea). Pasted Keep entries get no Category, by design. The page will not get Transfer or foreign cash entry
+(owner, 2026-11-28): transfers come from statement imports, foreign spends are entered with the Wise import.
 
 The layout below is kept because the web page's bulk entry accepts rows pasted from the sheet as they are.
 

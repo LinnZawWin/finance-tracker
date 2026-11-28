@@ -70,8 +70,11 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
 - Platform behaviour, tested:
   - Updating a series rewrites the same columns on **all its open instances**, past and future. Completed
     and cancelled appointments are read-only and keep their values.
-  - Amount, Payment Type, Description and currency are copied from a series to its instances (on create
-    and on update). **Paid From, Finance Category and Payee are not** (tested 2026-11-19: empty on every instance),
+  - Amount, Payment Type, Payee, Description and currency are copied from a series to its instances (on create
+    and on update). A custom column is copied only when the series column's `LinkedAttributeId` points to the
+    instance column ([Microsoft Learn](https://learn.microsoft.com/power-apps/developer/data-platform/link-custom-attributes-recurring-master-appointment-entities));
+    Amount and Payment Type were linked by the older solution, Payee by `build_appointments.py` (2026-11-28).
+    **Paid From, Finance Category and Transfer To are not linked** (tested 2026-11-19: empty on every instance),
     so the flow reads them from the series (`seriesid`) when the instance has none. Set them on the series.
   - Deleting every instance of a series deletes the series too.
 - **Creating a series by API:** set `utcconversiontimezonecode` = 260 (as the other series) and use the same start
@@ -80,8 +83,9 @@ To run a flow by hand, call the Power Automate API with an Azure CLI token for
   regenerate them, so delete and recreate. Lookup binds are `lzw_PaidFrom_RecurringAppointmentMaster@odata.bind`
   and `lzw_FinanceCategory_RecurringAppointmentMaster@odata.bind`. A create can run twice through the proxy:
   check for a duplicate series afterwards.
-- **Payee** (column `lzw_payee`, 2026-11-28): set it on the series to the payee the bank line names. Like Paid From
-  and Finance Category, it is not copied to existing instances, so the flow reads the series. Set on: Rent = Madison
+- **Payee** (column `lzw_payee`, 2026-11-28): set it on the series to the payee the bank line names; the platform
+  copies it to the open instances (all open instances were filled on 2026-11-28), and the flow also falls back to the
+  series. Set on: Rent = Madison
   Heights, Health Insurance = AHM, W Support = Joint Main, Broadband = Rush, Utility (Electricity/Gas) = Altogether,
   YouTube Premium = the person the family share is paid to. The others fall back to the Subject.
 - **Salary**: the flow's Salary FT (Paid From Everyday, the series' net) is reused by `payslip_link.py` when the

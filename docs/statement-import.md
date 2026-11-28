@@ -105,6 +105,8 @@ by hand (Method Manual) and check the difference after the rollup. `split_match.
 Amount, so it reports a false difference and sets Partly Reconciled: set Reconciled by hand when the rollup gives 0.
 
 Wise (owner's rules, 2026-11-20). Wise is one Bank Account; its export is a transaction list, not a statement:
+- Foreign cash spends (owner, 2026-11-28): the owner keeps them in the notes and they are entered as Finance
+  Transactions in the same Claude Code session as the Wise import (not through the web page).
 - One Bank Statement "Wise <year>", period 1 Jan to 31 Dec, no balances. Each month the owner uploads a
   newer full-year export; compare it against the existing lines and create only the new ones.
 - Skip REFUNDED rows and conversions between balances (Direction NEUTRAL). They are not imported.

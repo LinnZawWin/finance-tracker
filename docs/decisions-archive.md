@@ -758,3 +758,8 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
 ### Owner answers of 2026-11-28
 - "Taxi from Home to Airport" (24 Oct, DiDi 29.35): not part of a trip. It was sending Partner home, so Share Type set
   to All for Partner (AA) and the project China Yunnan Trip removed.
+- Correction (owner misread the question): "Taxi from Home to Airport" (24 Oct) put back on China Yunnan Trip, Share
+  Type Mine.
+- Supermarket Slayer 8979, created from the Bank Rules and matched: Groceries 30 Dec 2025 ALDI 6.72; Woolworths 9 Jan
+  14.95, 20 Jan 75.70, 25 Jan 15.00, 13 Feb 6.70, 17 Feb 19.90. The Coles lines (3 Feb 40.53, 7 Feb 12.00, 15 Feb 8.50)
+  have no rule and stay Unmatched.

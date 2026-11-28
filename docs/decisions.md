@@ -8,10 +8,9 @@ and the rules in [../CLAUDE.md](../CLAUDE.md).
 | # | Item | Who | Notes |
 |---|---|---|---|
 | 2 | Test Claude Code GitHub Actions | Owner | `.github/workflows/claude.yml` (added 2026-11-15) ran once on 15 Nov from an `issues` event and succeeded, including the Azure sign-in; the `@claude` comment run was skipped. Owner to confirm |
-| 7 | Web page: foreign cash entry (`CNY100`, a cash account's currency), Type Transfer and Transfer To | Owner to ask | Dataverse side done 2026-11-21. The owner enters trip notes through Claude Code for now. Pasted Keep entries get no Category, by design (owner, 2026-11-28) |
 | 8 | Notes waiting for bank lines | Owner, then Claude | Notes before 9 Oct are entered. New rows are reconciled at the end of the next session once their lines are imported |
 | 9 | Guessed categories | Owner | Café "Drinks" and the Lawson "Drink" were set as Food and Soft Drinks, bar "Drinks" as Alcohol |
-| 14 | Bank Rules for unmatched lines | Owner to decide | 28 lines fit a rule (2026-11-28), all from 30 Dec 2025 to 2 Apr 2026 |
+| 14 | Bank Rules for unmatched lines | Owner, later | Supermarket Slayer 8979 lines created from the rules 2026-11-28; the Mar 2026 AMEX and Wise lines are left for later (low priority) |
 | 15 | Card payment pairing | Claude | `reconcile.py` could pair a card payment when the description names the card even with a same-amount rival |
 | 12 | FY2027 income tax assessment | Owner, then Claude | When it arrives, replace the four estimated `Income Tax - 2026-06..09` lines and the net of their Salary FTs ("Estimated tax" in `statement-import.md`) |
 
@@ -687,3 +686,19 @@ Owner's request, to use less of the plan allowance:
 - `reconcile.py` now lists each line a Bank Rule fits in its details file (`rule:` with the rule, payee and category).
 - Reminders (scheduled tasks in the cloud session): 5 Dec 2026, chase the third Duolingo repayment; 4 Jan 2027, import
   the Wise export after the Thailand trip.
+- **Later the same day (owner's answers):**
+  - Bank Rules: the six Supermarket Slayer 8979 lines that fit a rule were created as Finance Transactions (Groceries,
+    payee from the rule, Mine) with `create_transactions.py` and matched with `split_match.py --batch`. The AMEX and
+    Wise lines of March 2026 are left: they are before the change in the owner's finances and matter little for analysis.
+    The three 8979 Coles lines (no rule) and its Load stay Unmatched.
+  - Web page: no Transfer or foreign cash entry will be added. Transfers come from the statement imports; foreign
+    spends stay in the notes and are entered with the Wise import through Claude Code.
+  - "Hotel Deposit" (15 Oct): a card hold that was cancelled. Nothing to enter.
+  - The 24 Oct "Taxi from Home to Airport" correction was reverted (owner misread it): project China Yunnan Trip, Mine.
+  - **Payee copied from series to instances:** the platform copies a custom series column to its instances only when the
+    series column's `LinkedAttributeId` is the instance column's MetadataId (Microsoft Learn, "Link custom columns of the
+    recurring appointment master and appointment tables"). Amount and Payment Type were already linked; Payee was not,
+    which is why the first patch did not reach the instances. `build_appointments.py` now sets the link (PUT of the
+    column definition). Re-patching each series' Payee then filled all its open instances (W Support 53, Rent 53,
+    Health Insurance 52, Broadband 14, Utility 15, YouTube Premium 14). The lookups (Paid From, Finance Category,
+    Transfer To) are not linked; the flow still reads them from the series.

@@ -118,7 +118,8 @@ Finance Transaction **Claim Type**: Employer (859130000), Income Tax; **Claim St
 Planned and Recurring Transaction are in the solution as shells: only these components, not the whole table.
 Columns (same on both): Amount `lzw_amount`, Payment Type `lzw_paymenttype` (global choice: Auto, Manual,
 Estimated), Paid From `lzw_paidfrom` (Bank Account), Transfer To `lzw_transferto` (Bank Account; set = the flow creates
-a Transfer), Finance Category `lzw_financecategory`. The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
+a Transfer), Finance Category `lzw_financecategory`, Payee `lzw_payee` (text; the flow's Payee, else the series', else
+Subject). The scheduled flow sets a done Planned Transaction to Status = Completed (there is no Processed column). Forms "Planned Transaction" / "Recurring Transaction", views
 "Planned Transactions" / "Recurring Transactions". Both tables are under Capture in the app. The old lookups
 Financial Account and Transaction Category (to the old MoneyManagement tables) were deleted.
 
@@ -142,7 +143,7 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | Script | Purpose |
 |---|---|
 | `dv.py`, `spec.py` | Web API helper and the schema specification. `dv.batch(ops, done=...)` sends writes and reads in `$batch` requests of 25 (one atomic change set each, reads after it); use it for any script that writes more than a few rows |
-| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` (the retired Keep flow) only provides helpers now |
+| `build_schema.py`, `build_formulas.py`, `build_ui.py`, `build_icons.py`, `seed.py` | Idempotent build, in this order. `build_schema.py` adds missing choice options; `build_formulas.py` updates a formula that differs from `spec.py`; `build_ui.py` rewrites the forms and views. `build_flow.py` only provides flow helpers (the Keep flow and its components are deleted) |
 | `build_week_view.py` | System view "Current Week Pending Transactions" on Planned Transaction (idempotent) |
 | `build_appointments.py`, `build_recurring_flow.py` | Planned / Recurring Transactions: columns, rename, forms, views, app and the scheduled flow (created off; an existing flow that is on is left untouched) |
 | `verify.py [--write-docs]` | Checks everything exists in the solution, regenerates `docs/schema.md` |
@@ -154,8 +155,8 @@ Financial Account and Transaction Category (to the old MoneyManagement tables) w
 | `create_transactions.py <notes file> [--apply] [--verbose]` | Create Finance Transactions from a notes file in the fixed format ("Notes file" in `docs/entering-notes.md`): looks up accounts, projects and categories, skips duplicates, sets the order times; writes nothing while any row has a problem (dry run by default) |
 | `statement_import.py <out> [--apply] [--include-possible] [--reconcile]` | Create the Bank Statements and only the missing lines (dry run by default); a hand-typed screenshot statement (kind "Screenshot", see `docs/statement-import.md`) too. `--reconcile` also runs `reconcile.py --apply` afterwards; normally reconcile once at the end of the session instead |
 | `report.py` | Short output for `reconcile.py` and `cash_lines.py`: counts and the pairs for the owner on screen, every detail in a file outside the repo whose path is printed (`--verbose` prints it all). Read that file only when a detail is needed |
-| `statement_compare.py` | The comparison used by `statement_import.py`; also a single-statement CLI |
-| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
+| `statement_compare.py` | The comparison used by `statement_import.py`; its CLI only prints the comparison for one statement (never writes) |
+| `reconcile.py [--apply] [--verbose]` | Reconcile open bank lines: transfers, then transaction-to-line pairs (as the web page suggests them, confirmed only without a rival and when the transaction's Payee shares a word with the line), then a count of lines a Bank Rule fits (each listed as `rule:` in the details file) (dry run by default). `--apply` holds the lock and recalculates the rollups of the rows it matched |
 | `lock.py [--release]` | The reconciliation lock: environment variable `lzw_ReconcileLock` ("<holder> <UTC time>", empty = free), taken with If-Match so only one session reconciles at a time; older than 60 minutes = abandoned. `--release` clears it after a crashed run |
 | `split_match.py <ft id> <line id>[=<amount>] ... [--apply]`, `split_match.py --batch <file> [--apply]` | Link one Finance Transaction to several bank lines (split bill or refund, see "Split bills and refunds"): Method Manual, Confirmed; sets line and transaction status; holds the lock (dry run by default). `--batch`: one `<ft id> <line id>[=<amount>] ...` per line (`#` starts a comment), checked as a whole (nothing written if any part does not fit), written under one lock. **Use `--batch` whenever there is more than one transaction**: about 5 calls per transaction instead of 15 (27 rows: about 2.5 minutes instead of 13) |
 | `cash_lines.py [--apply]` | Generate the cash lines (see "Cash lines"); `reconcile.py` runs it first, under the lock (dry run by default) |

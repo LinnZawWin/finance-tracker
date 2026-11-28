@@ -754,3 +754,7 @@ NZTA NZBAS Trip (5). 15 Oct 2026 dinner Payee changed from "Mexico" to "Brew'd H
   deleted, the 40 super lines Ignored, 120 lines given a Bank Category.
 - Planned Transactions: the two owed ones got Transfer To Delta Insights and lost Category Tax; the Salary series and its
   12 open instances -18,333.33 -> -12,557.33. Delta Insights balance unchanged at -35,325.00.
+
+### Owner answers of 2026-11-28
+- "Taxi from Home to Airport" (24 Oct, DiDi 29.35): not part of a trip. It was sending Partner home, so Share Type set
+  to All for Partner (AA) and the project China Yunnan Trip removed.

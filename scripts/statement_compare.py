@@ -1,10 +1,9 @@
 """Compare parsed statement lines with the Bank Statement Lines already in Dataverse.
 
-Always run this before creating Bank Statement Lines. It prints a summary (new, existing,
-updates, possible duplicates) and writes nothing unless --apply is given.
+statement_import.py uses compare() and line_body() for every import and does the writing. The CLI below only
+prints the comparison for one statement (new, existing, updates, possible duplicates) and never writes.
 
     python scripts/statement_compare.py --account "ANZ Plus Everyday" --source PDF --file lines.json
-    python scripts/statement_compare.py ... --statement <bank statement GUID> --apply
 
 lines.json (keep it outside the repo): a list of objects
     {"date": "2026-01-31", "amount": -12.50, "description": "...", "balance": 100.00,
@@ -19,7 +18,7 @@ Rules
   (description, balance, source) instead of creating a new line; only leftovers are created.
 - A leftover that shares date + amount (different description) or date + description (different
   amount) with an unused existing row is flagged as a possible duplicate and is not written
-  unless --include-possible is given.
+  unless statement_import.py gets --include-possible.
 """
 import argparse
 import json
@@ -155,9 +154,6 @@ def main():
     ap.add_argument("--account", required=True, help="Bank Account name")
     ap.add_argument("--source", required=True, choices=SOURCES)
     ap.add_argument("--file", required=True, help="JSON file with the parsed lines")
-    ap.add_argument("--statement", help="Bank Statement GUID (required with --apply)")
-    ap.add_argument("--apply", action="store_true", help="write the changes")
-    ap.add_argument("--include-possible", action="store_true", help="also create possible duplicates")
     a = ap.parse_args()
 
     incoming = json.load(open(a.file))
@@ -186,24 +182,7 @@ def main():
     for line, row in res["possible"]:
         print(f"    CHECK  {line['date']} {line['amount']:>10.2f}  {line['description']}   vs existing "
               f"{row['amount']:.2f} '{row['description']}'")
-    if not a.apply:
-        print("Nothing written. Re-run with --statement <id> --apply after confirming the summary.")
-        return
-    if not a.statement:
-        raise SystemExit("--statement is required with --apply")
-    cur = dv.get("transactioncurrencies?$select=transactioncurrencyid&$filter=isocurrencycode eq 'AUD'")["value"]
-    aud = cur[0]["transactioncurrencyid"] if cur else None
-    for line, row in res["update"]:
-        body = {"lzw_name": line["description"][:500], "lzw_source": O + SOURCES.index("PDF"), "lzw_ispending": False,
-                "lzw_duplicatekey": duplicate_key(line)}
-        if line.get("balance") is not None:
-            body["lzw_runningbalance"] = line["balance"]
-        dv.patch(f"lzw_bankstatementlines({row['id']})", body)
-    to_create = res["new"] + ([line for line, _ in res["possible"]] if a.include_possible else [])
-    for line in to_create:
-        # A dropped connection is not retried blindly; re-run the comparison instead, it only creates the shortfall.
-        dv.post("lzw_bankstatementlines", line_body(line, account_id, a.statement, a.source, aud))
-    print(f"updated {len(res['update'])}, created {len(to_create)}. Now run: python scripts/recalc.py")
+    print("Nothing written: statement_import.py writes the lines.")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ Finance Transaction gets Amount = abs(Amount) and Type from the sign, or Transfe
 appointment or its series has Transfer To (2026-11-27).
 A transaction is created once per appointment (Source = Recurring, Source Row ID = appointment ID), so a
 series edit cannot create duplicates. A processed appointment is set to Completed (status reason Completed).
+Payee = the appointment's Payee, else its series' Payee, else the Subject.
 """
 import json
 import sys
@@ -58,7 +59,8 @@ def definition(sets):
         "entityName": sets["lzw_financetransaction"],
         "item/lzw_name": f"@{item('subject')}",
         "item/lzw_transactiondate": f"@formatDateTime(convertFromUtc({item('scheduledstart')}, '{TZ}'), 'yyyy-MM-dd')",
-        "item/lzw_payee": f"@{item('subject')}",
+        # Payee from the appointment, else its series, else the Subject (2026-11-28).
+        "item/lzw_payee": f"@coalesce({lookup('lzw_payee')}, {item('subject')})",
         # Transfer when Transfer To is set, else Income when negative, else Expense
         "item/lzw_type": f"@if(not(empty({lookup('_lzw_transferto_value')})), {O + 2}, if(less({amount}, 0), {O + 1}, {O}))",
         "item/lzw_amount": f"@if(less({amount}, 0), mul({amount}, -1), {amount})",
@@ -87,7 +89,7 @@ def definition(sets):
             # A single appointment has no series: the filter then matches nothing.
             T_SERIES: a("ListRecords", {
                 "entityName": "recurringappointmentmasters", "$top": 1,
-                "$select": "activityid,_lzw_paidfrom_value,_lzw_financecategory_value,_lzw_transferto_value",
+                "$select": "activityid,lzw_payee,_lzw_paidfrom_value,_lzw_financecategory_value,_lzw_transferto_value",
                 "$filter": f"@{{if(empty({item('seriesid')}), 'activityid eq null', "
                            f"concat('activityid eq ', {item('seriesid')}))}}",
             }),
@@ -138,8 +140,8 @@ def definition(sets):
                      {f"Initialize_variable:_{VAR}": ["Succeeded"]}),
             T_LIST: a("ListRecords", {
                 "entityName": "appointments", "$top": 5000, "$orderby": "scheduledstart asc",
-                "$select": "activityid,seriesid,subject,description,scheduledstart,lzw_amount,lzw_paymenttype,_lzw_paidfrom_value,"
-                           "_lzw_financecategory_value,_lzw_transferto_value,_transactioncurrencyid_value",
+                "$select": "activityid,seriesid,subject,description,scheduledstart,lzw_amount,lzw_paymenttype,lzw_payee,"
+                           "_lzw_paidfrom_value,_lzw_financecategory_value,_lzw_transferto_value,_transactioncurrencyid_value",
                 # Open (0) or Scheduled (3) only: completed (done) and cancelled appointments are read-only.
                 "$filter": f"lzw_amount ne null and (statecode eq 0 or statecode eq 3) "
                            f"and scheduledstart lt @{{outputs('{T_END}')}}",
